@@ -6,8 +6,10 @@ const ctfCollection = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.string().optional(),
+    ctf: z.string().optional(),
     description: z.string().optional(),
     icon: z.string().optional(),
+    points: z.number().optional(),
     solves: z.number().optional(),
     placement: z.string().optional(),
     totalTeams: z.number().optional(),

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
   const ctfEntries = await getCollection('ctf');
@@ -11,43 +11,73 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await entry.render();
+const { Content, headings } = await entry.render();
 ---
 <BaseLayout 
-  title={entry.data.title}
+  title={`${entry.data.title} | Writeups`}
   description={entry.data.description ?? `CTF writeup: ${entry.data.title}`}
   activePage="ctf"
-  extraCss={['/styles/ctf.css', '/styles/docs.css']}
+  extraCss={['/styles/ctf.css']}
 >
+  <main class="ctf-blog-layout" id="main-content">
+    
+    <!-- Left Column: Writeup Content -->
+    <article class="ctf-blog-main">
+      <nav class="docs-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">The False Positive</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="/ctf">Writeups</a>
+        <span class="breadcrumb-sep">›</span>
+        <span>{entry.data.title}</span>
+      </nav>
 
-  <main class="page-wrapper docs-layout" id="main-content">
-    <div class="docs-main">
-      <article class="docs-content">
-
-        <nav class="docs-breadcrumb" aria-label="Breadcrumb">
-          <a href="/">The False Positive</a>
-          <span class="breadcrumb-sep">›</span>
-          <a href="/ctf">Case Files</a>
-          <span class="breadcrumb-sep">›</span>
-          <span>{entry.data.title}</span>
-        </nav>
-
-        <header class="docs-page-header">
-          <span class="docs-tag">// CTF Writeup</span>
-          <h1>{entry.data.title}</h1>
+      <header class="writeup-header">
+        <h1 class="writeup-title">{entry.data.title} {entry.data.ctf && `- ${entry.data.ctf}`}</h1>
+        <div class="writeup-meta">
+          <span class="meta-item">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            vaLak
+          </span>
           {entry.data.date && (
-            <p class="text-muted text-mono" style="font-size:0.8rem;">
-              {new Date(entry.data.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
-            </p>
+            <span class="meta-item">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              {entry.data.date}
+            </span>
           )}
-        </header>
+          {entry.data.tags && entry.data.tags.length > 0 && (
+            <span class="meta-item">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+              {entry.data.tags[0]}
+            </span>
+          )}
+        </div>
+      </header>
 
-        <!-- Rendered Markdown content -->
+      <div class="writeup-content">
         <Content />
+      </div>
+    </article>
 
-      </article>
-    </div>
+    <!-- Right Column: TOC Widget -->
+    <aside class="ctf-blog-sidebar">
+      
+      <!-- TOC Widget -->
+      {headings.length > 0 && (
+        <div class="widget projects-widget" style="position: sticky; top: calc(var(--nav-height) + 2rem);">
+          <h3 class="widget-header">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+            Table of Contents
+          </h3>
+          <ul class="projects-list" style="max-height: 60vh; overflow-y: auto;">
+            {headings.map(h => (
+              <li style={`padding-left: ${(h.depth - 1) * 1}rem;`}>
+                <a href={`#${h.slug}`}>{h.text}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </aside>
+
   </main>
-
-  <script src="/scripts/docs.js" is:inline></script>
 </BaseLayout>

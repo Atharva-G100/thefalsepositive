@@ -3,124 +3,164 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
 // Get all CTF writeups from content collection
-const ctfWriteups = await getCollection('ctf').catch(() => []);
+const allWriteups = await getCollection('ctf').catch(() => []);
+
+// Sort by date descending
+const sortedWriteups = allWriteups.sort((a, b) => {
+  const dateA = new Date(a.data.date || 0);
+  const dateB = new Date(b.data.date || 0);
+  return dateB.getTime() - dateA.getTime();
+});
+
+// Group by Year -> CTF
+const groupedByYearAndCtf = sortedWriteups.reduce((acc, writeup) => {
+  const date = writeup.data.date ? new Date(writeup.data.date) : new Date();
+  const year = date.getFullYear().toString();
+  const ctfName = writeup.data.ctf || 'Other';
+  
+  if (!acc[year]) acc[year] = {};
+  if (!acc[year][ctfName]) acc[year][ctfName] = [];
+  
+  acc[year][ctfName].push(writeup);
+  return acc;
+}, {} as Record<string, Record<string, typeof allWriteups>>);
+
+// Get sorted years
+const years = Object.keys(groupedByYearAndCtf).sort((a, b) => Number(b) - Number(a));
+
+// Get tags and their counts
+const tagCounts = allWriteups.reduce((acc, writeup) => {
+  if (writeup.data.tags) {
+    writeup.data.tags.forEach(tag => {
+      acc[tag] = (acc[tag] || 0) + 1;
+    });
+  }
+  return acc;
+}, {} as Record<string, number>);
+const tags = Object.keys(tagCounts).sort();
 ---
 <BaseLayout 
-  title="CTF Case Files" 
+  title="CTF Writeups" 
   description="CTF writeups by vaLak — every competition documented like a case file."
   activePage="ctf"
-  extraCss={['/styles/ctf.css', '/styles/docs.css']}
+  extraCss={['/styles/ctf.css']}
 >
-
-  <main class="page-wrapper docs-layout" id="main-content">
-
-    <!-- Sidebar -->
-    <aside class="docs-sidebar" id="ctf-sidebar" aria-label="CTF navigation">
-      <div class="sidebar-header">
-        <span class="sidebar-label">// Case Files</span>
+  <main class="ctf-blog-layout" id="main-content">
+    
+    <!-- Left Column: Timeline & Tags -->
+    <div class="ctf-blog-main">
+      <h1 class="ctf-page-title">Writeups</h1>
+      
+      <!-- Archives / Timeline -->
+      <div class="ctf-timeline">
+        {years.map(year => (
+          <div class="timeline-year-group">
+            <h2 class="timeline-year">{year}</h2>
+            {Object.keys(groupedByYearAndCtf[year]).map(ctfName => (
+              <div class="timeline-ctf-group">
+                <h3 class="timeline-ctf-name">{ctfName}</h3>
+                <ul class="timeline-writeups">
+                  {groupedByYearAndCtf[year][ctfName].map(writeup => {
+                    const date = writeup.data.date ? new Date(writeup.data.date) : new Date();
+                    const monthDay = date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' }).replace('/', '-');
+                    return (
+                      <li class="writeup-item" data-tags={(writeup.data.tags || []).join(',')}>
+                        <span class="timeline-date">{monthDay}</span>
+                        <a href={`/ctf/${writeup.slug}`} class="timeline-link">{writeup.data.title}</a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
-      <nav class="sidebar-nav" aria-label="CTF list">
-        <ul class="sidebar-nav-list" id="ctf-nav-list">
-          <li class="sidebar-nav-item active">
-            <a href="/ctf" class="sidebar-nav-link">🏠 Overview</a>
-          </li>
-          <!-- Dynamic CTF entries -->
-          {ctfWriteups.map(entry => (
-            <li class="sidebar-nav-item">
-              <a href={`/ctf/${entry.slug}`} class="sidebar-nav-link">
-                🏴 {entry.data.title}
-              </a>
-            </li>
+
+      <!-- Tags Section -->
+      <div class="ctf-tags-section">
+        <h2 class="tags-title">Tags</h2>
+        <div class="tags-grid">
+          {tags.map(tag => (
+            <a href={`/ctf?tag=${tag}`} class="tag-link" data-tag={tag}>
+              <span class="tag-hash">#</span> {tag} <span class="tag-count">({tagCounts[tag]})</span>
+            </a>
           ))}
-          <li id="ctf-nav-placeholder" class="sidebar-nav-item sidebar-placeholder">
-            <span class="text-muted text-mono" style="font-size:0.78rem; opacity:0.5;">
-              // writeups appear here
-            </span>
-          </li>
-        </ul>
-      </nav>
-    </aside>
-
-    <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
-
-    <!-- Main Content -->
-    <div class="docs-main">
-      <div class="docs-content ctf-content">
-
-        <!-- Breadcrumb -->
-        <nav class="docs-breadcrumb" aria-label="Breadcrumb">
-          <span>The False Positive</span>
-          <span class="breadcrumb-sep">›</span>
-          <span>Case Files</span>
-        </nav>
-
-        <!-- Header -->
-        <header class="ctf-header">
-          <div class="ctf-header-img-wrap" aria-hidden="true">
-            <img src="/assets/investigation_board.png" alt="" class="ctf-header-img" loading="lazy" />
-            <div class="ctf-header-overlay"></div>
-          </div>
-          <div class="ctf-header-content">
-            <span class="docs-tag">// 02 &mdash; Case Files</span>
-            <h1>CTF Case Files</h1>
-            <p class="ctf-header-sub">
-              Every competition is a case. Every challenge is a suspect.<br />
-              Every solved flag is a closed file.
-            </p>
-          </div>
-        </header>
-
-        <!-- Search -->
-        <div class="ctf-search-wrap">
-          <input
-            type="search"
-            id="ctf-table-search"
-            class="ctf-search-input"
-            placeholder="Search case files..."
-            aria-label="Search CTF table"
-          />
         </div>
-
-        <!-- CTF Table -->
-        <div class="ctf-table-wrap">
-          <table class="ctf-table" aria-label="CTF Competition Records">
-            <thead>
-              <tr>
-                <th>Competition</th>
-                <th>Challenges Solved</th>
-                <th>Placement</th>
-                <th>Mode</th>
-              </tr>
-            </thead>
-            <tbody id="ctf-table-body">
-              <!-- Populated by ctf.js (CTF_DATA array) or markdown collection below -->
-              {ctfWriteups.length === 0 && (
-                <tr id="ctf-empty-row">
-                  <td colspan="4" class="ctf-empty-row">
-                    <span class="text-muted">// No cases filed yet. First competition incoming.</span>
-                  </td>
-                </tr>
-              )}
-              {ctfWriteups.map((entry, i) => (
-                <tr id={`ctf-row-${i}`}>
-                  <td>
-                    <a href={`/ctf/${entry.slug}`}>
-                      {entry.data.icon ?? '🏴'} {entry.data.title}
-                    </a>
-                  </td>
-                  <td>{entry.data.solves ?? '—'}</td>
-                  <td><span class="place-other">{entry.data.placement ?? '—'}</span></td>
-                  <td><span class="team-badge">{entry.data.team ?? 'Solo'}</span></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
       </div>
     </div>
 
+    <!-- Right Column: Profile Widget -->
+    <aside class="ctf-blog-sidebar">
+      <div class="widget profile-widget">
+        <div class="profile-logo">
+          <span style="font-family: var(--font-heading); font-size: 3rem; color: var(--white);">
+            va<span style="color: var(--red);">L</span>ak
+          </span>
+        </div>
+        <p class="profile-title">Official notebook of vaLak</p>
+        <div class="profile-socials">
+          <a href="#" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a>
+          <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a>
+        </div>
+      </div>
+
+      <div class="widget projects-widget">
+        <h3 class="widget-header">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+          Active Projects
+        </h3>
+        <ul class="projects-list">
+          <li><a href="/">The False Positive</a> <span class="project-desc">(CTF Blog)</span></li>
+          <li><a href="/pentest">Pentest Handbook</a> <span class="project-desc">(Documentation)</span></li>
+          <li><a href="/news">Cyber Intel</a> <span class="project-desc">(Live News)</span></li>
+        </ul>
+      </div>
+    </aside>
+
   </main>
 
-  <script src="/scripts/ctf.js" is:inline></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const activeTag = urlParams.get('tag');
+
+      if (!activeTag) return;
+
+      // 1. Highlight the active tag and allow toggling it off
+      document.querySelectorAll('.tag-link').forEach(link => {
+        if (link.getAttribute('data-tag') === activeTag) {
+          link.classList.add('active');
+          link.href = '/ctf'; // Click again to clear the filter
+        }
+      });
+
+      // 2. Filter the writeups
+      document.querySelectorAll('.timeline-year-group').forEach(yearGroup => {
+        let yearHasVisible = false;
+
+        yearGroup.querySelectorAll('.timeline-ctf-group').forEach(ctfGroup => {
+          let ctfHasVisible = false;
+
+          ctfGroup.querySelectorAll('.writeup-item').forEach(item => {
+            const tags = item.getAttribute('data-tags').split(',');
+            if (tags.includes(activeTag)) {
+              item.style.display = ''; // Show
+              ctfHasVisible = true;
+              yearHasVisible = true;
+            } else {
+              item.style.display = 'none'; // Hide
+            }
+          });
+
+          // Hide CTF group if all its writeups are hidden
+          ctfGroup.style.display = ctfHasVisible ? '' : 'none';
+        });
+
+        // Hide Year group if all its CTF groups are hidden
+        yearGroup.style.display = yearHasVisible ? '' : 'none';
+      });
+    });
+  </script>
 </BaseLayout>

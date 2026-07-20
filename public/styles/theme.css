@@ -312,3 +312,9 @@ li { margin-bottom: 0.25rem; }
 
 .fade-in { animation: fadeIn 0.6s ease forwards; }
 .flicker  { animation: flicker 8s infinite; }
+
+/* ── Base ───────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--nav-height) + 2rem);
+}

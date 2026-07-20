@@ -38,6 +38,21 @@ hamburger?.addEventListener('click', () => {
 });
 overlay?.addEventListener('click', closeSidebar);
 
+// ── Desktop Sidebar Collapse ──────────────────
+const desktopToggle = document.getElementById('desktop-sidebar-toggle');
+const tocToggle = document.getElementById('desktop-toc-toggle');
+const docsLayout = document.getElementById('docs-layout');
+
+desktopToggle?.addEventListener('click', () => {
+  const isCollapsed = docsLayout.classList.toggle('left-collapsed');
+  desktopToggle.setAttribute('aria-expanded', String(!isCollapsed));
+});
+
+tocToggle?.addEventListener('click', () => {
+  const isCollapsed = docsLayout.classList.toggle('right-collapsed');
+  tocToggle.setAttribute('aria-expanded', String(!isCollapsed));
+});
+
 // ── TOC Active Highlight ──────────────────────
 const tocLinks = document.querySelectorAll('.toc-nav a');
 const sections = document.querySelectorAll('.docs-content h2, .docs-content h3');
