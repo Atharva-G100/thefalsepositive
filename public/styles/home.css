@@ -28,51 +28,62 @@
 
 
 
-/* ── L Logo Mark ───────────────────────────── */
-.hero-logo-mark {
-  width: 80px;
-  height: 80px;
-  background: var(--white);
-  border-radius: 4px;
+/* ── Hero Title Graphic ────────────────────── */
+.hero-title-container {
   display: flex;
-  align-items: center;
   justify-content: center;
-  font-family: var(--font-display);
-  font-size: 3rem;
-  font-weight: 900;
-  color: var(--bg-primary);
+  align-items: center;
+  width: 100%;
+  max-width: 780px;
   margin-bottom: var(--space-xl);
   position: relative;
-  box-shadow: 0 0 0 0 rgba(255,255,255,0.2);
-  transition: box-shadow var(--transition-slow);
 }
 
-.hero-logo-mark:hover {
-  box-shadow: 0 0 30px rgba(255,255,255,0.25);
+.hero-title-graphic {
+  width: 100%;
+  max-width: 700px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 35px rgba(67, 102, 113, 0.45)) drop-shadow(0 0 15px rgba(184, 38, 53, 0.3));
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
 }
 
-/* ── Blog Title ────────────────────────────── */
-.hero-title {
-  font-family: var(--font-display);
-  font-size: clamp(2.2rem, 6vw, 4.5rem);
-  font-weight: 900;
-  color: var(--white);
-  letter-spacing: 0.06em;
-  line-height: 1;
-  margin-bottom: var(--space-lg);
-  text-shadow:
-    0 0 24px rgba(67,102,113,0.5),
-    0 0 70px rgba(67,102,113,0.18),
-    0 0 4px rgba(225,233,232,0.3);
+.hero-title-graphic:hover {
+  transform: scale(1.02);
+  filter: drop-shadow(0 0 50px rgba(67, 102, 113, 0.65)) drop-shadow(0 0 25px rgba(184, 38, 53, 0.45));
 }
 
-.hero-title .accent { color: var(--red-bright); }
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
-/* ── Quote ──────────────────────────── */
+/* ── Quote Container ────────────────────────── */
+.hero-quote-container {
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto var(--space-xl);
+  padding: var(--space-lg) var(--space-xl);
+  background: rgba(22, 25, 22, 0.65);
+  border-top: 1px solid rgba(67, 102, 113, 0.25);
+  border-bottom: 1px solid rgba(67, 102, 113, 0.25);
+  border-left: 3px solid var(--red-bright);
+  position: relative;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  border-radius: 0 8px 8px 0;
+}
+
 .hero-quote {
-  max-width: 600px;
   font-family: 'Crimson Pro', 'Georgia', serif;
-  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+  font-size: clamp(1.25rem, 2.2vw, 1.65rem);
   font-style: italic;
   font-weight: 300;
   color: var(--off-white);
@@ -80,19 +91,18 @@
   text-align: center;
   margin: 0 0 var(--space-md);
   letter-spacing: 0.01em;
-  /* No quote marks in CSS — using real curly quotes in HTML */
 }
 
 .hero-quote-attr {
   font-family: var(--font-heading);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   font-variant: small-caps;
   color: var(--red-bright);
-  margin-bottom: var(--space-2xl);
+  margin-bottom: 0;
   text-align: center;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 /* ── Description ─────────────────────── */

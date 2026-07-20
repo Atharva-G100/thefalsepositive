@@ -11,17 +11,23 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     <!-- ── Hero ── -->
     <section class="hero" aria-label="Introduction">
-      <div class="hero-logo-mark" aria-label="L logo">L</div>
+      <div class="hero-title-container">
+        <h1 class="visually-hidden">The False Positive</h1>
+        <img 
+          src="/assets/the_false_positive_title_logo.png" 
+          alt="The False Positive" 
+          class="hero-title-graphic" 
+          loading="eager"
+        />
+      </div>
 
-      <h1 class="hero-title flicker">
-        The <span class="accent">False</span> Positive
-      </h1>
-
-      <blockquote class="hero-quote">
-        &#8220;There is a 94% probability that the person reading this
-        is trying to get better at hacking.&#8221;
-      </blockquote>
-      <p class="hero-quote-attr">&sim;&thinsp; L - The World's Greatest Detective</p>
+      <div class="hero-quote-container">
+        <blockquote class="hero-quote">
+          &#8220;There is a 94% probability that the person reading this
+          is trying to get better at hacking.&#8221;
+        </blockquote>
+        <p class="hero-quote-attr">&sim;&thinsp; L - The World's Greatest Detective</p>
+      </div>
 
       <p class="hero-desc">
         A personal notebook built for the me who was navigating TryHackMe,
