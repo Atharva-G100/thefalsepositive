@@ -2,6 +2,12 @@
 dist/
 .astro/
 
+# ── Legacy static files (pre-Astro) — do NOT commit ─────────────────
+css/
+js/
+assets/
+*.html
+
 # ── Node ─────────────────────────────────────────────────────────────
 node_modules/
 npm-debug.log*
