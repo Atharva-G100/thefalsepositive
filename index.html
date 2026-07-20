@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The False Positive — vaLak</title>
+  <meta name="description"
+    content="A cybersecurity notebook by vaLak. Pentesting journey, CTF writeups, and daily cyber news — themed around the Death Note universe." />
+  <meta name="author" content="vaLak" />
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/home.css" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='black'/><text y='.9em' font-size='85' font-family='serif' font-weight='900' fill='white'>L</text></svg>" />
+</head>
+
+<body>
+
+
+  <!-- Top Navigation -->
+  <nav id="topnav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-brand" aria-label="The False Positive — Home">
+      <div class="nav-brand-l" aria-label="L logo"></div>
+      <span class="nav-brand-name">The False Positive</span>
+    </a>
+    <div class="nav-spacer"></div>
+    <ul class="nav-links" role="list">
+      <li><a href="pentest.html" id="nav-pentest">Handbook</a></li>
+      <li><a href="ctf.html" id="nav-ctf">Case Files</a></li>
+      <li><a href="news.html" id="nav-news">Intel</a></li>
+    </ul>
+    <button class="nav-search-btn" id="search-trigger" aria-label="Open search" aria-keyshortcuts="Control+K">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        aria-hidden="true">
+        <circle cx="11" cy="11" r="8" />
+        <path d="m21 21-4.35-4.35" />
+      </svg>
+      Search
+      <kbd class="shortcut">Ctrl K</kbd>
+    </button>
+    <a href="https://github.com/Atharva-G100" target="_blank" rel="noopener" class="nav-icon-link"
+      aria-label="GitHub profile" id="nav-github">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path
+          d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z" />
+      </svg>
+    </a>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Search Modal -->
+  <div id="search-modal" role="dialog" aria-label="Search" aria-modal="true">
+    <div class="search-box">
+      <div class="search-input-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          aria-hidden="true">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+        <input type="text" id="search-input" placeholder="Search the notebook..." autocomplete="off"
+          aria-label="Search" />
+      </div>
+      <div id="search-results" role="listbox" aria-label="Search results">
+        <div class="search-empty">Start typing to search the notebook...</div>
+      </div>
+      <div class="search-footer">
+        <span>↑↓ navigate</span>
+        <span>↵ open</span>
+        <span>Esc close</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Page -->
+  <main class="page-wrapper" id="main-content">
+
+    <!-- ── Hero ── -->
+    <section class="hero" aria-label="Introduction">
+      <div class="hero-logo-mark" aria-label="L logo">L</div>
+
+      <h1 class="hero-title flicker">
+        The <span class="accent">False</span> Positive
+      </h1>
+
+      <blockquote class="hero-quote">
+        &#8220;There is a 94% probability that the person reading this
+        is trying to get better at hacking.&#8221;
+      </blockquote>
+      <p class="hero-quote-attr">&sim;&thinsp; L &mdash; The World’s Greatest Detective</p>
+
+      <p class="hero-desc">
+        A personal notebook built for the me who was navigating TryHackMe,
+        HackTheBox, and the overwhelming world of ethical hacking. Every technique,
+        every command, every case file &mdash; documented like evidence.
+      </p>
+
+      <div class="hero-cta">
+        <a href="pentest.html" class="btn btn-primary" id="hero-enter-btn">
+          Open the Note
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+
+      <div class="l-probability" aria-label="L probability estimate">
+        <span>I am va</span><span class="prob-val">L</span><span>ak. The L is not a coincidence.</span>
+      </div>
+
+      <div class="scroll-hint" aria-hidden="true">
+        <span>SCROLL</span>
+        <div class="scroll-arrow"></div>
+      </div>
+    </section>
+
+    <!-- ── Death Note Book Parallax Section ── -->
+    <div class="parallax-section" aria-label="Death Note Artifact">
+      <div class="parallax-bg" style="background-image: url('assets/death_note_book.png');"></div>
+      <div class="parallax-overlay">
+        <p class="parallax-text">// The human whose name is written in this notebook shall die.</p>
+      </div>
+    </div>
+
+    <!-- ── Section Cards ── -->
+    <section class="home-sections" aria-label="Navigate to sections">
+      <p class="home-sections-title">// The Notebook Sections</p>
+      <div class="home-cards" role="list">
+
+        <!-- Pentest Handbook -->
+        <a href="pentest.html" class="home-card" role="listitem" id="card-pentest" aria-label="Pentest Handbook">
+          <span class="card-icon" aria-hidden="true">🔴</span>
+          <span class="card-tag">// 01 — Handbook</span>
+          <h2 class="card-title">Pentest Handbook</h2>
+          <p class="card-desc">
+            Every technique. Every command. Every methodology — organized by category
+            and written like case notes. Red-Teaming, Web Attacks, Active Directory.
+          </p>
+          <span class="card-arrow">
+            Open Handbook
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </span>
+        </a>
+
+        <!-- CTF Case Files -->
+        <a href="ctf.html" class="home-card" role="listitem" id="card-ctf" aria-label="CTF Case Files">
+          <span class="card-icon" aria-hidden="true">🚩</span>
+          <span class="card-tag">// 02 — Case Files</span>
+          <h2 class="card-title">CTF Case Files</h2>
+          <p class="card-desc">
+            Every competition is a case. Every challenge is a suspect.
+            Writeups from CTFs — documented with methodology, tools used, and lessons learned.
+          </p>
+          <span class="card-arrow">
+            Open Case Files
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </span>
+        </a>
+
+        <!-- Cyber Intel -->
+        <a href="news.html" class="home-card" role="listitem" id="card-news" aria-label="Cyber Intel News">
+          <span class="card-icon" aria-hidden="true">📡</span>
+          <span class="card-tag">// 03 — Intel</span>
+          <h2 class="card-title">Cyber Intel</h2>
+          <p class="card-desc">
+            Daily intelligence from the field. Live cybersecurity news —
+            vulnerabilities, breaches, tools, and threat reports. Refreshed automatically.
+          </p>
+          <span class="card-arrow">
+            View Intel Feed
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </span>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ── About Strip ── -->
+    <section class="home-about" aria-label="About vaLak">
+      <div class="about-l-image" aria-hidden="true">
+        <img src="assets/l_hero.png" alt="L Lawliet — vaLak" class="about-l-portrait" loading="lazy" />
+      </div>
+      <h2 class="about-handle">va<span class="handle-l">L</span>ak</h2>
+      <p class="about-text">
+        Navigating the world of ethical hacking and cybersecurity — one challenge at a time.
+        This notebook documents the journey. The wins, the failures, the "aha" moments.
+        Everything written in red ink, in the style of L himself.
+        <br><br>
+        <em class="text-silver">"Watashi wa L desu."</em> 🍰
+      </p>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer id="site-footer" role="contentinfo">
+    <span class="footer-l-mark" aria-hidden="true">L</span>
+    <p class="footer-text">
+      © <span id="footer-year"></span> <span>vaLak</span> · The False Positive ·
+      <span>Written in red ink</span>
+    </p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,126 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+// Get all CTF writeups from content collection
+const ctfWriteups = await getCollection('ctf').catch(() => []);
+---
+<BaseLayout 
+  title="CTF Case Files" 
+  description="CTF writeups by vaLak — every competition documented like a case file."
+  activePage="ctf"
+  extraCss={['/styles/ctf.css', '/styles/docs.css']}
+>
+
+  <main class="page-wrapper docs-layout" id="main-content">
+
+    <!-- Sidebar -->
+    <aside class="docs-sidebar" id="ctf-sidebar" aria-label="CTF navigation">
+      <div class="sidebar-header">
+        <span class="sidebar-label">// Case Files</span>
+      </div>
+      <nav class="sidebar-nav" aria-label="CTF list">
+        <ul class="sidebar-nav-list" id="ctf-nav-list">
+          <li class="sidebar-nav-item active">
+            <a href="/ctf" class="sidebar-nav-link">🏠 Overview</a>
+          </li>
+          <!-- Dynamic CTF entries -->
+          {ctfWriteups.map(entry => (
+            <li class="sidebar-nav-item">
+              <a href={`/ctf/${entry.slug}`} class="sidebar-nav-link">
+                🏴 {entry.data.title}
+              </a>
+            </li>
+          ))}
+          <li id="ctf-nav-placeholder" class="sidebar-nav-item sidebar-placeholder">
+            <span class="text-muted text-mono" style="font-size:0.78rem; opacity:0.5;">
+              // writeups appear here
+            </span>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+    <!-- Main Content -->
+    <div class="docs-main">
+      <div class="docs-content ctf-content">
+
+        <!-- Breadcrumb -->
+        <nav class="docs-breadcrumb" aria-label="Breadcrumb">
+          <span>The False Positive</span>
+          <span class="breadcrumb-sep">›</span>
+          <span>Case Files</span>
+        </nav>
+
+        <!-- Header -->
+        <header class="ctf-header">
+          <div class="ctf-header-img-wrap" aria-hidden="true">
+            <img src="/assets/investigation_board.png" alt="" class="ctf-header-img" loading="lazy" />
+            <div class="ctf-header-overlay"></div>
+          </div>
+          <div class="ctf-header-content">
+            <span class="docs-tag">// 02 &mdash; Case Files</span>
+            <h1>CTF Case Files</h1>
+            <p class="ctf-header-sub">
+              Every competition is a case. Every challenge is a suspect.<br />
+              Every solved flag is a closed file.
+            </p>
+          </div>
+        </header>
+
+        <!-- Search -->
+        <div class="ctf-search-wrap">
+          <input
+            type="search"
+            id="ctf-table-search"
+            class="ctf-search-input"
+            placeholder="Search case files..."
+            aria-label="Search CTF table"
+          />
+        </div>
+
+        <!-- CTF Table -->
+        <div class="ctf-table-wrap">
+          <table class="ctf-table" aria-label="CTF Competition Records">
+            <thead>
+              <tr>
+                <th>Competition</th>
+                <th>Challenges Solved</th>
+                <th>Placement</th>
+                <th>Mode</th>
+              </tr>
+            </thead>
+            <tbody id="ctf-table-body">
+              <!-- Populated by ctf.js (CTF_DATA array) or markdown collection below -->
+              {ctfWriteups.length === 0 && (
+                <tr id="ctf-empty-row">
+                  <td colspan="4" class="ctf-empty-row">
+                    <span class="text-muted">// No cases filed yet. First competition incoming.</span>
+                  </td>
+                </tr>
+              )}
+              {ctfWriteups.map((entry, i) => (
+                <tr id={`ctf-row-${i}`}>
+                  <td>
+                    <a href={`/ctf/${entry.slug}`}>
+                      {entry.data.icon ?? '🏴'} {entry.data.title}
+                    </a>
+                  </td>
+                  <td>{entry.data.solves ?? '—'}</td>
+                  <td><span class="place-other">{entry.data.placement ?? '—'}</span></td>
+                  <td><span class="team-badge">{entry.data.team ?? 'Solo'}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <script src="/scripts/ctf.js" is:inline></script>
+</BaseLayout>

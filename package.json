@@ -1,0 +1,14 @@
+{
+  "name": "the-false-positive",
+  "version": "1.0.0",
+  "description": "A Death Note-themed cybersecurity blog by vaLak",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^5.2.2"
+  }
+}

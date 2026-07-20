@@ -1,0 +1,272 @@
+/* ============================================
+   THE FALSE POSITIVE — CTF Writeups Styles
+   ============================================ */
+
+/* ── CTF Layout ────────────────────────────── */
+.ctf-layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  min-height: calc(100vh - var(--nav-height));
+  padding-top: var(--nav-height);
+}
+
+/* ── CTF Sidebar ───────────────────────────── */
+.ctf-sidebar {
+  position: fixed;
+  top: var(--nav-height);
+  left: 0;
+  width: var(--sidebar-width);
+  height: calc(100vh - var(--nav-height));
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.ctf-sidebar-inner { padding: var(--space-lg) 0 var(--space-2xl); }
+
+.ctf-sidebar-header {
+  padding: 0 var(--space-md) var(--space-md);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--red-bright);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-md);
+}
+
+.ctf-home-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0.5rem var(--space-md);
+  margin: 0 var(--space-sm) var(--space-sm);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--off-white);
+  text-decoration: none;
+  background: var(--red-ghost);
+  border: 1px solid var(--border-red);
+  transition: all var(--transition-fast);
+}
+
+.ctf-home-link:hover {
+  background: rgba(201,0,0,0.15);
+  color: var(--white);
+}
+
+.ctf-home-link .flag-icon { font-size: 1rem; }
+
+/* CTF list items */
+.ctf-nav { list-style: none; margin-top: var(--space-sm); }
+
+.ctf-nav-item a {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0.4rem var(--space-md);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.ctf-nav-item a:hover {
+  color: var(--off-white);
+  background: var(--bg-elevated);
+  border-left-color: var(--border-light);
+}
+
+.ctf-nav-item a.active {
+  color: var(--white);
+  background: var(--red-ghost);
+  border-left-color: var(--red);
+}
+
+.ctf-nav-icon { font-size: 0.9rem; flex-shrink: 0; }
+
+/* ── CTF Main Content ───────────────────────── */
+.ctf-content {
+  margin-left: var(--sidebar-width);
+  padding: var(--space-2xl) var(--space-2xl);
+  min-width: 0;
+}
+
+.ctf-page-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.ctf-flag-icon { font-size: 2rem; }
+
+.ctf-page-title {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  color: var(--white);
+}
+
+.ctf-page-copy-btn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.ctf-page-copy-btn:hover {
+  color: var(--off-white);
+  border-color: var(--border-red);
+}
+
+.ctf-page-desc {
+  color: var(--silver);
+  font-size: 1rem;
+  margin-bottom: var(--space-xl);
+  max-width: 640px;
+}
+
+/* ── Overview Table ─────────────────────────── */
+.ctf-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-top: var(--space-lg);
+}
+
+.ctf-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.ctf-table th {
+  background: var(--bg-elevated);
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.75rem var(--space-md);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.ctf-table td {
+  padding: 0.75rem var(--space-md);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: var(--off-white);
+  vertical-align: middle;
+}
+
+.ctf-table tr:last-child td { border-bottom: none; }
+
+.ctf-table tr:hover td {
+  background: var(--red-ghost);
+}
+
+/* Name link cell */
+.ctf-table td a {
+  color: var(--red-bright);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+.ctf-table td a:hover { color: var(--white); text-decoration: underline; }
+
+/* Placement badges */
+.place-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.15em 0.5em;
+  border-radius: 2px;
+}
+
+.place-1st { color: #ffd700; }
+.place-top10 { color: #00cc88; }
+.place-top25 { color: #66aaff; }
+.place-other { color: var(--silver); }
+
+/* Solo/Team badge */
+.team-badge {
+  font-size: 0.72rem;
+  padding: 0.15em 0.5em;
+  border-radius: 2px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+/* ── Search Bar ─────────────────────────────── */
+.ctf-search-wrap {
+  position: relative;
+  max-width: 400px;
+  margin-bottom: var(--space-lg);
+}
+
+.ctf-search-input {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.6rem 0.9rem 0.6rem 2.4rem;
+  color: var(--off-white);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.ctf-search-input:focus { border-color: var(--border-red); }
+.ctf-search-input::placeholder { color: var(--muted); }
+
+.ctf-search-icon {
+  position: absolute;
+  left: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+  font-size: 0.85rem;
+}
+
+/* ── Individual Writeup ─────────────────────── */
+.writeup-header {
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-xl);
+}
+
+.writeup-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.writeup-meta .tag { font-size: 0.68rem; }
+
+/* ── Responsive ─────────────────────────────── */
+@media (max-width: 768px) {
+  .ctf-sidebar { transform: translateX(-100%); }
+  .ctf-sidebar.open { transform: translateX(0); }
+  .ctf-content { margin-left: 0; padding: var(--space-lg) var(--space-md); }
+  .ctf-page-header { flex-wrap: wrap; }
+  .ctf-page-copy-btn { margin-left: 0; }
+}

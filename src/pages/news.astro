@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout 
+  title="Cyber Intel" 
+  description="Live cybersecurity news feed — vulnerabilities, breaches, tools, and research."
+  activePage="news"
+  extraCss={['/styles/news.css']}
+>
+
+  <!-- Ryuk Parallax Header — Full Width -->
+  <header class="news-header-parallax" aria-label="News Header Banner">
+    <div class="parallax-bg" style="background-image: url('/assets/ryuk.png');"></div>
+    <div class="parallax-overlay">
+      <div class="news-header-content">
+        <span class="news-header-tag">// Live Intelligence Feed</span>
+        <h1>
+          <span class="news-live-dot" aria-label="Live" title="Auto-refreshing"></span>
+          Cyber Intel
+        </h1>
+        <p class="news-header-sub" id="news-last-updated">
+          Fetching latest intelligence from the field...
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-wrapper" id="main-content">
+    <div class="news-layout">
+
+      <!-- Filters -->
+      <div class="news-filters" role="group" aria-label="Filter news by category">
+        <button class="news-filter-btn active" data-filter="all" id="filter-all">All</button>
+        <button class="news-filter-btn" data-filter="vulnerability" id="filter-vuln">Vulnerabilities</button>
+        <button class="news-filter-btn" data-filter="breach" id="filter-breach">Breaches</button>
+        <button class="news-filter-btn" data-filter="tools" id="filter-tools">Tools</button>
+        <button class="news-filter-btn" data-filter="research" id="filter-research">Research</button>
+      </div>
+
+      <!-- Refresh bar -->
+      <div class="news-refresh-bar" id="news-refresh-bar">
+        <span id="news-count-label">Loading articles...</span>
+        <button class="refresh-btn" id="news-refresh-btn" aria-label="Refresh news feed">
+          ↻ Refresh
+        </button>
+      </div>
+
+      <!-- News grid -->
+      <div class="news-grid" id="news-grid" role="feed" aria-label="Cybersecurity news articles">
+        <!-- Populated by news.js -->
+      </div>
+
+    </div>
+  </main>
+
+  <script src="/scripts/news.js" is:inline></script>
+</BaseLayout>

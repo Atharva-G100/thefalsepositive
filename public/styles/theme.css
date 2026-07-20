@@ -1,0 +1,314 @@
+/* ============================================
+   THE FALSE POSITIVE — Design System
+   by vaLak | Death Note × Cybersecurity
+   L's Official Color Palette
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+
+/* ── CSS Variables — L's Palette ───────────── */
+:root {
+  /* ── Backgrounds ──────────────────────────── */
+  /* #1A1D1A — near black (L's darkest shadow) */
+  --bg-primary:    #1A1D1A;
+  /* #2A2D2F — dark charcoal (panels, cards) */
+  --bg-secondary:  #2A2D2F;
+  --bg-tertiary:   #2A2D2F;
+  /* Slightly lifted surface */
+  --bg-elevated:   #323639;
+  --bg-hover:      #3b4044;
+
+  /* ── Accent — #436671 (L's teal jeans) ───── */
+  --red:           #436671;
+  --red-bright:    #5b8da1;
+  --red-dim:       #2c4a57;
+  --red-ghost:     rgba(67, 102, 113, 0.10);
+  --red-glow:      rgba(67, 102, 113, 0.30);
+  --red-glow-soft: rgba(67, 102, 113, 0.12);
+
+  /* ── Text — L's beige & cool white ─────────  */
+  /* #E1E9E8 — cool off-white (L's shirt) */
+  --white:         #E1E9E8;
+  /* #DAD3C9 — warm beige (L's skin, parchment) */
+  --off-white:     #DAD3C9;
+  /* #47494B — medium gray muted text */
+  --silver:        #9eaaad;
+  --muted:         #60696e;
+
+  /* ── Borders ─────────────────────────────── */
+  --border:        #323639;
+  --border-red:    rgba(67, 102, 113, 0.35);
+  --border-light:  #3d4247;
+
+  /* Typography */
+  --font-display:  'Cinzel Decorative', serif;
+  --font-heading:  'Cinzel', serif;
+  --font-body:     'Crimson Pro', Georgia, serif;
+  --font-mono:     'JetBrains Mono', 'Courier New', monospace;
+
+  /* Spacing */
+  --space-xs:  0.25rem;
+  --space-sm:  0.5rem;
+  --space-md:  1rem;
+  --space-lg:  1.5rem;
+  --space-xl:  2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+
+  /* Sizing */
+  --sidebar-width:    260px;
+  --toc-width:        220px;
+  --content-max:      760px;
+  --nav-height:       56px;
+
+  /* Transitions */
+  --transition-fast:   150ms ease;
+  --transition-mid:    250ms ease;
+  --transition-slow:   400ms ease;
+
+  /* Shadows */
+  --shadow-red:    0 0 20px var(--red-glow), 0 0 60px var(--red-glow-soft);
+  --shadow-card:   0 4px 24px rgba(26,29,26,0.9), 0 2px 8px rgba(67,102,113,0.08);
+  --shadow-panel:  0 8px 40px rgba(26,29,26,0.95), 0 0 20px rgba(67,102,113,0.06);
+}
+
+/* ── Reset & Base ──────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--off-white);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Scrollbar ─────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--red-dim); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--red); }
+
+/* ── Typography ────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--white);
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+}
+
+h1 { font-size: 2.4rem; font-weight: 700; }
+h2 { font-size: 1.7rem; font-weight: 600; }
+h3 { font-size: 1.3rem; font-weight: 600; }
+h4 { font-size: 1.1rem; font-weight: 500; }
+
+p { margin-bottom: 1rem; }
+
+a {
+  color: var(--red-bright);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+a:hover { color: var(--white); }
+
+strong { color: var(--white); font-weight: 600; }
+em { color: var(--silver); font-style: italic; }
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--bg-elevated);
+  color: var(--red-bright);
+  padding: 0.15em 0.45em;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-red);
+  border-left: 3px solid var(--red);
+  border-radius: 4px;
+  padding: var(--space-md) var(--space-lg);
+  overflow-x: auto;
+  margin: var(--space-lg) 0;
+  line-height: 1.6;
+}
+
+pre code {
+  background: transparent;
+  border: none;
+  color: var(--off-white);
+  padding: 0;
+  font-size: 1em;
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--red-dim), transparent);
+  margin: var(--space-xl) 0;
+}
+
+ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+li { margin-bottom: 0.25rem; }
+
+/* ── Selection ─────────────────────────────── */
+::selection {
+  background: var(--red-dim);
+  color: var(--white);
+}
+
+/* ── Buttons ───────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.75rem 2rem;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-mid);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--red);
+  color: var(--white);
+  box-shadow: 0 0 0 0 var(--red-glow);
+}
+.btn-primary:hover {
+  background: var(--red-bright);
+  color: var(--white);
+  box-shadow: var(--shadow-red);
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--off-white);
+  border: 1px solid var(--border-light);
+}
+.btn-ghost:hover {
+  border-color: var(--red);
+  color: var(--white);
+  background: var(--red-ghost);
+}
+
+/* ── Callout / Alert Boxes ─────────────────── */
+.callout {
+  border-left: 3px solid var(--red);
+  background: var(--red-ghost);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: 0 4px 4px 0;
+  margin: var(--space-lg) 0;
+  font-family: var(--font-body);
+}
+
+.callout-title {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--red-bright);
+  margin-bottom: var(--space-sm);
+}
+
+.callout-warning {
+  border-color: #ff6600;
+  background: rgba(255, 102, 0, 0.08);
+}
+.callout-warning .callout-title { color: #ff8833; }
+
+.callout-note {
+  border-color: var(--silver);
+  background: rgba(170,170,170,0.06);
+}
+.callout-note .callout-title { color: var(--silver); }
+
+.callout-l {
+  border-color: var(--white);
+  background: rgba(255,255,255,0.04);
+  font-style: italic;
+}
+.callout-l .callout-title {
+  color: var(--white);
+  font-style: normal;
+}
+
+/* ── Tag / Badge ───────────────────────────── */
+.tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2em 0.6em;
+  border-radius: 2px;
+  border: 1px solid var(--border-red);
+  color: var(--red-bright);
+  background: var(--red-ghost);
+}
+
+/* ── Utility ───────────────────────────────── */
+.text-red     { color: var(--red-bright); }
+.text-muted   { color: var(--muted); }
+.text-silver  { color: var(--silver); }
+.text-mono    { font-family: var(--font-mono); }
+.text-center  { text-align: center; }
+
+.glow-red {
+  text-shadow: 0 0 10px var(--red-glow), 0 0 30px var(--red-glow-soft);
+}
+
+/* ── Animations ────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 var(--red-glow); }
+  50%       { box-shadow: 0 0 20px 4px var(--red-glow); }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92%       { opacity: 1; }
+  93%       { opacity: 0.7; }
+  94%       { opacity: 1; }
+  96%       { opacity: 0.85; }
+  97%       { opacity: 1; }
+}
+
+@keyframes ink-spread {
+  0%   { clip-path: circle(0% at 50% 50%); opacity: 1; }
+  100% { clip-path: circle(150% at 50% 50%); opacity: 0; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.fade-in { animation: fadeIn 0.6s ease forwards; }
+.flicker  { animation: flicker 8s infinite; }

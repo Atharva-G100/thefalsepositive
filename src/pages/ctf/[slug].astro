@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, getEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const ctfEntries = await getCollection('ctf');
+  return ctfEntries.map(entry => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+---
+<BaseLayout 
+  title={entry.data.title}
+  description={entry.data.description ?? `CTF writeup: ${entry.data.title}`}
+  activePage="ctf"
+  extraCss={['/styles/ctf.css', '/styles/docs.css']}
+>
+
+  <main class="page-wrapper docs-layout" id="main-content">
+    <div class="docs-main">
+      <article class="docs-content">
+
+        <nav class="docs-breadcrumb" aria-label="Breadcrumb">
+          <a href="/">The False Positive</a>
+          <span class="breadcrumb-sep">›</span>
+          <a href="/ctf">Case Files</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>{entry.data.title}</span>
+        </nav>
+
+        <header class="docs-page-header">
+          <span class="docs-tag">// CTF Writeup</span>
+          <h1>{entry.data.title}</h1>
+          {entry.data.date && (
+            <p class="text-muted text-mono" style="font-size:0.8rem;">
+              {new Date(entry.data.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </p>
+          )}
+        </header>
+
+        <!-- Rendered Markdown content -->
+        <Content />
+
+      </article>
+    </div>
+  </main>
+
+  <script src="/scripts/docs.js" is:inline></script>
+</BaseLayout>
