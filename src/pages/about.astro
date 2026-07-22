@@ -1,0 +1,218 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout 
+  title="About vaLak" 
+  description="Threat actor profile and intelligence dossier."
+  activePage="about"
+  extraCss={['/styles/about.css']}
+>
+  <!-- Visible Parallax Background -->
+  <div class="parallax-container">
+    
+    <!-- Deepest Layer: The Monitor -->
+    <div class="parallax-layer parallax-0" data-speed="0.05">
+      <div class="monitor-frame">
+        <img src="/gifs/L%20logo.gif" alt="L Monitor" class="monitor-gif" />
+      </div>
+    </div>
+
+    <div class="parallax-layer parallax-1" data-speed="0.2">
+      <div class="p-box p-large"></div>
+    </div>
+    <div class="parallax-layer parallax-2" data-speed="0.5">
+      <div class="p-box p-medium"></div>
+    </div>
+    <div class="parallax-layer parallax-3" data-speed="0.1">
+      <div class="p-line"></div>
+    </div>
+    <div class="parallax-layer parallax-4" data-speed="0.35">
+      <div class="p-box p-small"></div>
+    </div>
+  </div>
+
+  <div class="about-container">
+    
+    <!-- Hero Section -->
+    <header class="about-hero fade-up">
+      <div class="hero-symbol">[ ]</div>
+      <div class="hero-title">Threat Actor: vaLak</div>
+    </header>
+
+    <!-- Biography -->
+    <section class="dossier-section">
+      <h2 class="section-title fade-up" data-scramble="BIOGRAPHY">BIOGRAPHY</h2>
+      <p class="dossier-text fade-up">
+        I am vaLak. I operate primarily within the digital realm, obsessed with unearthing hidden vulnerabilities and exposing the "false positives" in secure systems.
+      </p>
+      <p class="dossier-text fade-up">
+        My focus is on offensive security, specifically Web Exploitation, Digital Forensics, and Reverse Engineering. I document my findings, tactics, and techniques meticulously in this database.
+      </p>
+    </section>
+
+    <!-- Arsenal (Tech Stack) -->
+    <section class="dossier-section">
+      <h2 class="section-title fade-up" data-scramble="ARSENAL">ARSENAL</h2>
+      <div class="arsenal-grid fade-up">
+        
+        <div class="arsenal-category fade-up">
+          <h3>Languages</h3>
+          <div class="arsenal-tags">
+            <span class="arsenal-tag">Python</span>
+            <span class="arsenal-tag">Rust</span>
+            <span class="arsenal-tag">Bash</span>
+            <span class="arsenal-tag">JavaScript</span>
+          </div>
+        </div>
+
+        <div class="arsenal-category fade-up">
+          <h3>Offensive Tools</h3>
+          <div class="arsenal-tags">
+            <span class="arsenal-tag">Burp Suite</span>
+            <span class="arsenal-tag">Metasploit</span>
+            <span class="arsenal-tag">Nmap</span>
+            <span class="arsenal-tag">Wireshark</span>
+          </div>
+        </div>
+
+        <div class="arsenal-category fade-up">
+          <h3>Reverse Eng</h3>
+          <div class="arsenal-tags">
+            <span class="arsenal-tag">Ghidra</span>
+            <span class="arsenal-tag">IDA Pro</span>
+            <span class="arsenal-tag">x64dbg</span>
+            <span class="arsenal-tag">Radare2</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Operations -->
+    <section class="dossier-section">
+      <h2 class="section-title fade-up" data-scramble="OPERATIONS">OPERATIONS</h2>
+      <ul class="ops-list fade-up">
+        <li class="ops-item fade-up">
+          <h3 class="ops-title">Capture The Flag (CTF)</h3>
+          <p class="ops-desc">Participating in global cybersecurity competitions, specializing in Web Exploitation and Forensics. All operations are documented in the Writeups database.</p>
+        </li>
+        <li class="ops-item fade-up">
+          <h3 class="ops-title">Penetration Testing</h3>
+          <p class="ops-desc">Conducting independent security audits of web applications, documenting TTPs (Tactics, Techniques, and Procedures) in the Handbook.</p>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Directives -->
+    <section class="dossier-section">
+      <h2 class="section-title fade-up" data-scramble="DIRECTIVES">DIRECTIVES</h2>
+      <p class="dossier-text fade-up">
+        "Trust nothing. Verify everything."
+      </p>
+      <p class="dossier-text fade-up">
+        Every system has a flaw. Every "false positive" is just a misunderstanding of the underlying architecture. Learning is continuous, and the terminal is home.
+      </p>
+    </section>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      /* ── Parallax Scroll Effect ────────────────── */
+      const parallaxLayers = document.querySelectorAll('.parallax-layer');
+      
+      window.addEventListener('scroll', () => {
+        const scrolled = window.scrollY;
+        
+        parallaxLayers.forEach(layer => {
+          const speed = parseFloat(layer.getAttribute('data-speed'));
+          // Move layers up at different speeds based on scroll
+          layer.style.transform = `translateY(${scrolled * -speed}px)`;
+        });
+      });
+
+      /* ── Scramble Text Function ────────────────── */
+      function scrambleText(element, finalString) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*';
+        let iterations = 0;
+        const maxIterations = 10; 
+        
+        if (element.hasAttribute('data-scrambled')) return;
+        element.setAttribute('data-scrambled', 'true');
+
+        const interval = setInterval(() => {
+          let scrambled = '';
+          for (let i = 0; i < finalString.length; i++) {
+            if (finalString[i] === ' ') {
+              scrambled += ' ';
+            } else {
+              scrambled += chars[Math.floor(Math.random() * chars.length)];
+            }
+          }
+          
+          element.innerText = scrambled;
+          iterations++;
+
+          if (iterations >= maxIterations) {
+            clearInterval(interval);
+            element.innerText = finalString;
+          }
+        }, 40); 
+      }
+
+      /* ── Intersection Observer ─────────────────── */
+      // Handles both Fade-Up animations and Scramble Decryption
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            
+            // Trigger Fade-Up
+            if (el.classList.contains('fade-up')) {
+              el.classList.add('is-visible');
+              
+              // Only scramble once it becomes visible
+              const targetText = el.getAttribute('data-scramble');
+              if (targetText) {
+                // Add a small delay to the scramble so the fade-in happens first
+                setTimeout(() => {
+                  scrambleText(el, targetText);
+                }, 200);
+              }
+              
+              // Unobserve after animating in once
+              observer.unobserve(el);
+            }
+          }
+        });
+      }, {
+        threshold: 0.1, // Trigger when 10% is visible
+        rootMargin: "0px 0px -50px 0px" // Trigger slightly before it hits the bottom
+      });
+
+      // Observe all elements with fade-up class
+      document.querySelectorAll('.fade-up').forEach(el => {
+        observer.observe(el);
+      });
+
+      // Initial trigger for elements already in viewport on load
+      // (The observer usually catches this automatically, but just in case)
+      setTimeout(() => {
+        const scrolled = window.scrollY;
+        if(scrolled === 0) {
+           document.querySelectorAll('.fade-up').forEach(el => {
+              const rect = el.getBoundingClientRect();
+              if(rect.top < window.innerHeight) {
+                 el.classList.add('is-visible');
+                 const targetText = el.getAttribute('data-scramble');
+                 if(targetText) scrambleText(el, targetText);
+                 observer.unobserve(el);
+              }
+           });
+        }
+      }, 100);
+
+    });
+  </script>
+</BaseLayout>

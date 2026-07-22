@@ -1,0 +1,256 @@
+/* ── About Page Layout (Dossier) ──────────────── */
+.about-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 4rem 2rem 8rem 2rem;
+  font-family: var(--font-body, serif);
+  color: var(--white);
+  line-height: 1.8;
+}
+
+/* ── Hero Section ─────────────────────────────── */
+.about-hero {
+  text-align: center;
+  margin-bottom: 6rem;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.hero-symbol {
+  color: var(--white);
+  margin-bottom: 1rem;
+  display: inline-block;
+  font-family: var(--font-mono, monospace);
+  font-size: 3rem;
+  font-weight: 300;
+  color: var(--red-dim);
+}
+
+.hero-title {
+  font-family: var(--font-mono, monospace);
+  font-size: 1.2rem;
+  color: var(--white); 
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+
+/* ── Sections ─────────────────────────────────── */
+.dossier-section {
+  margin-bottom: 5rem;
+}
+
+.section-title {
+  font-family: var(--font-mono, monospace);
+  font-size: 1.5rem;
+  color: var(--white);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.section-title::before {
+  content: '>';
+  margin-right: 0.75rem;
+  color: var(--red-bright);
+  font-weight: 300;
+}
+
+.dossier-text {
+  font-size: 1.15rem;
+  color: var(--off-white);
+  margin-bottom: 1.5rem;
+}
+
+/* ── Arsenal Grid (Tech Stack) ────────────────── */
+.arsenal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.arsenal-category {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  border-radius: 4px;
+}
+
+.arsenal-category h3 {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.9rem;
+  color: var(--silver);
+  margin-top: 0;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.arsenal-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.arsenal-tag {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.85rem;
+  color: var(--white);
+  background: var(--bg-elevated);
+  padding: 4px 10px;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  cursor: default;
+}
+
+/* Subtle Hover Effect (No Glow) */
+.arsenal-tag:hover {
+  border-color: var(--red-bright);
+  color: var(--red-bright);
+  background: var(--red-ghost);
+}
+
+/* ── Operations Timeline ──────────────────────── */
+.ops-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ops-item {
+  margin-bottom: 2.5rem;
+  padding-left: 1.5rem;
+  border-left: 2px solid var(--border);
+  position: relative;
+}
+
+.ops-item::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 6px;
+  width: 10px;
+  height: 10px;
+  background-color: var(--red-bright);
+  border-radius: 50%;
+}
+
+.ops-title {
+  font-family: var(--font-heading, serif);
+  font-size: 1.4rem;
+  color: var(--white);
+  margin: 0 0 0.5rem 0;
+}
+
+.ops-desc {
+  font-size: 1.05rem;
+  color: var(--silver);
+  margin: 0;
+}
+
+/* ── Visible Parallax Elements ────────────────── */
+.parallax-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.parallax-layer {
+  position: absolute;
+  will-change: transform;
+}
+
+/* Deepest Layer - The Monitor */
+.parallax-0 {
+  top: 15%;
+  right: 5%;
+  z-index: -5; /* Deepest layer, behind geometric shapes */
+}
+
+.monitor-frame {
+  width: 600px;
+  max-width: 90vw;
+  background: #000;
+  border: 16px solid #111;
+  border-radius: 12px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.9), inset 0 0 30px rgba(0, 0, 0, 0.8);
+  position: relative;
+  overflow: hidden;
+  opacity: 0.25; /* Subtle background presence */
+}
+
+/* CRT Scanline Overlay */
+.monitor-frame::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: 100% 4px, 3px 100%;
+  pointer-events: none;
+}
+
+.monitor-gif {
+  width: 100%;
+  display: block;
+  opacity: 0.8;
+  filter: contrast(1.1) brightness(0.9) grayscale(0.2);
+}
+
+/* Base styles for the geometric shapes */
+.p-box {
+  border: 1px solid var(--border-light);
+  transform: rotate(45deg);
+  opacity: 0.15; /* subtle but visible */
+}
+
+.p-line {
+  width: 2px;
+  height: 200vh; /* spans the whole height */
+  background: var(--border-light);
+  transform: rotate(45deg);
+  opacity: 0.1;
+}
+
+/* Specific Sizes and Positions */
+.p-large {
+  width: 600px;
+  height: 600px;
+}
+.p-medium {
+  width: 400px;
+  height: 400px;
+}
+.p-small {
+  width: 200px;
+  height: 200px;
+  border-width: 2px;
+}
+
+.parallax-1 { top: -20%; left: -10%; }
+.parallax-2 { top: 50%; right: -5%; }
+.parallax-3 { top: -50%; left: 30%; }
+.parallax-4 { top: 20%; right: 20%; }
+
+/* ── Smooth Scroll Reveals ────────────────────── */
+.fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+              transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: opacity, transform;
+}
+
+.fade-up.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
