@@ -57,10 +57,90 @@
   font-weight: 300;
 }
 
+.subsection-title {
+  font-family: var(--font-mono, monospace);
+  font-size: 1.1rem;
+  color: var(--white);
+  margin-bottom: 1.2rem;
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+}
+
+.subsection-title::before {
+  content: '>';
+  margin-right: 0.75rem;
+  color: var(--red-bright);
+  font-weight: 300;
+}
+
 .dossier-text {
   font-size: 1.15rem;
   color: var(--off-white);
   margin-bottom: 1.5rem;
+}
+
+/* ── Identity Card ────────────────────────────── */
+.identity-card {
+  background: var(--red-ghost);
+  border: 1px solid var(--border-red);
+  border-left: 3px solid var(--red-bright);
+  padding: 1.5rem 2rem;
+  margin-bottom: 3rem;
+  border-radius: 4px;
+  box-shadow: var(--shadow-card);
+}
+
+.identity-header {
+  font-family: var(--font-mono, monospace);
+  color: var(--silver);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  text-transform: uppercase;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  background: var(--red-bright);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--red-glow);
+  animation: pulse-accent 2s infinite;
+}
+
+@keyframes pulse-accent {
+  0% { opacity: 1; box-shadow: 0 0 12px var(--red-glow); }
+  50% { opacity: 0.4; box-shadow: 0 0 2px var(--red-glow-soft); }
+  100% { opacity: 1; box-shadow: 0 0 12px var(--red-glow); }
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  font-family: var(--font-mono, monospace);
+  align-items: baseline;
+}
+
+.detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.detail-label {
+  color: var(--silver);
+  width: 140px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+}
+
+.detail-value {
+  color: var(--white);
 }
 
 /* ── Arsenal Grid (Tech Stack) ────────────────── */

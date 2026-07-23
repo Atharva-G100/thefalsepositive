@@ -39,14 +39,28 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <div class="hero-title">Threat Actor: vaLak</div>
     </header>
 
-    <!-- Biography -->
+    <!-- Biography (Identity Reveal) -->
     <section class="dossier-section">
-      <h2 class="section-title fade-up" data-scramble="BIOGRAPHY">BIOGRAPHY</h2>
+      <h2 class="section-title fade-up" data-scramble="IDENTITY FILE">IDENTITY FILE</h2>
+      
+      <div class="identity-card fade-up">
+        <div class="identity-header">
+          <span class="status-indicator"></span> [ ALIAS "vaLak" DECLASSIFIED ]
+        </div>
+        <div class="identity-details">
+          <div class="detail-row"><span class="detail-label">Real Name:</span> <span class="detail-value">Atharva Gawas</span></div>
+          <div class="detail-row"><span class="detail-label">Designation:</span> <span class="detail-value">Cybersecurity Student · Jr. Penetration Tester</span></div>
+          <div class="detail-row"><span class="detail-label">Base of Ops:</span> <span class="detail-value">Navi Mumbai, India</span></div>
+          <div class="detail-row"><span class="detail-label">Core Focus:</span> <span class="detail-value">Offensive Security, Web App Sec, Digital Forensics</span></div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title fade-up">WHY I BREAK THINGS</h3>
       <p class="dossier-text fade-up">
-        I am vaLak. I operate primarily within the digital realm, obsessed with unearthing hidden vulnerabilities and exposing the "false positives" in secure systems.
+        Driven by curiosity and a relentless desire to understand how systems operate beneath the surface. Practical experience built through hands-on labs, independent research, and global CTF competitions. 
       </p>
       <p class="dossier-text fade-up">
-        My focus is on offensive security, specifically Web Exploitation, Digital Forensics, and Reverse Engineering. I document my findings, tactics, and techniques meticulously in this database.
+        Primary objective: discover weaknesses, apply ethical hacking methodologies, and engineer stronger, more resilient architectures. The terminal is always active.
       </p>
     </section>
 
@@ -59,9 +73,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <h3>Languages</h3>
           <div class="arsenal-tags">
             <span class="arsenal-tag">Python</span>
-            <span class="arsenal-tag">Rust</span>
-            <span class="arsenal-tag">Bash</span>
+            <span class="arsenal-tag">C</span>
             <span class="arsenal-tag">JavaScript</span>
+            <span class="arsenal-tag">Bash</span>
           </div>
         </div>
 
@@ -71,17 +85,21 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <span class="arsenal-tag">Burp Suite</span>
             <span class="arsenal-tag">Metasploit</span>
             <span class="arsenal-tag">Nmap</span>
+            <span class="arsenal-tag">OWASP ZAP</span>
+            <span class="arsenal-tag">OpenVAS</span>
             <span class="arsenal-tag">Wireshark</span>
+            <span class="arsenal-tag">Ghidra</span>
           </div>
         </div>
 
         <div class="arsenal-category fade-up">
-          <h3>Reverse Eng</h3>
+          <h3>Certifications</h3>
           <div class="arsenal-tags">
-            <span class="arsenal-tag">Ghidra</span>
-            <span class="arsenal-tag">IDA Pro</span>
-            <span class="arsenal-tag">x64dbg</span>
-            <span class="arsenal-tag">Radare2</span>
+            <span class="arsenal-tag">THM: Jr. Penetration Tester</span>
+            <span class="arsenal-tag">APIsec Certified Practitioner</span>
+            <span class="arsenal-tag">Udemy: Applied Ethical Hacking</span>
+            <span class="arsenal-tag">Infosys: Pentesting with Metasploit</span>
+            <span class="arsenal-tag">Cisco: Intro to CyberSecurity</span>
           </div>
         </div>
 
@@ -93,14 +111,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <h2 class="section-title fade-up" data-scramble="OPERATIONS">OPERATIONS</h2>
       <ul class="ops-list fade-up">
         <li class="ops-item fade-up">
-          <h3 class="ops-title">Capture The Flag (CTF)</h3>
-          <p class="ops-desc">Participating in global cybersecurity competitions, specializing in Web Exploitation and Forensics. All operations are documented in the Writeups database.</p>
-        </li>
-        <li class="ops-item fade-up">
-          <h3 class="ops-title">Penetration Testing</h3>
-          <p class="ops-desc">Conducting independent security audits of web applications, documenting TTPs (Tactics, Techniques, and Procedures) in the Handbook.</p>
+          <h3 class="ops-title">CTF Player</h3>
+          <p class="ops-desc">[3301] N0T F0UND<br>Actively competing in Capture The Flag competitions, specializing in web exploitation, forensics, and privilege escalation.</p>
         </li>
       </ul>
+    </section>
+
+    <!-- Communications -->
+    <section class="dossier-section">
+      <h2 class="section-title fade-up" data-scramble="COMMUNICATIONS">COMMUNICATIONS</h2>
+      <div class="arsenal-tags fade-up">
+        <a href="https://www.linkedin.com/in/atharva-gawas-valak/" target="_blank" class="arsenal-tag" style="text-decoration: none;">LinkedIn</a>
+        <a href="https://github.com/Atharva-G100" target="_blank" class="arsenal-tag" style="text-decoration: none;">GitHub</a>
+        <a href="mailto:gawasatharva8@gmail.com" class="arsenal-tag" style="text-decoration: none;">Email</a>
+      </div>
     </section>
 
     <!-- Directives -->
