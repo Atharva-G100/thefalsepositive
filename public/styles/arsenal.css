@@ -1,0 +1,746 @@
+/* ==========================================================
+   ARSENAL — Minimalist Modern Tech UI CSS
+   ========================================================== */
+
+/* ── Container Layout ────────────────────────────────────── */
+.arsenal-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem 6rem 2rem;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+/* ── Top HUD Tabs ────────────────────────────────────────── */
+.hud-tab-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: calc(var(--nav-height) + 2rem) 2rem 0 2rem;
+}
+
+.arsenal-hud-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  gap: 1.5rem;
+}
+
+.hud-tab {
+  background: transparent;
+  border: none;
+  color: var(--silver);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  padding: 0.75rem 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color var(--transition-fast);
+  position: relative;
+  text-transform: uppercase;
+}
+
+.hud-tab:hover {
+  color: var(--white);
+}
+
+.hud-tab.active {
+  color: var(--white);
+  font-weight: 600;
+}
+
+.hud-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--red-bright);
+}
+
+.hud-indicator {
+  width: 5px;
+  height: 5px;
+  background: var(--muted);
+  border-radius: 50%;
+  transition: background var(--transition-fast);
+}
+
+.hud-tab.active .hud-indicator {
+  background: var(--red-bright);
+}
+
+.hud-view {
+  display: none;
+}
+
+.hud-view.active {
+  display: block;
+}
+
+/* Hide diagnostics in minimal view */
+.hud-diagnostics {
+  display: none;
+}
+
+/* ── Sidebar (Minimalist Tree) ──────────────────────────── */
+.arsenal-sidebar {
+  background: transparent;
+  border: none;
+  padding: 0;
+  position: sticky;
+  top: calc(var(--nav-height) + 2rem);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.arsenal-sidebar-group {
+  margin-bottom: 2rem;
+}
+
+.arsenal-sidebar-group:last-child {
+  margin-bottom: 0;
+}
+
+.arsenal-sidebar-title {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.arsenal-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.arsenal-nav-btn {
+  background: transparent;
+  border: none;
+  color: var(--silver);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.85rem;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border-left: 2px solid transparent;
+}
+
+.arsenal-nav-btn:hover {
+  color: var(--white);
+  background: var(--bg-secondary);
+}
+
+.arsenal-nav-btn.active {
+  color: var(--white);
+  font-weight: 500;
+  background: var(--bg-secondary);
+  border-left-color: var(--red-bright);
+}
+
+/* ── Main Panel ─────────────────────────────────────────── */
+.arsenal-main {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  min-height: 500px;
+}
+
+.arsenal-main::before {
+  display: none; /* Remove scanline texture */
+}
+
+.tool-header {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1rem;
+}
+
+.tool-title {
+  font-family: var(--font-mono, monospace);
+  font-size: 1.8rem;
+  color: var(--white);
+  margin-bottom: 0.25rem;
+  letter-spacing: 0;
+  text-shadow: none;
+}
+
+.tool-desc {
+  color: var(--silver);
+  font-size: 0.95rem;
+}
+
+/* ── Minimal Panels & Sections ──────────────────────────── */
+.arsenal-tool-panel {
+  display: none;
+}
+
+.arsenal-tool-panel.active {
+  display: block;
+  animation: fadeUp 0.3s ease-out forwards;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tool-section {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.tool-section::after {
+  display: none; /* Remove sci-fi corners */
+}
+
+.tool-section-title {
+  font-family: var(--font-mono, monospace);
+  font-size: 1rem;
+  color: var(--white);
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.tool-section-title::before {
+  content: '>';
+  margin-right: 0.5rem;
+  color: var(--red-bright);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  display: block;
+  font-family: var(--font-mono, monospace);
+  color: var(--silver);
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.form-input, .form-textarea, .form-select {
+  width: 100%;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  color: var(--white);
+  font-family: var(--font-mono, monospace);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: border-color var(--transition-fast);
+  box-shadow: none;
+}
+
+.form-input:focus, .form-textarea:focus, .form-select:focus {
+  outline: none;
+  border-color: var(--red-bright);
+  box-shadow: none;
+  background: var(--bg-primary);
+}
+
+/* ── Form Side-by-Side Grid ─────────────────── */
+.tool-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .tool-grid-2 {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* ── Minimalist Buttons ─────────────────────────────────── */
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.btn {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--silver);
+  font-family: var(--font-mono, monospace);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  letter-spacing: 0;
+  text-transform: none;
+  transition: all var(--transition-fast);
+}
+
+.btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--silver);
+  color: var(--white);
+  box-shadow: none;
+  transform: none;
+}
+
+.btn:active {
+  transform: none;
+}
+
+.btn-primary {
+  background: var(--red-dim);
+  border-color: var(--red-bright);
+  color: var(--white);
+  box-shadow: none;
+}
+
+.btn-primary:hover {
+  background: rgba(91, 141, 161, 0.2);
+  border-color: var(--red-bright);
+  box-shadow: none;
+}
+
+/* ── Console Output Boxes ────────────────────────────────── */
+.result-box {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--red-bright);
+  padding: 1rem;
+  border-radius: 4px;
+  font-family: var(--font-mono, monospace);
+  color: var(--white);
+  word-break: break-all;
+  white-space: pre-wrap;
+  position: relative;
+  min-height: 60px;
+  box-shadow: none;
+}
+
+.result-box.empty {
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: italic;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--silver);
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono, monospace);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.result-box:hover .copy-btn {
+  opacity: 1;
+}
+
+.copy-btn:hover {
+  color: var(--white);
+  background: var(--bg-hover);
+  border-color: var(--silver);
+  box-shadow: none;
+}
+
+/* ── Satellite Intel Grid (Minimal Link Cards) ───────────── */
+.external-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem 6rem 2rem;
+}
+
+.links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.link-category-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.5rem;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.link-category-card::after {
+  display: none;
+}
+
+.link-category-title {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.95rem;
+  color: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.link-category-title::before {
+  content: '#';
+  color: var(--red-bright);
+}
+
+.link-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.link-item {
+  text-decoration: none;
+  display: block;
+  padding: 0.75rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-left: 2px solid var(--border);
+  border-radius: 0;
+  transition: all var(--transition-fast) ease;
+}
+
+.link-item:hover {
+  background: rgba(255, 255, 255, 0.01);
+  border-left-color: var(--red-bright);
+  transform: none;
+  box-shadow: none;
+}
+
+.link-name {
+  font-family: var(--font-mono, monospace);
+  color: var(--red-bright);
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.link-name::after {
+  content: '→';
+  font-size: 0.8rem;
+  color: var(--red-bright);
+  opacity: 0.5;
+  transition: opacity var(--transition-fast);
+}
+
+.link-item:hover .link-name::after {
+  opacity: 1;
+}
+
+.link-desc {
+  color: var(--silver);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Payload Drop (Cheat Sheet) ──────────────────────────── */
+.payload-category {
+  margin-bottom: 2rem;
+}
+
+.payload-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.payload-item {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--border-light);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  transition: all var(--transition-fast) ease;
+}
+
+.payload-item:hover {
+  border-left-color: var(--red-bright);
+  background: rgba(255, 255, 255, 0.01);
+  box-shadow: none;
+}
+
+.payload-code {
+  font-family: var(--font-mono, monospace);
+  color: var(--white);
+  font-size: 0.85rem;
+  overflow-x: auto;
+  white-space: pre;
+  flex-grow: 1;
+}
+
+.payload-input-inline {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--red-bright);
+  font-family: var(--font-mono, monospace);
+  padding: 0.2rem 0.5rem;
+  border-radius: 2px;
+  width: 120px;
+  font-size: 0.8rem;
+  margin: 0 0.5rem;
+  outline: none;
+}
+
+.payload-input-inline:focus {
+  border-color: var(--red-bright);
+  box-shadow: none;
+}
+
+.payload-copy {
+  background: var(--red-ghost);
+  border: 1px solid var(--border-red);
+  color: var(--white);
+  padding: 0.4rem 0.8rem;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0;
+  transition: all var(--transition-fast) ease;
+  text-transform: none;
+}
+
+.payload-copy:hover {
+  background: var(--red-glow);
+  color: var(--white);
+  box-shadow: none;
+}
+
+.payload-search-bar {
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.payload-search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--silver);
+}
+
+.payload-search-input {
+  width: 100%;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  color: var(--white);
+  padding: 1rem 1rem 1rem 3rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: var(--font-mono, monospace);
+  box-shadow: none;
+  transition: all var(--transition-fast) ease;
+}
+
+.payload-search-input:focus {
+  outline: none;
+  border-color: var(--red-bright);
+  box-shadow: none;
+}
+
+/* ── Toast Notification ──────────────────────────────────── */
+#toast-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.toast {
+  background: var(--bg-secondary);
+  color: var(--white);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--red-bright);
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.85rem;
+  letter-spacing: 0;
+  box-shadow: var(--shadow-card);
+  animation: toastSlideUp 0.25s ease-out forwards;
+}
+
+@keyframes toastSlideUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Cipher Identifier V2 ────────────────────────────────── */
+.conf-badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-right: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.conf-high {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+.conf-med {
+  background: rgba(234, 179, 8, 0.15);
+  color: #facc15;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+.conf-low {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+.conf-ruled {
+  background: rgba(156, 163, 175, 0.1);
+  color: #9ca3af;
+  border: 1px solid rgba(156, 163, 175, 0.2);
+}
+
+.cipher-category {
+  color: var(--silver);
+  font-size: 0.75rem;
+  margin-left: 0.5rem;
+  text-transform: uppercase;
+}
+
+.cipher-reasoning {
+  color: var(--silver);
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  padding-left: 0.5rem;
+  border-left: 2px solid var(--border-light);
+}
+
+.cipher-drawback {
+  color: var(--muted);
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  padding-left: 0.5rem;
+  border-left: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+.cipherid-result-item {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+.cipherid-result-item:last-child {
+  margin-bottom: 0;
+}
+
+details.cipher-details {
+  margin-top: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-primary);
+}
+details.cipher-details summary {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--silver);
+  font-size: 0.85rem;
+  user-select: none;
+}
+details.cipher-details summary:hover {
+  background: var(--bg-hover);
+  color: var(--white);
+}
+details.cipher-details .details-content {
+  padding: 1rem;
+  border-top: 1px solid var(--border);
+  color: var(--silver);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  word-break: normal;
+  white-space: normal;
+}
+@media (max-width: 600px) {
+  .stats-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Responsiveness ──────────────────────────────────────── */
+@media (max-width: 900px) {
+  .arsenal-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .arsenal-sidebar {
+    position: static;
+  }
+
+  .links-grid {
+    grid-template-columns: 1fr;
+  }
+}

