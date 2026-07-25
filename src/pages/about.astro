@@ -13,7 +13,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <!-- Deepest Layer: The Monitor -->
     <div class="parallax-layer parallax-0" data-speed="0.05">
       <div class="monitor-frame">
-        <img src="/gifs/L%20logo.gif" alt="L Monitor" class="monitor-gif" />
+        <img src="/gifs/L%20logo.gif" alt="L Monitor" class="monitor-gif" loading="lazy" decoding="async" />
       </div>
     </div>
 
@@ -36,7 +36,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <!-- Hero Section -->
     <header class="about-hero fade-up">
       <div class="hero-symbol">[ ]</div>
-      <div class="hero-title">Threat Actor: vaLak</div>
+      <h1 class="hero-title">Threat Actor: vaLak</h1>
     </header>
 
     <!-- Biography (Identity Reveal) -->
@@ -45,7 +45,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       
       <div class="identity-card fade-up">
         <div class="identity-header">
-          <span class="status-indicator"></span> [ ALIAS "vaLak" DECLASSIFIED ]
+          <span class="status-indicator"></span> [ ALIAS "vaLak" DECLASSIFIED&nbsp;]
         </div>
         <div class="identity-details">
           <div class="detail-row"><span class="detail-label">Real Name:</span> <span class="detail-value">Atharva Gawas</span></div>
@@ -121,8 +121,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <section class="dossier-section">
       <h2 class="section-title fade-up" data-scramble="COMMUNICATIONS">COMMUNICATIONS</h2>
       <div class="arsenal-tags fade-up">
-        <a href="https://www.linkedin.com/in/atharva-gawas-valak/" target="_blank" class="arsenal-tag" style="text-decoration: none;">LinkedIn</a>
-        <a href="https://github.com/Atharva-G100" target="_blank" class="arsenal-tag" style="text-decoration: none;">GitHub</a>
+        <a href="https://www.linkedin.com/in/atharva-gawas-valak/" target="_blank" rel="noopener noreferrer" class="arsenal-tag" style="text-decoration: none;">LinkedIn</a>
+        <a href="https://github.com/Atharva-G100" target="_blank" rel="noopener noreferrer" class="arsenal-tag" style="text-decoration: none;">GitHub</a>
         <a href="mailto:gawasatharva8@gmail.com" class="arsenal-tag" style="text-decoration: none;">Email</a>
       </div>
     </section>

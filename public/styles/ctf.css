@@ -4,11 +4,11 @@
 
 .ctf-blog-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
+  grid-template-columns: minmax(0, 1fr) 320px;
   gap: 3rem;
   max-width: 1200px;
   margin: 0 auto;
-  padding: calc(var(--nav-height) + 2.5rem) 2rem 4rem 2rem;
+  padding: calc(var(--nav-height) + 3rem) 3rem 4rem 3rem;
   min-height: 100vh;
 }
 
@@ -16,6 +16,7 @@
 .ctf-blog-main {
   display: flex;
   flex-direction: column;
+  min-width: 0; /* CRITICAL: prevents grid item from overflowing */
 }
 
 /* ── Hero Banner ────────────────────────────── */
@@ -36,7 +37,7 @@
   inset: 0;
   background-image: url('/gifs/writeup-page.gif');
   background-size: cover;
-  background-position: center 75%;
+  background-position: center 25%;
   filter: grayscale(50%) opacity(0.65);
   z-index: 0;
 }
@@ -214,6 +215,19 @@
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1.5rem;
+}
+
+details.widget summary::-webkit-details-marker {
+  display: none; /* Hide default arrow */
+}
+
+details.widget[open] .details-chevron {
+  transform: rotate(180deg);
+}
+
+.details-chevron {
+  transition: transform 0.2s ease;
+  color: var(--muted);
 }
 
 .profile-widget {
@@ -405,10 +419,40 @@
   color: var(--silver);
 }
 
+.writeup-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  display: block;
+  margin: 1.5rem auto;
+}
+
+.writeup-content table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 1.5rem;
+  border-collapse: collapse;
+}
+
+.writeup-content th,
+.writeup-content td {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+}
+
+.writeup-content th {
+  background: var(--bg-elevated);
+  font-family: var(--font-heading);
+  text-align: left;
+}
+
 /* ── Breadcrumb ─────────────────────────────── */
 .docs-breadcrumb {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.5rem;
   font-family: var(--font-mono);
   font-size: 0.8rem;
@@ -435,9 +479,134 @@
 @media (max-width: 900px) {
   .ctf-blog-layout {
     grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    align-content: start;
+    padding-top: calc(var(--nav-height) + 1.5rem);
+    padding-left: 1rem;
+    padding-right: 1rem;
+    gap: 1.5rem;
   }
 
   .ctf-blog-sidebar {
     order: -1;
+    gap: 1rem;
+  }
+  
+  .widget {
+    padding: 1rem;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+  }
+  
+  .widget-header {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+  }
+  
+  details.widget[open] .widget-header {
+    margin-bottom: 1rem;
+  }
+
+  .tags-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0;
+  }
+  
+  .tag-link {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  /* Single Writeup Fixes */
+  .writeup-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .writeup-title {
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
+    word-break: break-word;
+    line-height: 1.3;
+  }
+
+  .projects-list li a {
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.4;
+  }
+
+  .writeup-meta {
+    gap: 1rem;
+    font-size: 0.8rem;
+  }
+
+  .writeup-content {
+    font-size: 1rem;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .writeup-content pre {
+    padding: 1rem;
+    font-size: 0.8rem;
+  }
+
+  .writeup-content h2 {
+    font-size: 1.4rem;
+    margin-top: 2rem;
+  }
+  
+  .writeup-content h3 {
+    font-size: 1.2rem;
+  }
+
+  /* Hero Banner Optimization */
+  .ctf-hero-banner {
+    height: 30vh;
+    min-height: 200px;
+  }
+  
+  .ctf-hero-title {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+  }
+
+  /* Timeline Condensation */
+  .timeline-year {
+    font-size: 1.3rem;
+    padding-left: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .timeline-ctf-group {
+    padding-left: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .timeline-ctf-name {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .timeline-writeups {
+    gap: 1rem;
+  }
+  
+  .timeline-writeups li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .timeline-date {
+    font-size: 0.75rem;
+    color: var(--muted);
+    width: auto;
+  }
+  
+  .timeline-link {
+    font-size: 1rem;
   }
 }

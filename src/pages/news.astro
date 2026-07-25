@@ -8,16 +8,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   extraCss={['/styles/news.css']}
 >
 
-  <!-- Ryuk Parallax Header — Full Width -->
+  <!-- Intel Dashboard Header -->
   <header class="news-header-parallax" aria-label="News Header Banner">
     <div class="parallax-bg" style="background-image: url('/assets/ryuk.png');"></div>
+    <div class="header-scanline"></div>
     <div class="parallax-overlay">
       <div class="news-header-content">
-        <span class="news-header-tag">// Live Intelligence Feed</span>
-        <h1>
-          <span class="news-live-dot" aria-label="Live" title="Auto-refreshing"></span>
-          Cyber Intel
-        </h1>
+        <div class="news-header-badge">
+          <span class="news-live-dot" aria-label="Live"></span>
+          [ LIVE FEED ACTIVE ]
+        </div>
+        <h1>Cyber Intel</h1>
         <p class="news-header-sub" id="news-last-updated">
           Fetching latest intelligence from the field...
         </p>
@@ -28,21 +29,23 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   <main class="page-wrapper" id="main-content">
     <div class="news-layout">
 
-      <!-- Filters -->
-      <div class="news-filters" role="group" aria-label="Filter news by category">
-        <button class="news-filter-btn active" data-filter="all" id="filter-all">All</button>
-        <button class="news-filter-btn" data-filter="vulnerability" id="filter-vuln">Vulnerabilities</button>
-        <button class="news-filter-btn" data-filter="breach" id="filter-breach">Breaches</button>
-        <button class="news-filter-btn" data-filter="tools" id="filter-tools">Tools</button>
-        <button class="news-filter-btn" data-filter="research" id="filter-research">Research</button>
-      </div>
+      <!-- Control Bar: Filters & Refresh -->
+      <div class="news-control-bar fade-up">
+        <div class="news-filters" role="group" aria-label="Filter news by category">
+          <button class="news-filter-btn active" data-filter="all" id="filter-all">All</button>
+          <button class="news-filter-btn" data-filter="vulnerability" id="filter-vuln">Vulnerabilities</button>
+          <button class="news-filter-btn" data-filter="breach" id="filter-breach">Breaches</button>
+          <button class="news-filter-btn" data-filter="tools" id="filter-tools">Tools</button>
+          <button class="news-filter-btn" data-filter="research" id="filter-research">Research</button>
+        </div>
 
-      <!-- Refresh bar -->
-      <div class="news-refresh-bar" id="news-refresh-bar">
-        <span id="news-count-label">Loading articles...</span>
-        <button class="refresh-btn" id="news-refresh-btn" aria-label="Refresh news feed">
-          ↻ Refresh
-        </button>
+        <div class="news-refresh-wrapper">
+          <span id="news-count-label">Loading articles...</span>
+          <button class="refresh-btn" id="news-refresh-btn" aria-label="Refresh news feed">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-8.31l5.67-5.67"/></svg>
+            Refresh
+          </button>
+        </div>
       </div>
 
       <!-- News grid -->

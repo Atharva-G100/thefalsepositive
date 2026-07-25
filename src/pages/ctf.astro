@@ -54,7 +54,6 @@ const tags = Object.keys(tagCounts).sort();
     
     <!-- Left Column: Timeline & Tags -->
     <div class="ctf-blog-main">
-      <h1 class="ctf-page-title">Writeups</h1>
       
       <!-- Archives / Timeline -->
       <div class="ctf-timeline">
@@ -86,11 +85,16 @@ const tags = Object.keys(tagCounts).sort();
 
     <!-- Right Column: Profile Widget -->
     <aside class="ctf-blog-sidebar">
-      <div class="widget projects-widget">
-        <h3 class="widget-header">
-          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-          Filter by Tag
-        </h3>
+      <details class="widget projects-widget" id="tags-widget">
+        <summary class="widget-header" style="cursor: pointer; user-select: none; list-style: none;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="display: flex; align-items: center; gap: 0.5rem;">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+              Filter by Tag
+            </span>
+            <svg class="details-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+        </summary>
         <div class="tags-grid">
           {tags.map(tag => (
             <a href={`/ctf?tag=${tag}`} class="tag-link" data-tag={tag}>
@@ -98,13 +102,19 @@ const tags = Object.keys(tagCounts).sort();
             </a>
           ))}
         </div>
-      </div>
+      </details>
     </aside>
 
   </main>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      // Keep tags open by default on desktop
+      if (window.innerWidth > 900) {
+        const tags = document.getElementById('tags-widget');
+        if (tags) tags.setAttribute('open', '');
+      }
+
       const urlParams = new URLSearchParams(window.location.search);
       const activeTag = urlParams.get('tag');
 
@@ -115,6 +125,10 @@ const tags = Object.keys(tagCounts).sort();
         if (link.getAttribute('data-tag') === activeTag) {
           link.classList.add('active');
           link.href = '/ctf'; // Click again to clear the filter
+          
+          // Ensure tags widget is open if a tag is active on load (even on mobile)
+          const tags = document.getElementById('tags-widget');
+          if (tags) tags.setAttribute('open', '');
         }
       });
 

@@ -16,30 +16,33 @@ const searchTrigger = document.getElementById('search-trigger');
 const searchInput   = document.getElementById('search-input');
 const searchResults = document.getElementById('search-results');
 
-// Site search index
-const SEARCH_INDEX = [
-  { title: 'Pre-Engagement',       section: 'Handbook / Red-Teaming',  url: '/pentest' },
-  { title: 'Legal Foundation',     section: 'Handbook / Pre-Engagement', url: '/pentest#legal-foundation' },
-  { title: 'Scope Definition',     section: 'Handbook / Pre-Engagement', url: '/pentest#scope-definition' },
-  { title: 'Rules of Engagement',  section: 'Handbook / Pre-Engagement', url: '/pentest#rules-of-engagement' },
-  { title: 'Nmap Enumeration',     section: 'Handbook / Recon',         url: '/pentest#nmap' },
-  { title: 'Web Recon',            section: 'Handbook / Recon',         url: '/pentest#web-recon' },
-  { title: 'Shells & Payloads',    section: 'Handbook / Pre-Exploit',   url: '/pentest#shells-payloads' },
-  { title: 'Privilege Escalation', section: 'Handbook / Post-Exploit',  url: '/pentest#priv-esc' },
-  { title: 'XSS',                  section: 'Handbook / Web-Attacks',   url: '/pentest#xss' },
-  { title: 'SQL Injection',        section: 'Handbook / Web-Attacks',   url: '/pentest#sqli' },
-  { title: 'Local File Inclusion', section: 'Handbook / Web-Attacks',   url: '/pentest#lfi' },
-  { title: 'SSRF',                 section: 'Handbook / Web-Attacks',   url: '/pentest#ssrf' },
-  { title: 'CTF Case Files',       section: 'Case Files',               url: '/ctf' },
-  { title: 'Cyber Intel',          section: 'Intel / News Feed',        url: '/news' },
-  { title: 'Home',                 section: 'The False Positive',        url: '/' },
-];
+let SEARCH_INDEX = [];
+let isFetchingIndex = false;
+
+async function fetchSearchIndex() {
+  if (SEARCH_INDEX.length > 0 || isFetchingIndex) return;
+  isFetchingIndex = true;
+  try {
+    const res = await fetch('/api/search.json');
+    if (res.ok) {
+      SEARCH_INDEX = await res.json();
+      // Re-render if user already typed something
+      if (searchInput && searchInput.value) {
+        renderResults(searchInput.value);
+      }
+    }
+  } catch(e) {
+    console.error('Failed to load search index:', e);
+  }
+  isFetchingIndex = false;
+}
 
 function openSearch() {
   if (!searchModal) return;
   searchModal.classList.add('open');
   searchInput?.focus();
   document.body.style.overflow = 'hidden';
+  fetchSearchIndex();
 }
 
 function closeSearch() {
@@ -58,16 +61,22 @@ function renderResults(query) {
   const q = query.toLowerCase();
   const matches = SEARCH_INDEX.filter(item =>
     item.title.toLowerCase().includes(q) ||
-    item.section.toLowerCase().includes(q)
+    item.type.toLowerCase().includes(q) ||
+    (item.context && item.context.toLowerCase().includes(q)) ||
+    (item.tags && item.tags.some(t => t.toLowerCase().includes(q)))
   );
   if (!matches.length) {
-    searchResults.innerHTML = '<div class="search-empty">No results found. The notebook doesn\'t have that yet.</div>';
+    if (isFetchingIndex) {
+      searchResults.innerHTML = '<div class="search-empty">Loading intel...</div>';
+    } else {
+      searchResults.innerHTML = '<div class="search-empty">No results found. The notebook doesn\'t have that yet.</div>';
+    }
     return;
   }
   searchResults.innerHTML = matches.map((item, i) => `
     <a href="${item.url}" class="search-result-item" role="option" id="search-result-${i}" tabindex="-1">
       <span class="result-title">${item.title}</span>
-      <span class="result-section">${item.section}</span>
+      <span class="result-section">${item.type} ${item.context ? '/ ' + item.context : ''}</span>
     </a>
   `).join('');
 }

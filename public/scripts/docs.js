@@ -19,23 +19,23 @@ document.querySelectorAll('.sidebar-nav-link[aria-expanded]').forEach(btn => {
 // ── Mobile Sidebar Toggle ─────────────────────
 const sidebar  = document.getElementById('docs-sidebar');
 const overlay  = document.getElementById('sidebar-overlay');
-const hamburger = document.getElementById('nav-hamburger');
+const mobileOpenBtn = document.getElementById('mobile-sidebar-toggle');
+const mobileCloseBtn = document.getElementById('mobile-sidebar-close');
 
 function openSidebar() {
-  sidebar?.classList.add('open');
+  sidebar?.classList.add('mobile-open');
   if (overlay) { overlay.style.display = 'block'; overlay.setAttribute('aria-hidden','false'); }
-  hamburger?.setAttribute('aria-expanded', 'true');
+  mobileOpenBtn?.setAttribute('aria-expanded', 'true');
 }
 
 function closeSidebar() {
-  sidebar?.classList.remove('open');
+  sidebar?.classList.remove('mobile-open');
   if (overlay) { overlay.style.display = 'none'; overlay.setAttribute('aria-hidden','true'); }
-  hamburger?.setAttribute('aria-expanded', 'false');
+  mobileOpenBtn?.setAttribute('aria-expanded', 'false');
 }
 
-hamburger?.addEventListener('click', () => {
-  sidebar?.classList.contains('open') ? closeSidebar() : openSidebar();
-});
+mobileOpenBtn?.addEventListener('click', openSidebar);
+mobileCloseBtn?.addEventListener('click', closeSidebar);
 overlay?.addEventListener('click', closeSidebar);
 
 // ── Desktop Sidebar Collapse ──────────────────

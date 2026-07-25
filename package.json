@@ -4,7 +4,7 @@
   "description": "A Death Note-themed cybersecurity blog by vaLak",
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro dev --host",
     "build": "astro build",
     "preview": "astro preview"
   },

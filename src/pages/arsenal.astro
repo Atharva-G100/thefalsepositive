@@ -9,6 +9,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   extraCss={['/styles/arsenal.css']}
 >
   <div class="hud-tab-wrapper">
+    <h1 class="visually-hidden">Toolkit</h1>
     <div class="arsenal-hud-tabs">
       <button class="hud-tab active" data-view="local-tools-view">
         <span class="hud-indicator"></span> Local Tools
@@ -24,8 +25,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <div class="arsenal-container">
     
     <!-- Sidebar Navigation -->
-    <aside class="arsenal-sidebar">
-      <div class="hud-diagnostics">
+    <details class="arsenal-sidebar-wrapper" id="arsenal-menu">
+      <summary class="arsenal-menu-toggle">
+        <span style="display: flex; align-items: center; gap: 0.5rem;">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+          Select Tool
+        </span>
+        <svg class="details-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </summary>
+      <aside class="arsenal-sidebar">
+        <div class="hud-diagnostics">
         <div class="hud-diag-row">
           <span>STATUS:</span>
           <span class="hud-diag-val"><span class="hud-pulse"></span>ONLINE</span>
@@ -75,7 +84,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <button class="arsenal-nav-btn" data-target="tool-payloads">Payload Drop</button>
         </nav>
       </div>
-    </aside>
+      </aside>
+    </details>
 
     <!-- Main Content Area -->
     <main class="arsenal-main">
@@ -646,6 +656,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       const targetId = activeBtn.getAttribute('data-target');
       const targetPanel = document.getElementById(targetId);
       
+      // Auto-collapse mobile menu
+      if (window.innerWidth <= 900) {
+        const menu = document.getElementById('arsenal-menu');
+        if (menu) menu.removeAttribute('open');
+      }
+      
       if (targetPanel) {
         targetPanel.classList.add('active');
         
@@ -696,8 +712,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       return;
     }
     el.classList.remove('empty');
-    const btnHtml = el.innerHTML.includes('<button') ? '<button class="copy-btn" onclick="copyResult(\'' + elementId + '\')">Copy</button>' : '';
-    el.innerHTML = value + btnHtml;
+    const hasBtn = el.innerHTML.includes('<button');
+    el.textContent = value;
+    if (hasBtn) {
+      el.insertAdjacentHTML('beforeend', '<button class="copy-btn" onclick="copyResult(\'' + elementId + '\')">Copy</button>');
+    }
   }
 
   // --- Tool: Decoder Ring ---
@@ -725,6 +744,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       setOutput('decoder-out', 'Error: Invalid input for this operation.');
     }
   }
+
+  // Keep menu open on desktop by default
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.innerWidth > 900) {
+      const menu = document.getElementById('arsenal-menu');
+      if (menu) menu.setAttribute('open', '');
+    }
+  });
 
   // --- Tool: ROT Cipher ---
   function rotRun(mode) {
