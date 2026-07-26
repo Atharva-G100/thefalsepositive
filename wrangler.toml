@@ -1,0 +1,8 @@
+# Cloudflare Pages configuration
+# https://developers.cloudflare.com/pages/configuration/wrangler-configuration/
+
+name = "the-false-positive"
+pages_build_output_dir = "dist"
+
+[env.production]
+name = "the-false-positive"

@@ -53,9 +53,15 @@ function formatDate(dateStr) {
 }
 
 function stripHtml(html) {
-  const div = document.createElement('div');
-  div.innerHTML = html;
-  return div.textContent || div.innerText || '';
+  // Use regex stripping instead of div.innerHTML to avoid the browser
+  // parsing & loading external resources (tracking pixels) from RSS content.
+  return (html || '').replace(/<[^>]*>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#039;/g, "'");
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
 }
 
 function truncate(text, maxLen = 140) {
@@ -95,11 +101,11 @@ function createCard(article) {
   card.innerHTML = `
     <div class="news-card-body">
       <div class="news-card-meta">
-        <span class="news-source">${article.source}</span>
+        <span class="news-source">${escapeHtml(article.source)}</span>
         <span class="news-date">${formatDate(article.pubDate)}</span>
       </div>
-      <h2 class="news-card-title">${article.title}</h2>
-      <p class="news-card-excerpt">${truncate(article.description)}</p>
+      <h2 class="news-card-title">${escapeHtml(article.title)}</h2>
+      <p class="news-card-excerpt">${escapeHtml(truncate(article.description))}</p>
     </div>
     <div class="news-card-footer">
       <span class="news-category-tag">${getCategoryLabel(article.category)}</span>

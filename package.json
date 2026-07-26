@@ -3,12 +3,19 @@
   "version": "1.0.0",
   "description": "A Death Note-themed cybersecurity blog by vaLak",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
-    "dev": "astro dev --host",
+    "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "deploy": "astro build && wrangler pages deploy dist"
   },
   "dependencies": {
     "astro": "^5.2.2"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
   }
 }

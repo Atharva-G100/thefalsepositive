@@ -19,6 +19,19 @@ const searchResults = document.getElementById('search-results');
 let SEARCH_INDEX = [];
 let isFetchingIndex = false;
 
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str || '';
+  return d.innerHTML;
+}
+
+function sanitizeUrl(url) {
+  // Only allow relative paths or https:// — blocks javascript: and data: URIs
+  if (!url) return '#';
+  if (url.startsWith('/') || url.startsWith('https://')) return url;
+  return '#';
+}
+
 async function fetchSearchIndex() {
   if (SEARCH_INDEX.length > 0 || isFetchingIndex) return;
   isFetchingIndex = true;
@@ -74,9 +87,9 @@ function renderResults(query) {
     return;
   }
   searchResults.innerHTML = matches.map((item, i) => `
-    <a href="${item.url}" class="search-result-item" role="option" id="search-result-${i}" tabindex="-1">
-      <span class="result-title">${item.title}</span>
-      <span class="result-section">${item.type} ${item.context ? '/ ' + item.context : ''}</span>
+    <a href="${sanitizeUrl(item.url)}" class="search-result-item" role="option" id="search-result-${i}" tabindex="-1">
+      <span class="result-title">${escapeHtml(item.title)}</span>
+      <span class="result-section">${escapeHtml(item.type)}${item.context ? ' / ' + escapeHtml(item.context) : ''}</span>
     </a>
   `).join('');
 }
