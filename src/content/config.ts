@@ -24,8 +24,9 @@ const handbookCollection = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
-    section: z.string(), // e.g. "Red-Teaming", "Web-Attacks"
+    section: z.string(), // Series name e.g. "Network Recon", "Web Attacks"
     order: z.number().optional(),
+    description: z.string().optional(),
     tags: z.array(z.string()).optional(),
   }),
 });
