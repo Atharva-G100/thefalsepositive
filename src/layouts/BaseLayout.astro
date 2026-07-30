@@ -13,6 +13,9 @@ const {
   activePage = '',
   extraCss = []
 } = Astro.props;
+
+// Generate a build-time hash to automatically bust CSS caches on new deployments
+const buildVersion = Date.now().toString(36);
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -25,11 +28,11 @@ const {
   <link rel="icon" type="image/png" href="/favicon.png" />
 
   <!-- Core CSS -->
-  <link rel="stylesheet" href="/styles/theme.css" />
-  <link rel="stylesheet" href="/styles/layout.css" />
+  <link rel="stylesheet" href={`/styles/theme.css?v=${buildVersion}`} />
+  <link rel="stylesheet" href={`/styles/layout.css?v=${buildVersion}`} />
 
   <!-- Per-page CSS -->
-  {extraCss.map(href => <link rel="stylesheet" href={href} />)}
+  {extraCss.map(href => <link rel="stylesheet" href={`${href}?v=${buildVersion}`} />)}
 </head>
 <body>
 
