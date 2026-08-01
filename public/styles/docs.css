@@ -629,8 +629,42 @@
 
 /* ── Handbook Index Page ────────────────────── */
 .handbook-index {
-  max-width: 860px;
+  width: 100%;
 }
+
+/* Two-column: series left, disclaimer right */
+.handbook-index-grid {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.handbook-series-col {
+  min-width: 0;
+}
+
+.handbook-disclaimer-panel {
+  position: sticky;
+  top: calc(var(--nav-height) + 1.5rem);
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--red-dim);
+  border-radius: 4px;
+  background: rgba(220, 38, 38, 0.04);
+}
+
+@media (max-width: 900px) {
+  .handbook-index-grid {
+    grid-template-columns: 1fr;
+  }
+  .handbook-disclaimer-panel {
+    position: static;
+    margin-top: 1rem;
+  }
+}
+
+
 
 .handbook-index-header {
   margin-bottom: 3.5rem;
@@ -985,6 +1019,46 @@
   color: var(--off-white);
   border-left-color: var(--red-bright);
 }
+
+/* ── Handbook Disclaimer ────────────────────── */
+.handbook-disclaimer {
+  margin-top: 2.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--red-dim);
+  border-radius: 4px;
+  background: rgba(220, 38, 38, 0.04);
+}
+
+.disclaimer-icon {
+  display: flex;
+  align-items: center;
+  color: var(--red-dim);
+  margin-bottom: 0.5rem;
+}
+
+.disclaimer-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--red-dim);
+  margin-bottom: 0.75rem;
+}
+
+.disclaimer-text {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 0.6rem;
+}
+
+.disclaimer-text:last-child {
+  margin-bottom: 0;
+}
+
+
 
 /* ── Chapter Navigation ─────────────────────── */
 .chapter-nav {
