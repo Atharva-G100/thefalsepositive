@@ -5,8 +5,8 @@
 .ctf-blog-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;
-  gap: 3rem;
-  max-width: 1200px;
+  gap: 5rem;
+  max-width: 1440px;
   margin: 0 auto;
   padding: calc(var(--nav-height) + 3rem) 3rem 4rem 3rem;
   min-height: 100vh;

@@ -408,19 +408,19 @@
   width: 160px;
   height: 160px;
   object-fit: cover;
-  object-position: top center;
+  object-position: center;
   border-radius: 50%;
   border: 2px solid var(--border-red);
   filter: saturate(0.9) brightness(1.0);
   display: block;
   margin: 0 auto;
-  box-shadow: 0 0 30px rgba(67,102,113,0.2), 0 0 0 4px var(--bg-secondary);
+  box-shadow: 0 0 30px var(--red-glow-soft), 0 0 0 4px var(--bg-secondary);
   transition: filter var(--transition-slow), box-shadow var(--transition-slow);
 }
 
 .about-l-portrait:hover {
   filter: saturate(1) brightness(1);
-  box-shadow: 0 0 40px rgba(67,102,113,0.35), 0 0 0 4px var(--bg-secondary);
+  box-shadow: 0 0 40px var(--red-glow), 0 0 0 4px var(--bg-secondary);
 }
 
 /* ── Responsive ─────────────────────────────── */
