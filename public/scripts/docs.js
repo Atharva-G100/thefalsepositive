@@ -54,7 +54,7 @@ tocToggle?.addEventListener('click', () => {
 });
 
 // ── TOC Active Highlight ──────────────────────
-const tocLinks = document.querySelectorAll('.toc-nav a');
+const tocLinks = document.querySelectorAll('.toc-list .toc-link');
 const sections = document.querySelectorAll('.docs-content h2, .docs-content h3');
 
 function updateTOC() {
