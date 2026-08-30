@@ -1,147 +1,182 @@
+﻿---
+import { getCollection } from 'astro:content';
+
+const writeups = await getCollection('ctf').catch(() => []);
+
+// Sort by date descending
+const sortedWriteups = writeups.sort((a, b) => {
+  const dateA = new Date(a.data.date || 0);
+  const dateB = new Date(b.data.date || 0);
+  return dateB.getTime() - dateA.getTime();
+});
+
+// Take top 4 recent operations
+const recentOperations = sortedWriteups.slice(0, 4);
+
+// Generate build hash for CSS
+const buildVersion = Date.now().toString(36);
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
----
-<BaseLayout 
-  title="vaLak" 
-  description="A cybersecurity notebook by vaLak. Pentesting journey, CTF writeups, and daily cyber news - themed around the Death Note universe."
-  extraCss={['/styles/home.css']}
->
-  
-  <main class="page-wrapper" id="main-content">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="The False Positive is VALAK's personal cybersecurity portfolio covering digital forensics, offensive security, and documented research." />
+  <meta name="author" content="vaLak" />
+  <title>VALAK | The False Positive</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
 
-    <!-- ── Hero ── -->
-    <section class="hero" aria-label="Introduction">
-      <div class="hero-title-container">
-        <h1 class="visually-hidden">The False Positive</h1>
-        <img 
-          src="/assets/The_False_Positive_removed_bg.png" 
-          alt="The False Positive" 
-          class="hero-title-graphic" 
-          loading="eager"
-        />
-      </div>
+  <!-- Core CSS -->
+  <link rel="stylesheet" href={`/styles/theme.css?v=${buildVersion}`} />
+  <link rel="stylesheet" href={`/styles/home.css?v=${buildVersion}`} />
+</head>
+<body>
+  <div class="home-page">
+    
+    <!-- 1. FIXED LEFT SIDEBAR -->
+    <aside class="sidebar-rail" aria-label="Primary Navigation">
+      <a href="/" class="rail-logo" style="border:none;outline:none;"><img src="/assets/V_logo.png" alt="VALAK" /></a>
+      <div class="rail-logo-divider"></div>
+      
+      <nav class="rail-nav">
+        <a href="/" class="rail-nav-item active">
+          <span class="rail-nav-num">01</span>
+          <span class="rail-nav-label">HOME <span class="active-dash"></span></span>
+        </a>
+        <a href="/ctf" class="rail-nav-item">
+          <span class="rail-nav-num">02</span>
+          <span class="rail-nav-label">WRITEUPS</span>
+        </a>
+        <a href="/pentest" class="rail-nav-item">
+          <span class="rail-nav-num">03</span>
+          <span class="rail-nav-label">BLOG</span>
+        </a>
+        <a href="/arsenal" class="rail-nav-item">
+          <span class="rail-nav-num">04</span>
+          <span class="rail-nav-label">TOOLS</span>
+        </a>
+        <a href="/news" class="rail-nav-item">
+          <span class="rail-nav-num">05</span>
+          <span class="rail-nav-label">RESEARCH</span>
+        </a>
+        <a href="/about" class="rail-nav-item">
+          <span class="rail-nav-num">06</span>
+          <span class="rail-nav-label">ABOUT</span>
+        </a>
+      </nav>
 
-      <div class="hero-quote-container">
-        <blockquote class="hero-quote">
-          &#8220;There is a 94% probability that the person reading this
-          is trying to get better at hacking.&#8221;
-        </blockquote>
-      </div>
+      
 
-      <p class="hero-desc">
-        A personal notebook built for the me who was navigating TryHackMe,
-        HackTheBox, and the overwhelming world of ethical hacking. Every technique,
-        every command, every case file - documented like evidence.
-      </p>
-
-      <div class="hero-cta">
-        <a href="/pentest" class="btn btn-primary" id="hero-enter-btn">
-          Open the Note
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
+      <div class="rail-socials">
+        <a href="https://github.com/Atharva-G100" class="rail-social-link" aria-label="GitHub" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/atharva-gawas-valak/" class="rail-social-link" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </a>
+        <a href="mailto:gawasatharva8@gmail.com" class="rail-social-link" aria-label="Email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
         </a>
       </div>
+    </aside>
 
-      <div class="l-probability" aria-label="L probability estimate">
-        <span>I am va</span><span class="prob-val">L</span><span>ak. The L is not a coincidence.</span>
-      </div>
+    <!-- Main Content Stage -->
+    <main class="main-stage">
+      
+      
 
-      <div class="scroll-hint" aria-hidden="true">
-        <span>SCROLL</span>
-        <div class="scroll-arrow"></div>
-      </div>
-    </section>
-
-    <!-- ── Death Note Book Parallax Section ── -->
-    <div class="parallax-section" aria-label="Death Note Artifact">
-      <div class="parallax-bg" style="background-image: url('/assets/death_note_book.png');"></div>
-      <div class="parallax-overlay">
-        <p class="parallax-text">The system whose vulnerabilities are written in this notebook shall fall.</p>
-      </div>
-    </div>
-
-    <!-- ── Section Cards ── -->
-    <section class="home-sections" aria-label="Navigate to sections">
-      <p class="home-sections-title">The Notebook</p>
-      <div class="home-cards" role="list">
-
-        <!-- Pentest Handbook -->
-        <a href="/pentest" class="home-card" role="listitem" id="card-pentest" aria-label="Pentest Handbook">
-          <span class="card-number">01</span>
-          <span class="card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="1em" height="1em" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
-          </span>
-          <h2 class="card-title">Pentest Handbook</h2>
-          <p class="card-desc">
-            Every technique. Every command. Every methodology - organized by category
-            and written like case notes. Red-Teaming, Web Attacks, Active Directory.
+      <!-- 2. TOP HERO AREA & 3. SKULL IMAGE -->
+      <section class="valak-hero">
+        <div class="hero-left">
+          <h1 class="hero-title">
+            <span>THE</span>
+            <span>FALSE</span>
+            <span>POSITIVE</span>
+          </h1>
+          <p class="hero-description">
+            CYBERSECURITY &middot; DIGITAL FORENSICS &middot; OFFENSIVE SECURITY<br />
+            INVESTIGATE. ANALYZE. DOCUMENT.
           </p>
-          <span class="card-arrow">
-            Open Handbook
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </span>
-        </a>
+          <div class="hero-divider"></div>
+          <a href="/pentest" class="hero-cta">
+            <span>ENTER ARCHIVE</span>
+            <span class="hero-cta-arrow">→</span>
+          </a>
+        </div>
 
-        <!-- CTF Writeups -->
-        <a href="/ctf" class="home-card" role="listitem" id="card-ctf" aria-label="CTF Writeups">
-          <span class="card-number">02</span>
-          <span class="card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="1em" height="1em" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
-          </span>
-          <h2 class="card-title">CTF Writeups</h2>
-          <p class="card-desc">
-            Every competition is a case. Every challenge is a suspect.
-            Writeups from CTFs - documented with methodology, tools used, and lessons learned.
+        <div class="hero-right">
+          <div class="hero-visual-container">
+            <img src="/assets/valak_homepagebg.png" alt="Operative Skull" class="hero-visual" />
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. RECENT OPERATIONS & 7. ABOUT / WHO AM I -->
+      <section class="bottom-panel">
+        
+        <div class="ops-section">
+          <div class="ops-header">
+            <div class="ops-title">
+              <span class="red-dash">—</span> RECENT OPERATIONS
+            </div>
+            <a href="/ctf" class="ops-view-all">VIEW ALL <span class="arrow">→</span></a>
+          </div>
+
+          <div class="ops-list">
+            {recentOperations.map((entry, index) => {
+              // Format ID like OP-014
+              const opId = `OP-01${4 - index}`;
+              const isFirst = index === 0;
+              const statusText = isFirst ? 'COMPLETE' : 'COMPLETE'; // Usually from frontmatter, stubbed here
+              
+              return (
+                <a href={`/ctf/${entry.slug}`} class="ops-item">
+                  <span class="op-id">{opId}</span>
+                  <span class="op-name">{entry.data.title.toUpperCase()}</span>
+                  <span class="op-tags">
+                    {entry.data.tags?.[0] || 'CTF'} / {entry.data.tags?.[1] || 'RECON'}
+                  </span>
+                  <span class={`op-status ${isFirst ? 'active' : 'complete'}`}>
+                    {isFirst ? 'ACTIVE' : 'COMPLETE'}
+                  </span>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+
+        <div class="profile-block">
+          <div class="profile-title">WHO AM I?</div>
+          <div class="profile-name">ATHARVA GAWAS</div>
+          <p class="profile-desc">
+            I break things to understand them.<br />
+            I document what I learn.<br />
+            I share to help others build.
           </p>
-          <span class="card-arrow">
-            Open Writeups
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </span>
-        </a>
+          <a href="/about" class="profile-link">MORE ABOUT ME <span class="arrow">→</span></a>
+        </div>
 
-        <!-- Cyber Intel -->
-        <a href="/news" class="home-card" role="listitem" id="card-news" aria-label="Cyber Intel News">
-          <span class="card-number">03</span>
-          <span class="card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="1em" height="1em" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg>
-          </span>
-          <h2 class="card-title">Cyber Intel</h2>
-          <p class="card-desc">
-            Daily intelligence from the field. Live cybersecurity news -
-            vulnerabilities, breaches, tools, and threat reports. Refreshed automatically.
-          </p>
-          <span class="card-arrow">
-            View Intel Feed
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </span>
-        </a>
+      </section>
 
-      </div>
-    </section>
+    </main>
+  </div>
+</body>
+</html>
 
-    <!-- ── About Strip ── -->
-    <section class="home-about" aria-label="About vaLak">
-      <div class="about-l-image" aria-hidden="true">
-        <img src="/assets/l_hero.jpg" alt="L Lawliet - vaLak" class="about-l-portrait" loading="lazy" />
-      </div>
-      <h2 class="about-handle">va<span class="handle-l">L</span>ak</h2>
-      <p class="about-text">
-        Navigating the world of ethical hacking and cybersecurity - one challenge at a time.
-        This notebook documents the journey. The wins, the failures, the "aha" moments.
-        Everything written in red ink, in the style of L himself.
-        <br /><br />
-        <em class="text-silver">"Watashi wa L desu."</em>
-      </p>
-    </section>
 
-  </main>
 
-</BaseLayout>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
