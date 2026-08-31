@@ -1,162 +1,198 @@
+﻿---
+import { getCollection } from "astro:content";
+
+const allWriteups = await getCollection("ctf").catch(() => []);
+
+const DIFFICULTY_TAGS = ["Easy", "Medium", "Hard", "Insane", "easy", "medium", "hard", "insane"];
+
+const sortedWriteups = allWriteups
+  .sort((a, b) => new Date(b.data.date || 0).getTime() - new Date(a.data.date || 0).getTime())
+  .map((entry, index, arr) => {
+    const tags = entry.data.tags || [];
+    const difficulty = tags.find(t => DIFFICULTY_TAGS.includes(t)) || "—";
+    const category = tags.find(t => !DIFFICULTY_TAGS.includes(t)) || "—";
+    const date = entry.data.date ? new Date(entry.data.date) : null;
+    const formattedDate = date
+      ? date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase()
+      : "—";
+    const id = String(arr.length - index).padStart(3, "0");
+    return { entry, id, difficulty, category, formattedDate };
+  });
+
+const platforms = [...new Set(sortedWriteups.map(w => w.entry.data.ctf).filter(Boolean))];
+const categories = [...new Set(sortedWriteups.map(w => w.category).filter(c => c !== "—"))];
+const difficulties = ["Easy", "Medium", "Hard", "Insane"];
+
+const buildVersion = Date.now().toString(36);
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="CTF Writeups — Documented security research and CTF operations by VALAK." />
+  <title>Writeups | The False Positive</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="stylesheet" href={`/styles/theme.css?v=${buildVersion}`} />
+  <link rel="stylesheet" href={`/styles/ops.css?v=${buildVersion}`} />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
 
-// Get all CTF writeups from content collection
-const allWriteups = await getCollection('ctf').catch(() => []);
+<div class="ops-page">
 
-// Sort by date descending
-const sortedWriteups = allWriteups.sort((a, b) => {
-  const dateA = new Date(a.data.date || 0);
-  const dateB = new Date(b.data.date || 0);
-  return dateB.getTime() - dateA.getTime();
-});
+  <!-- SIDEBAR -->
+  <aside class="sidebar-rail" aria-label="Primary Navigation">
+    <a href="/" class="rail-logo" style="border:none;outline:none;">
+      <img src="/assets/V_logo.png" alt="VALAK" />
+    </a>
+    <div class="rail-logo-divider"></div>
+    <nav class="rail-nav">
+      <a href="/" class="rail-nav-item"><span class="rail-nav-num">01</span><span class="rail-nav-label">HOME</span></a>
+      <a href="/ctf" class="rail-nav-item active"><span class="rail-nav-num">02</span><span class="rail-nav-label">WRITEUPS</span></a>
+      <a href="/pentest" class="rail-nav-item"><span class="rail-nav-num">03</span><span class="rail-nav-label">BLOG</span></a>
+      <a href="/arsenal" class="rail-nav-item"><span class="rail-nav-num">04</span><span class="rail-nav-label">TOOLS</span></a>
+      <a href="/news" class="rail-nav-item"><span class="rail-nav-num">05</span><span class="rail-nav-label">RESEARCH</span></a>
+      <a href="/about" class="rail-nav-item"><span class="rail-nav-num">06</span><span class="rail-nav-label">ABOUT</span></a>
+    </nav>
+    <div class="rail-socials">
+      <a href="https://github.com/Atharva-G100" class="rail-social-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/atharva-gawas-valak/" class="rail-social-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a>
+      <a href="mailto:gawasatharva8@gmail.com" class="rail-social-link" aria-label="Email">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+      </a>
+    </div>
+  </aside>
 
-// Group by Year -> CTF
-const groupedByYearAndCtf = sortedWriteups.reduce((acc, writeup) => {
-  const date = writeup.data.date ? new Date(writeup.data.date) : new Date();
-  const year = date.getFullYear().toString();
-  const ctfName = writeup.data.ctf || 'Other';
-  
-  if (!acc[year]) acc[year] = {};
-  if (!acc[year][ctfName]) acc[year][ctfName] = [];
-  
-  acc[year][ctfName].push(writeup);
-  return acc;
-}, {} as Record<string, Record<string, typeof allWriteups>>);
+  <!-- MAIN -->
+  <main class="ops-main">
 
-// Get sorted years
-const years = Object.keys(groupedByYearAndCtf).sort((a, b) => Number(b) - Number(a));
-
-// Get tags and their counts
-const tagCounts = allWriteups.reduce((acc, writeup) => {
-  if (writeup.data.tags) {
-    writeup.data.tags.forEach(tag => {
-      acc[tag] = (acc[tag] || 0) + 1;
-    });
-  }
-  return acc;
-}, {} as Record<string, number>);
-const tags = Object.keys(tagCounts).sort();
----
-<BaseLayout 
-  title="CTF Writeups" 
-  description="CTF writeups by vaLak — every competition documented like a case file."
-  activePage="ctf"
-  extraCss={['/styles/ctf.css']}
->
-  <!-- Full-Width Cinematic Header -->
-  <div class="ctf-hero-banner">
-    <h1 class="ctf-hero-title">Writeups</h1>
-  </div>
-
-  <main class="ctf-blog-layout" id="main-content" style="padding-top: 2.5rem;">
-    
-    <!-- Left Column: Timeline & Tags -->
-    <div class="ctf-blog-main">
-      
-      <!-- Archives / Timeline -->
-      <div class="ctf-timeline">
-        {years.map(year => (
-          <div class="timeline-year-group">
-            <h2 class="timeline-year">{year}</h2>
-            {Object.keys(groupedByYearAndCtf[year]).map(ctfName => (
-              <div class="timeline-ctf-group">
-                <h3 class="timeline-ctf-name">{ctfName}</h3>
-                <ul class="timeline-writeups">
-                  {groupedByYearAndCtf[year][ctfName].map(writeup => {
-                    const date = writeup.data.date ? new Date(writeup.data.date) : new Date();
-                    const monthDay = date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' }).replace('/', '-');
-                    return (
-                      <li class="writeup-item" data-tags={(writeup.data.tags || []).join(',')}>
-                        <span class="timeline-date">{monthDay}</span>
-                        <a href={`/ctf/${writeup.slug}`} class="timeline-link">{writeup.data.title}</a>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-
+    <!-- Page header -->
+    <div class="ops-header">
+      <div class="ops-eyebrow">WRITEUPS</div>
+      <p class="ops-subtitle">Documented security research and CTF writeups.</p>
     </div>
 
-    <!-- Right Column: Profile Widget -->
-    <aside class="ctf-blog-sidebar">
-      <details class="widget projects-widget" id="tags-widget">
-        <summary class="widget-header" style="cursor: pointer; user-select: none; list-style: none;">
-          <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="display: flex; align-items: center; gap: 0.5rem;">
-              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-              Filter by Tag
-            </span>
-            <svg class="details-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-          </div>
-        </summary>
-        <div class="tags-grid">
-          {tags.map(tag => (
-            <a href={`/ctf?tag=${tag}`} class="tag-link" data-tag={tag}>
-              <span class="tag-hash">#</span> {tag} <span class="tag-count">({tagCounts[tag]})</span>
-            </a>
-          ))}
+    <!-- Filter bar -->
+    <div class="ops-filter-bar">
+      <select class="ops-filter-select" id="filter-platform">
+        <option value="">PLATFORM</option>
+        {platforms.map(p => <option value={p}>{p.toUpperCase()}</option>)}
+      </select>
+      <select class="ops-filter-select" id="filter-category">
+        <option value="">CATEGORY</option>
+        {categories.map(c => <option value={c}>{c.toUpperCase()}</option>)}
+      </select>
+      <select class="ops-filter-select" id="filter-difficulty">
+        <option value="">DIFFICULTY</option>
+        {difficulties.map(d => <option value={d}>{d.toUpperCase()}</option>)}
+      </select>
+      <select class="ops-filter-select" id="filter-status">
+        <option value="">STATUS</option>
+        <option value="complete">COMPLETE</option>
+      </select>
+      <div class="ops-search-wrapper">
+        <input type="text" class="ops-search" id="search-input" placeholder="SEARCH..." autocomplete="off" />
+        <svg class="ops-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="ops-table-wrapper">
+      <!-- Header row -->
+      <div class="ops-table-head">
+        <span class="col-id">#</span>
+        <span class="col-name">Title</span>
+        <span class="col-platform">Platform</span>
+        <span class="col-category">Category</span>
+        <span class="col-difficulty">Difficulty</span>
+        <span class="col-date">Date</span>
+        <span class="col-status">Status</span>
+        <span class="col-arrow"></span>
+      </div>
+
+      <!-- Data rows -->
+      <div class="ops-table-body" id="ops-table-body">
+        {sortedWriteups.map(({ entry, id, difficulty, category, formattedDate }) => (
+          <a
+            href={`/ctf/${entry.slug}`}
+            class="ops-row"
+            data-platform={entry.data.ctf || ""}
+            data-category={category}
+            data-difficulty={difficulty}
+            data-title={entry.data.title}
+          >
+            <span class="col-id op-id">{id}</span>
+            <span class="col-name op-name">{entry.data.title.toUpperCase()}</span>
+            <span class="col-platform op-platform">{(entry.data.ctf || "—").toUpperCase()}</span>
+            <span class="col-category op-category">{category.toUpperCase()}</span>
+            <span class="col-difficulty op-difficulty">{difficulty.toUpperCase()}</span>
+            <span class="col-date op-date">{formattedDate}</span>
+            <span class="col-status op-status">COMPLETE</span>
+            <span class="col-arrow op-arrow">&rarr;</span>
+          </a>
+        ))}
+
+        <!-- Empty state -->
+        <div class="ops-empty" id="ops-empty" style="display:none;">
+          <span>NO OPERATIONS MATCH CURRENT FILTERS</span>
         </div>
-      </details>
-    </aside>
+      </div>
+    </div>
 
   </main>
+</div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Keep tags open by default on desktop
-      if (window.innerWidth > 900) {
-        const tags = document.getElementById('tags-widget');
-        if (tags) tags.setAttribute('open', '');
-      }
+<script>
+  const platformFilter = document.getElementById('filter-platform') as HTMLSelectElement;
+  const categoryFilter = document.getElementById('filter-category') as HTMLSelectElement;
+  const difficultyFilter = document.getElementById('filter-difficulty') as HTMLSelectElement;
+  const statusFilter = document.getElementById('filter-status') as HTMLSelectElement;
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+  const rows = document.querySelectorAll('.ops-row') as NodeListOf<HTMLElement>;
+  const emptyState = document.getElementById('ops-empty') as HTMLElement;
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const activeTag = urlParams.get('tag');
+  function applyFilters() {
+    const platform = platformFilter.value.toLowerCase();
+    const category = categoryFilter.value.toLowerCase();
+    const difficulty = difficultyFilter.value.toLowerCase();
+    const search = searchInput.value.toLowerCase();
 
-      if (!activeTag) return;
+    let visibleCount = 0;
 
-      // 1. Highlight the active tag and allow toggling it off
-      document.querySelectorAll('.tag-link').forEach(link => {
-        if (link.getAttribute('data-tag') === activeTag) {
-          link.classList.add('active');
-          link.href = '/ctf'; // Click again to clear the filter
-          
-          // Ensure tags widget is open if a tag is active on load (even on mobile)
-          const tags = document.getElementById('tags-widget');
-          if (tags) tags.setAttribute('open', '');
-        }
-      });
+    rows.forEach(row => {
+      const rowPlatform = (row.dataset.platform || '').toLowerCase();
+      const rowCategory = (row.dataset.category || '').toLowerCase();
+      const rowDifficulty = (row.dataset.difficulty || '').toLowerCase();
+      const rowTitle = (row.dataset.title || '').toLowerCase();
 
-      // 2. Filter the writeups
-      document.querySelectorAll('.timeline-year-group').forEach(yearGroup => {
-        let yearHasVisible = false;
+      const matchPlatform = !platform || rowPlatform === platform.toLowerCase() || rowPlatform.includes(platform);
+      const matchCategory = !category || rowCategory === category;
+      const matchDifficulty = !difficulty || rowDifficulty === difficulty;
+      const matchSearch = !search || rowTitle.includes(search);
 
-        yearGroup.querySelectorAll('.timeline-ctf-group').forEach(ctfGroup => {
-          let ctfHasVisible = false;
-
-          ctfGroup.querySelectorAll('.writeup-item').forEach(item => {
-            const tags = item.getAttribute('data-tags').split(',');
-            if (tags.includes(activeTag)) {
-              item.style.display = ''; // Show
-              ctfHasVisible = true;
-              yearHasVisible = true;
-            } else {
-              item.style.display = 'none'; // Hide
-            }
-          });
-
-          // Hide CTF group if all its writeups are hidden
-          ctfGroup.style.display = ctfHasVisible ? '' : 'none';
-        });
-
-        // Hide Year group if all its CTF groups are hidden
-        yearGroup.style.display = yearHasVisible ? '' : 'none';
-      });
+      const visible = matchPlatform && matchCategory && matchDifficulty && matchSearch;
+      row.style.display = visible ? '' : 'none';
+      if (visible) visibleCount++;
     });
-  </script>
-</BaseLayout>
+
+    emptyState.style.display = visibleCount === 0 ? 'flex' : 'none';
+  }
+
+  platformFilter.addEventListener('change', applyFilters);
+  categoryFilter.addEventListener('change', applyFilters);
+  difficultyFilter.addEventListener('change', applyFilters);
+  statusFilter.addEventListener('change', applyFilters);
+  searchInput.addEventListener('input', applyFilters);
+</script>
+
+</body>
+</html>
+
+
