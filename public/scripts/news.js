@@ -60,7 +60,7 @@ function stripHtml(html) {
 
 function escapeHtml(str) {
   const d = document.createElement('div');
-  d.textContent = str;
+  d.textContent = str || '';
   return d.innerHTML;
 }
 
@@ -145,11 +145,8 @@ function renderArticles(articles) {
     return;
   }
 
-  articles.forEach((article, i) => {
+  articles.forEach(article => {
     const card = createCard(article);
-    card.style.animationDelay = `${i * 40}ms`;
-    card.style.opacity = '0';
-    card.style.animation = `fadeIn 0.4s ease ${i * 40}ms forwards`;
     newsGrid.appendChild(card);
   });
 
@@ -204,7 +201,7 @@ async function fetchAllFeeds() {
     newsGrid.innerHTML = `
       <div class="news-error" style="grid-column:1/-1">
         <div class="news-error-icon">⚠️</div>
-        <p class="news-error-title">Failed to fetch intel</p>
+        <p class="news-error-title">Couldn’t load articles</p>
         <p class="news-error-text">
           Network error or RSS source unavailable.<br>
           Check your connection and try refreshing.

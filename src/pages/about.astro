@@ -1,75 +1,23 @@
-﻿---
-const buildVersion = Date.now().toString(36);
 ---
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="About Atharva Gawas — Cybersecurity student, Jr. Penetration Tester, and CTF player based in Navi Mumbai." />
-  <meta name="author" content="Atharva Gawas" />
-  <title>About | The False Positive</title>
-  <link rel="icon" type="image/png" href="/favicon.png" />
-  <link rel="stylesheet" href={`/styles/theme.css?v=${buildVersion}`} />
-  <link rel="stylesheet" href={`/styles/about.css?v=${buildVersion}`} />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
-</head>
-<body>
+import BaseLayout from '../layouts/BaseLayout.astro';
 
-<div class="about-page">
-
-  <!-- SIDEBAR RAIL -->
-  <aside class="sidebar-rail" aria-label="Primary Navigation">
-    <a href="/" class="rail-logo" style="border:none;outline:none;">
-      <img src="/assets/V_logo.png" alt="VALAK" />
-    </a>
-    <div class="rail-logo-divider"></div>
-    <nav class="rail-nav">
-      <a href="/" class="rail-nav-item"><span class="rail-nav-num">01</span><span class="rail-nav-label">HOME</span></a>
-      <a href="/ctf" class="rail-nav-item"><span class="rail-nav-num">02</span><span class="rail-nav-label">WRITEUPS</span></a>
-      <a href="/pentest" class="rail-nav-item"><span class="rail-nav-num">03</span><span class="rail-nav-label">BLOG</span></a>
-      <a href="/arsenal" class="rail-nav-item"><span class="rail-nav-num">04</span><span class="rail-nav-label">TOOLS</span></a>
-      <a href="/news" class="rail-nav-item"><span class="rail-nav-num">05</span><span class="rail-nav-label">RESEARCH</span></a>
-      <a href="/about" class="rail-nav-item active"><span class="rail-nav-num">06</span><span class="rail-nav-label">ABOUT</span></a>
-    </nav>
-    <div class="rail-socials">
-      <a href="https://github.com/Atharva-G100" class="rail-social-link" aria-label="GitHub" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
-      </a>
-      <a href="https://www.linkedin.com/in/atharva-gawas-valak/" class="rail-social-link" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-      </a>
-      <a href="mailto:gawasatharva8@gmail.com" class="rail-social-link" aria-label="Email">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-      </a>
-    </div>
-  </aside>
-
-  <!-- MAIN CONTENT -->
-  <main class="about-main">
+---
+<BaseLayout title="About" activePage="about" description="About Atharva Gawas — Cybersecurity learner, researcher, and red teamer interested in web, API, and Active Directory penetration testing.">
+  <div class="about-main">
 
     <!-- HERO -->
     <section class="about-hero">
       <div class="about-hero-left">
-        <div class="about-eyebrow">ABOUT</div>
-        <h1 class="about-name">ATHARVA<br/>GAWAS</h1>
-        <p class="about-tagline">Cybersecurity student &amp; practitioner<br/>focused on breaking, investigating,<br/>and understanding systems.</p>
+
+        <h1 class="about-name">Atharva Gawas</h1>
+        <p class="about-tagline">Cybersecurity learner and researcher with a curious mind, focused on web, API, and Active Directory penetration testing.</p>
         <div class="about-meta-row">
-          <span class="about-meta-item">Jr. Penetration Tester</span>
+          <span class="about-meta-item">Red teamer</span>
           <span class="about-meta-dot">&middot;</span>
           <span class="about-meta-item">Navi Mumbai, India</span>
         </div>
         <div class="about-divider"></div>
-        <p class="about-bio">I enjoy exploring how systems work, finding their weaknesses, and learning from every breakpoint. This site is where I document that journey.</p>
-      </div>
-      <div class="about-hero-right">
-        <div class="portrait-container">
-          <img src="/assets/About_bg.png" alt="Atharva Gawas" class="portrait-img" />
-          <div class="bracket-tl"></div>
-          <div class="bracket-br"></div>
-        </div>
+        <p class="about-bio">This blog is where I keep notes from my studies, work through CTF challenges, and share things I’ve learned along the way.</p>
       </div>
     </section>
 
@@ -84,12 +32,12 @@ const buildVersion = Date.now().toString(36);
             <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
           </svg>
         </div>
-        <div class="strip-title">Focus</div>
+        <h2 class="strip-title">Focus</h2>
         <ul class="strip-list">
-          <li>Offensive Security</li>
-          <li>Digital Forensics</li>
-          <li>Web Security</li>
-          <li>Security Research</li>
+          <li>Web penetration testing</li>
+          <li>API penetration testing</li>
+          <li>Active Directory security</li>
+          <li>Red teaming</li>
         </ul>
       </div>
       <!-- CURRENTLY -->
@@ -99,12 +47,12 @@ const buildVersion = Date.now().toString(36);
             <polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>
           </svg>
         </div>
-        <div class="strip-title">Currently</div>
+        <h2 class="strip-title">What I’m working on</h2>
         <ul class="strip-list">
-          <li>Learning</li>
-          <li>Building</li>
-          <li>Investigating</li>
-          <li>Automating</li>
+          <li>Studying cybersecurity</li>
+          <li>Building small tools</li>
+          <li>Practising in labs</li>
+          <li>Writing study notes</li>
         </ul>
       </div>
       <!-- PHILOSOPHY -->
@@ -115,8 +63,8 @@ const buildVersion = Date.now().toString(36);
             <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
           </svg>
         </div>
-        <div class="strip-title">Philosophy</div>
-        <p class="strip-philosophy">I break things<br/>to understand them.<br/>I document what I learn.<br/>I share to help<br/>others build.<br/><br/><em>"Trust nothing.<br/>Verify everything."</em></p>
+        <h2 class="strip-title">How I learn</h2>
+        <p class="strip-philosophy">I learn by trying things, asking questions, and writing down what I understand. I share those notes so others can follow along and compare approaches.</p>
       </div>
       <!-- THE ARCHIVE -->
       <div class="strip-column">
@@ -125,11 +73,11 @@ const buildVersion = Date.now().toString(36);
             <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
           </svg>
         </div>
-        <div class="strip-title">The Archive</div>
-        <a href="/pentest" class="strip-archive-link">Pentest Notes <span class="arrow-icon">&rarr;</span></a>
+        <h2 class="strip-title">Explore</h2>
+        <a href="/pentest" class="strip-archive-link">Archived handbook <span class="arrow-icon">&rarr;</span></a>
         <a href="/ctf" class="strip-archive-link">CTF Writeups <span class="arrow-icon">&rarr;</span></a>
-        <a href="/arsenal" class="strip-archive-link">Arsenal <span class="arrow-icon">&rarr;</span></a>
-        <a href="/news" class="strip-archive-link">Intel / News <span class="arrow-icon">&rarr;</span></a>
+        <a href="/arsenal" class="strip-archive-link">Toolkit <span class="arrow-icon">&rarr;</span></a>
+        <a href="/news" class="strip-archive-link">Security news <span class="arrow-icon">&rarr;</span></a>
       </div>
     </div>
 
@@ -142,7 +90,7 @@ const buildVersion = Date.now().toString(36);
             <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
           </svg>
         </div>
-        <div class="strip-title">Languages</div>
+        <h2 class="strip-title">Languages</h2>
         <ul class="strip-list">
           <li>Python</li>
           <li>C</li>
@@ -157,7 +105,7 @@ const buildVersion = Date.now().toString(36);
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
           </svg>
         </div>
-        <div class="strip-title">Offensive Tools</div>
+        <h2 class="strip-title">Tools I use</h2>
         <ul class="strip-list">
           <li>Burp Suite</li>
           <li>Metasploit</li>
@@ -174,7 +122,7 @@ const buildVersion = Date.now().toString(36);
             <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
           </svg>
         </div>
-        <div class="strip-title">Certifications</div>
+        <h2 class="strip-title">Certifications</h2>
         <ul class="strip-list">
           <li>THM: Jr. Penetration Tester</li>
           <li>APIsec Certified Practitioner</li>
@@ -190,7 +138,7 @@ const buildVersion = Date.now().toString(36);
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
           </svg>
         </div>
-        <div class="strip-title">CTF &amp; Ops</div>
+        <h2 class="strip-title">CTFs</h2>
         <ul class="strip-list">
           <li>[3301] N0T F0UND</li>
           <li>Web Exploitation</li>
@@ -200,9 +148,14 @@ const buildVersion = Date.now().toString(36);
       </div>
     </div>
 
-  </main>
-</div>
+  </div>
+</BaseLayout>
 
-</body>
-</html>
 
+<style>
+  .about-meta-row { color: var(--ny-color-text-subtle); font-size: var(--ny-font-size-meta); margin-bottom: 16px; }
+  .about-strip { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
+  .strip-icon { display: none; }
+  .strip-archive-link { display: block; margin-bottom: 8px; }
+  @media (max-width: 560px) { .about-strip { display: block; } }
+</style>
