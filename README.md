@@ -1,6 +1,6 @@
 # The False Positive
 
-Personal security writeups, blog posts, and archived study notes by vaLak. Built with Astro and adapted from the MIT-licensed [Nayuta theme](https://github.com/yuanzui-cf/nayuta).
+Personal security writeups and blog posts by vaLak. Built with Astro and adapted from the MIT-licensed [Nayuta theme](https://github.com/yuanzui-cf/nayuta).
 
 ## Local development
 
@@ -28,7 +28,7 @@ npm run preview
 | --- | --- |
 | `src/content/ctf/` | Full CTF and machine writeups |
 | `src/content/blog/` | Blog posts; intentionally empty until the first post |
-| `src/content/handbook/` | Original archived study notes |
+| `src/content/handbook/` | Original study notes preserved as source only for future blog rewrites |
 | `src/pages/` | Routes, content rendering, and the search endpoint |
 | `src/layouts/` | Shared layout adapter and floating reading/music tools |
 | `src/theme/` | Nayuta layout, components, styles, utilities, and license |
@@ -57,7 +57,9 @@ Use `category: "machine"` for a machine walkthrough. Machines share one list; CT
 
 Blog posts use `title`, `date`, optional `description`, `tags`, and optional `draft: true`. They render at `/blog/<slug>`. All collection fields are defined in `src/content/config.ts`.
 
-The handbook remains available at `/pentest`. Its source notes are preserved in `src/content/handbook/`.
+All nine original handbook notes are preserved unchanged in `src/content/handbook/` for future blog rewrites. They have no published routes, site links, or search entries. The old `/pentest` paths return the site’s 404 page. These source notes remain visible in the public GitHub repository.
+
+Keep `src/pages/404.astro`: it generates the top-level `404.html` that Cloudflare Pages uses for missing URLs, preventing a fallback to the homepage.
 
 ## Site settings and music
 
