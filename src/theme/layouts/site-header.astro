@@ -15,7 +15,7 @@ const isCurrent = (url?: string) => url === '/' ? pathname === '/' : Boolean(url
     {navigation.map(link => <a href={link.url} aria-current={isCurrent(link.url) ? 'page' : undefined}>{link.text}</a>)}
   </nav>
   <div class="header-actions">
-    <a class="github-link" href="https://github.com/Atharva-G100" aria-label="GitHub profile">
+    <a class="github-link" href="https://github.com/Atharva-G100" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
       <i class="fa-brands fa-github" aria-hidden="true"></i>
     </a>
     <button class="mobile-widgets-btn" id="open-widgets-btn" type="button" aria-label="Open Sidebar" title="Search and widgets" aria-controls="widgets-drawer" aria-expanded="false">
@@ -31,16 +31,44 @@ const isCurrent = (url?: string) => url === '/' ? pathname === '/' : Boolean(url
 </header>
 
 <script>
-  const menu = document.querySelector<HTMLDetailsElement>('.mobile-navigation');
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && menu?.open) {
-      menu.open = false;
-      menu.querySelector('summary')?.focus();
-    }
-  });
-  document.addEventListener('click', event => {
-    if (menu?.open && event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
-  });
+  let cleanupHeader: (() => void) | undefined;
+  function setupHeader() {
+    cleanupHeader?.();
+    const header = document.querySelector<HTMLElement>('.site-header');
+    if (!header) return;
+    const menu = header.querySelector<HTMLDetailsElement>('.mobile-navigation');
+    const controller = new AbortController();
+    const { signal } = controller;
+    let lastY = window.scrollY;
+    const show = () => {
+      header.classList.remove('header-hidden');
+      lastY = window.scrollY;
+    };
+    window.addEventListener('scroll', () => {
+      const y = Math.max(0, Math.min(window.scrollY, document.documentElement.scrollHeight - window.innerHeight));
+      const delta = y - lastY;
+      if (y <= 88 || menu?.open || header.contains(document.activeElement) || header.inert) show();
+      else if (Math.abs(delta) >= 8) {
+        header.classList.toggle('header-hidden', delta > 0);
+        lastY = y;
+      }
+    }, { passive: true, signal });
+    header.addEventListener('focusin', show, { signal });
+    menu?.addEventListener('toggle', show, { signal });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && menu?.open) {
+        menu.open = false;
+        menu.querySelector('summary')?.focus();
+      }
+    }, { signal });
+    document.addEventListener('click', event => {
+      if (menu?.open && event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+    }, { signal });
+    cleanupHeader = () => controller.abort();
+  }
+  setupHeader();
+  document.addEventListener('astro:before-swap', () => cleanupHeader?.());
+  document.addEventListener('astro:after-swap', setupHeader);
 </script>
 
 <style>
@@ -50,7 +78,8 @@ const isCurrent = (url?: string) => url === '/' ? pathname === '/' : Boolean(url
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
     gap: 24px;
     width: calc(100% - 2 * var(--ny-shell-gutter));
@@ -63,20 +92,23 @@ const isCurrent = (url?: string) => url === '/' ? pathname === '/' : Boolean(url
     -webkit-backdrop-filter: blur(18px) saturate(130%);
     backdrop-filter: blur(18px) saturate(130%);
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+    transition: transform 240ms cubic-bezier(0.2, 0.65, 0.3, 1);
   }
-  .site-brand { display: inline-flex; align-items: center; gap: 10px; font-size: var(--ny-font-size-ui); font-weight: 600; text-decoration: none; }
+  .site-header.header-hidden { transform: translate(-50%, calc(-100% - 24px)); pointer-events: none; }
+  .site-header:focus-within { transform: translateX(-50%); pointer-events: auto; }
+  .site-brand { display: inline-flex; justify-self: start; align-items: center; gap: 10px; font-size: var(--ny-font-size-ui); font-weight: 600; text-decoration: none; }
   .site-brand img { display: block; border-radius: var(--ny-radius-sm); }
-  .desktop-navigation { display: flex; align-items: center; gap: 24px; margin-left: auto; }
+  .desktop-navigation { display: flex; justify-self: center; align-items: center; gap: 24px; }
   .desktop-navigation a, .mobile-navigation a { color: #d3deec; font-size: var(--ny-font-size-ui-small); text-decoration: none; }
   .desktop-navigation a:hover, .mobile-navigation a:hover,
   .desktop-navigation a[aria-current], .mobile-navigation a[aria-current] { color: var(--ny-color-outline); }
-  .header-actions { display: flex; align-items: center; gap: 18px; }
+  .header-actions { display: flex; justify-self: end; align-items: center; gap: 18px; }
   .github-link { display: inline-flex; font-size: 18px; text-decoration: none; }
   .mobile-navigation, .mobile-widgets-btn { display: none; }
   .mobile-widgets-btn { align-items: center; justify-content: center; width: 28px; height: 28px; border: 0; background: transparent; color: var(--ny-color-text-muted); cursor: pointer; }
   :focus-visible { outline: 2px solid var(--ny-color-outline); outline-offset: 4px; }
   @media (max-width: 768px) {
-    .site-header { top: 12px; gap: 12px; padding: 8px 12px; }
+    .site-header { display: flex; top: 12px; gap: 12px; padding: 8px 12px; }
     .desktop-navigation { display: none; }
     .header-actions { margin-left: auto; gap: 14px; }
     .mobile-navigation { display: block; }
@@ -88,4 +120,5 @@ const isCurrent = (url?: string) => url === '/' ? pathname === '/' : Boolean(url
     .mobile-navigation nav a { padding: 10px 14px; }
   }
   @media (max-width: 360px) { .site-brand span { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .site-header { transition: none; } }
 </style>
