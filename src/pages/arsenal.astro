@@ -622,7 +622,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   referrerpolicy="no-referrer">
 </script>
 
-<script is:inline>
+<script is:inline data-astro-rerun>
   // --- UI Interactions ───
   // Top View Switching (Local vs Satellite)
   document.querySelectorAll('.hud-tab').forEach(tab => {
@@ -741,12 +741,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   }
 
   // Keep menu open on desktop by default
-  document.addEventListener('DOMContentLoaded', () => {
+  (() => {
     if (window.innerWidth > 900) {
       const menu = document.getElementById('arsenal-menu');
       if (menu) menu.setAttribute('open', '');
     }
-  });
+  })();
 
   // --- Tool: ROT Cipher ---
   function rotRun(mode) {
