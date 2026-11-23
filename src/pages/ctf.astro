@@ -1,198 +1,275 @@
-﻿---
-import { getCollection } from "astro:content";
-
-const allWriteups = await getCollection("ctf").catch(() => []);
-
-const DIFFICULTY_TAGS = ["Easy", "Medium", "Hard", "Insane", "easy", "medium", "hard", "insane"];
-
-const sortedWriteups = allWriteups
-  .sort((a, b) => new Date(b.data.date || 0).getTime() - new Date(a.data.date || 0).getTime())
-  .map((entry, index, arr) => {
-    const tags = entry.data.tags || [];
-    const difficulty = tags.find(t => DIFFICULTY_TAGS.includes(t)) || "—";
-    const category = tags.find(t => !DIFFICULTY_TAGS.includes(t)) || "—";
-    const date = entry.data.date ? new Date(entry.data.date) : null;
-    const formattedDate = date
-      ? date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase()
-      : "—";
-    const id = String(arr.length - index).padStart(3, "0");
-    return { entry, id, difficulty, category, formattedDate };
-  });
-
-const platforms = [...new Set(sortedWriteups.map(w => w.entry.data.ctf).filter(Boolean))];
-const categories = [...new Set(sortedWriteups.map(w => w.category).filter(c => c !== "—"))];
-const difficulties = ["Easy", "Medium", "Hard", "Insane"];
-
-const buildVersion = Date.now().toString(36);
 ---
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="CTF Writeups — Documented security research and CTF operations by VALAK." />
-  <title>Writeups | The False Positive</title>
-  <link rel="icon" type="image/png" href="/favicon.png" />
-  <link rel="stylesheet" href={`/styles/theme.css?v=${buildVersion}`} />
-  <link rel="stylesheet" href={`/styles/ops.css?v=${buildVersion}`} />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
-</head>
-<body>
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostList from '../theme/layouts/widgets/post-list/PostList.astro';
+import Input from '../theme/layouts/components/Input.astro';
+import CoverImage from '../theme/layouts/components/Image.astro';
+import ctfCover from '../assets/writeups-ctf-night.png';
+import machinesCover from '../assets/writeups-machines-night.png';
+import { getPosts } from '../theme/assets/utils/posts';
 
-<div class="ops-page">
+const posts = (await getPosts()).sort((a, b) => b.data.publishDate.localeCompare(a.data.publishDate));
+const tags = [...new Set(posts.flatMap(post => post.data.tags))].sort();
+const ctfPosts = posts.filter(post => post.data.category === 'ctf');
+const machinePosts = posts.filter(post => post.data.category === 'machine');
+const eventNames = [...new Set(ctfPosts.map(post => post.data.ctf?.trim() || 'Other'))];
+const events = eventNames.map(name => ({
+  category: 'ctf', name, label: name, categoryLabel: 'CTFs',
+  posts: ctfPosts.filter(post => (post.data.ctf?.trim() || 'Other') === name),
+}));
+const groups = [
+  ...events,
+  { category: 'machine', name: '', label: 'Machines', categoryLabel: 'Machines', posts: machinePosts },
+];
+const categories = [
+  { value: 'ctf', label: 'CTFs', cover: ctfCover, count: ctfPosts.length },
+  { value: 'machine', label: 'Machines', cover: machinesCover, count: machinePosts.length },
+];
+const coverWavePath = 'M0 40 C167 0 333 0 500 40 S833 80 1000 40 S1333 0 1500 40 S1833 80 2000 40 V144 H0 Z';
+const browseHref = (category: string, group?: string) => {
+  const params = new URLSearchParams({ category });
+  if (group) params.set('group', group);
+  return `/ctf?${params}`;
+};
+---
+<BaseLayout title="Writeups" activePage="ctf" description="CTF competition writeups and machine walkthroughs.">
+  <h1 id="archive-title">Writeups</h1>
+  <p id="archive-description">Browse CTF competitions and machine walkthroughs.</p>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar-rail" aria-label="Primary Navigation">
-    <a href="/" class="rail-logo" style="border:none;outline:none;">
-      <img src="/assets/V_logo.png" alt="VALAK" />
-    </a>
-    <div class="rail-logo-divider"></div>
-    <nav class="rail-nav">
-      <a href="/" class="rail-nav-item"><span class="rail-nav-num">01</span><span class="rail-nav-label">HOME</span></a>
-      <a href="/ctf" class="rail-nav-item active"><span class="rail-nav-num">02</span><span class="rail-nav-label">WRITEUPS</span></a>
-      <a href="/pentest" class="rail-nav-item"><span class="rail-nav-num">03</span><span class="rail-nav-label">BLOG</span></a>
-      <a href="/arsenal" class="rail-nav-item"><span class="rail-nav-num">04</span><span class="rail-nav-label">TOOLS</span></a>
-      <a href="/news" class="rail-nav-item"><span class="rail-nav-num">05</span><span class="rail-nav-label">RESEARCH</span></a>
-      <a href="/about" class="rail-nav-item"><span class="rail-nav-num">06</span><span class="rail-nav-label">ABOUT</span></a>
-    </nav>
-    <div class="rail-socials">
-      <a href="https://github.com/Atharva-G100" class="rail-social-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-        <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
-      </a>
-      <a href="https://www.linkedin.com/in/atharva-gawas-valak/" class="rail-social-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-        <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-      </a>
-      <a href="mailto:gawasatharva8@gmail.com" class="rail-social-link" aria-label="Email">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-      </a>
-    </div>
-  </aside>
+  <form id="archive-filters" role="search" aria-label="Search writeups">
+    <Input id="writeup-filter" type="search" aria-label="Search writeups" placeholder="Search title, tag or event..." />
+    <select id="filter-tag" aria-label="Tag"><option value="">All tags</option>{tags.map(tag => <option>{tag}</option>)}</select>
+    <button type="reset">Clear</button>
+  </form>
 
-  <!-- MAIN -->
-  <main class="ops-main">
+  <nav id="archive-path" aria-label="Writeup hierarchy" hidden>
+    <a href="/ctf" data-archive-link>All writeups</a>
+    <span id="category-path" hidden> / <a id="category-crumb" href="/ctf" data-archive-link></a></span>
+    <span id="group-path" hidden> / <span id="group-crumb" aria-current="page"></span></span>
+  </nav>
 
-    <!-- Page header -->
-    <div class="ops-header">
-      <div class="ops-eyebrow">WRITEUPS</div>
-      <p class="ops-subtitle">Documented security research and CTF writeups.</p>
-    </div>
+  <div class="archive-status-row">
+    <p id="archive-status" role="status">{posts.length} writeups</p>
+    <button id="wave-motion-toggle" type="button" aria-controls="category-tiles" hidden>Play waves</button>
+  </div>
 
-    <!-- Filter bar -->
-    <div class="ops-filter-bar">
-      <select class="ops-filter-select" id="filter-platform">
-        <option value="">PLATFORM</option>
-        {platforms.map(p => <option value={p}>{p.toUpperCase()}</option>)}
-      </select>
-      <select class="ops-filter-select" id="filter-category">
-        <option value="">CATEGORY</option>
-        {categories.map(c => <option value={c}>{c.toUpperCase()}</option>)}
-      </select>
-      <select class="ops-filter-select" id="filter-difficulty">
-        <option value="">DIFFICULTY</option>
-        {difficulties.map(d => <option value={d}>{d.toUpperCase()}</option>)}
-      </select>
-      <select class="ops-filter-select" id="filter-status">
-        <option value="">STATUS</option>
-        <option value="complete">COMPLETE</option>
-      </select>
-      <div class="ops-search-wrapper">
-        <input type="text" class="ops-search" id="search-input" placeholder="SEARCH..." autocomplete="off" />
-        <svg class="ops-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-      </div>
-    </div>
-
-    <!-- Table -->
-    <div class="ops-table-wrapper">
-      <!-- Header row -->
-      <div class="ops-table-head">
-        <span class="col-id">#</span>
-        <span class="col-name">Title</span>
-        <span class="col-platform">Platform</span>
-        <span class="col-category">Category</span>
-        <span class="col-difficulty">Difficulty</span>
-        <span class="col-date">Date</span>
-        <span class="col-status">Status</span>
-        <span class="col-arrow"></span>
-      </div>
-
-      <!-- Data rows -->
-      <div class="ops-table-body" id="ops-table-body">
-        {sortedWriteups.map(({ entry, id, difficulty, category, formattedDate }) => (
-          <a
-            href={`/ctf/${entry.slug}`}
-            class="ops-row"
-            data-platform={entry.data.ctf || ""}
-            data-category={category}
-            data-difficulty={difficulty}
-            data-title={entry.data.title}
-          >
-            <span class="col-id op-id">{id}</span>
-            <span class="col-name op-name">{entry.data.title.toUpperCase()}</span>
-            <span class="col-platform op-platform">{(entry.data.ctf || "—").toUpperCase()}</span>
-            <span class="col-category op-category">{category.toUpperCase()}</span>
-            <span class="col-difficulty op-difficulty">{difficulty.toUpperCase()}</span>
-            <span class="col-date op-date">{formattedDate}</span>
-            <span class="col-status op-status">COMPLETE</span>
-            <span class="col-arrow op-arrow">&rarr;</span>
-          </a>
-        ))}
-
-        <!-- Empty state -->
-        <div class="ops-empty" id="ops-empty" style="display:none;">
-          <span>NO OPERATIONS MATCH CURRENT FILTERS</span>
+  <div id="category-tiles" class="tile-grid" data-wave-motion="paused">
+    {categories.map(category => (
+      <a class="category-cover-link" href={browseHref(category.value)} data-archive-link data-category={category.value} data-category-label={category.label}>
+        <div class="cover-art">
+          <CoverImage src={category.cover} alt="" ratio="16 / 9" lightbox={false} />
+          <div class="cover-footer">
+            <svg class="cover-wave" viewBox="0 0 1000 112" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+              <g class="cover-wave-layer cover-wave-back"><path d={coverWavePath} transform="translate(0 -8)" /></g>
+              <g class="cover-wave-layer cover-wave-middle"><path d={coverWavePath} /></g>
+              <g class="cover-wave-layer cover-wave-front"><path d={coverWavePath} transform="translate(0 12)" /></g>
+            </svg>
+            <h2>{category.label}</h2>
+            <span class="cover-count">{category.count} {category.count === 1 ? 'writeup' : 'writeups'}</span>
+          </div>
         </div>
-      </div>
+      </a>
+    ))}
+  </div>
+
+    <div id="ctf-events" class="event-list" hidden>
+      {events.map(event => (
+        <a class="event-link" href={browseHref('ctf', event.name)} data-archive-link>
+          <span class="event-name">{event.label}</span>
+          <span class="event-count">{event.posts.length} {event.posts.length === 1 ? 'writeup' : 'writeups'}</span>
+        </a>
+      ))}
     </div>
 
-  </main>
-</div>
+  <p id="archive-empty" hidden>No writeups match these filters.</p>
+  <div id="writeup-lists" hidden>
+    {groups.map(group => (
+      <section class="writeup-group" data-category={group.category} data-group={group.name} data-group-label={group.label} data-category-label={group.categoryLabel} hidden>
+        <header class="writeup-group-heading">
+          {group.category === 'ctf' && <p class="group-category">{group.categoryLabel}</p>}
+          <h2>{group.label}</h2>
+        </header>
+        <PostList posts={group.posts} />
+      </section>
+    ))}
+  </div>
+  <noscript>
+    <p>All writeups:</p>
+    <ul>{posts.map(post => <li><a href={post.href}>{post.data.title}</a></li>)}</ul>
+  </noscript>
+</BaseLayout>
 
 <script>
-  const platformFilter = document.getElementById('filter-platform') as HTMLSelectElement;
-  const categoryFilter = document.getElementById('filter-category') as HTMLSelectElement;
-  const difficultyFilter = document.getElementById('filter-difficulty') as HTMLSelectElement;
-  const statusFilter = document.getElementById('filter-status') as HTMLSelectElement;
-  const searchInput = document.getElementById('search-input') as HTMLInputElement;
-  const rows = document.querySelectorAll('.ops-row') as NodeListOf<HTMLElement>;
-  const emptyState = document.getElementById('ops-empty') as HTMLElement;
+  const form = document.querySelector<HTMLFormElement>('#archive-filters')!;
+  const search = document.querySelector<HTMLInputElement>('#writeup-filter')!;
+  const tag = document.querySelector<HTMLSelectElement>('#filter-tag')!;
+  const title = document.querySelector<HTMLElement>('#archive-title')!;
+  const description = document.querySelector<HTMLElement>('#archive-description')!;
+  const categoryTiles = document.querySelector<HTMLElement>('#category-tiles')!;
+  const waveMotionToggle = document.querySelector<HTMLButtonElement>('#wave-motion-toggle')!;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let waveMotionChoice: string | null = null;
+  try { waveMotionChoice = sessionStorage.getItem('writeup-wave-motion'); } catch {}
+  function updateWaveMotion() {
+    const playing = waveMotionChoice ? waveMotionChoice === 'playing' : !reducedMotion.matches;
+    categoryTiles.dataset.waveMotion = playing ? 'playing' : 'paused';
+    waveMotionToggle.textContent = playing ? 'Pause waves' : 'Play waves';
+  }
+  waveMotionToggle.addEventListener('click', () => {
+    waveMotionChoice = categoryTiles.dataset.waveMotion === 'playing' ? 'paused' : 'playing';
+    try { sessionStorage.setItem('writeup-wave-motion', waveMotionChoice); } catch {}
+    updateWaveMotion();
+  });
+  reducedMotion.addEventListener('change', updateWaveMotion);
+  updateWaveMotion();
+  const categoryLinks = [...categoryTiles.querySelectorAll<HTMLAnchorElement>('[data-category]')];
+  const events = document.querySelector<HTMLElement>('#ctf-events')!;
+  const groups = [...document.querySelectorAll<HTMLElement>('.writeup-group')];
+  const lists = document.querySelector<HTMLElement>('#writeup-lists')!;
+  const empty = document.querySelector<HTMLElement>('#archive-empty')!;
+  const status = document.querySelector<HTMLElement>('#archive-status')!;
+  const path = document.querySelector<HTMLElement>('#archive-path')!;
+  const categoryPath = document.querySelector<HTMLElement>('#category-path')!;
+  const categoryCrumb = document.querySelector<HTMLAnchorElement>('#category-crumb')!;
+  const groupPath = document.querySelector<HTMLElement>('#group-path')!;
+  const groupCrumb = document.querySelector<HTMLElement>('#group-crumb')!;
+  const baseTitle = document.title;
 
-  function applyFilters() {
-    const platform = platformFilter.value.toLowerCase();
-    const category = categoryFilter.value.toLowerCase();
-    const difficulty = difficultyFilter.value.toLowerCase();
-    const search = searchInput.value.toLowerCase();
+  function readState(url: URL) {
+    const category = categoryLinks.find(link => link.dataset.category === url.searchParams.get('category'))?.dataset.category ?? '';
+    const group = category === 'ctf' ? groups.find(group => group.dataset.category === category && group.dataset.group === url.searchParams.get('group'))?.dataset.group ?? '' : '';
+    const requestedTag = url.searchParams.get('tag') ?? '';
+    return {
+      category,
+      group,
+      q: url.searchParams.get('q') ?? '',
+      tag: [...tag.options].some(option => option.value === requestedTag) ? requestedTag : '',
+    };
+  }
+  let state = readState(new URL(location.href));
 
-    let visibleCount = 0;
+  function render() {
+    search.value = state.q;
+    tag.value = state.tag;
+    const selectedCategory = categoryLinks.find(link => link.dataset.category === state.category);
+    const selectedGroup = state.group ? groups.find(group => group.dataset.category === state.category && group.dataset.group === state.group) : undefined;
+    const categoryLabel = selectedCategory?.dataset.categoryLabel ?? '';
+    const groupLabel = selectedGroup?.dataset.groupLabel ?? '';
+    const filtering = Boolean(state.q.trim() || state.tag);
+    const showingPosts = state.category === 'machine' || Boolean(state.group || filtering);
+    const query = state.q.trim().toLowerCase();
+    let count = 0;
 
-    rows.forEach(row => {
-      const rowPlatform = (row.dataset.platform || '').toLowerCase();
-      const rowCategory = (row.dataset.category || '').toLowerCase();
-      const rowDifficulty = (row.dataset.difficulty || '').toLowerCase();
-      const rowTitle = (row.dataset.title || '').toLowerCase();
+    for (const group of groups) {
+      const inScope = (!state.category || group.dataset.category === state.category) && (!state.group || group.dataset.group === state.group);
+      let groupCount = 0;
+      for (const post of group.querySelectorAll<HTMLElement>('.post-summary')) {
+        const text = `${post.textContent} ${post.dataset.tags ?? ''} ${post.dataset.platform ?? ''} ${group.dataset.groupLabel} ${group.dataset.categoryLabel}`.toLowerCase();
+        const matches = inScope && (!state.tag || JSON.parse(post.dataset.tags || '[]').includes(state.tag)) && text.includes(query);
+        post.hidden = !matches;
+        if (matches) groupCount++;
+      }
+      group.hidden = !showingPosts || groupCount === 0;
+      group.querySelector<HTMLElement>('.writeup-group-heading')!.hidden = Boolean(state.group) || state.category === 'machine';
+      count += groupCount;
+    }
 
-      const matchPlatform = !platform || rowPlatform === platform.toLowerCase() || rowPlatform.includes(platform);
-      const matchCategory = !category || rowCategory === category;
-      const matchDifficulty = !difficulty || rowDifficulty === difficulty;
-      const matchSearch = !search || rowTitle.includes(search);
+    categoryTiles.hidden = Boolean(state.category || showingPosts);
+    waveMotionToggle.hidden = categoryTiles.hidden;
+    events.hidden = showingPosts || state.category !== 'ctf';
+    lists.hidden = !showingPosts;
+    empty.hidden = !showingPosts || count > 0;
+    empty.textContent = filtering ? 'No writeups match these filters.' : 'No writeups published here yet.';
+    title.textContent = groupLabel || categoryLabel || 'Writeups';
+    description.textContent = state.group
+      ? 'Challenge writeups from this competition.'
+      : state.category === 'ctf' ? 'Choose a competition to browse its writeups.'
+      : state.category === 'machine' ? 'Machine walkthroughs and lab notes.'
+      : 'Browse CTF competitions and machine walkthroughs.';
+    document.title = groupLabel || categoryLabel ? `${groupLabel || categoryLabel} | ${baseTitle}` : baseTitle;
 
-      const visible = matchPlatform && matchCategory && matchDifficulty && matchSearch;
-      row.style.display = visible ? '' : 'none';
-      if (visible) visibleCount++;
-    });
-
-    emptyState.style.display = visibleCount === 0 ? 'flex' : 'none';
+    path.hidden = !state.category && !filtering;
+    categoryPath.hidden = !state.category;
+    categoryCrumb.textContent = categoryLabel;
+    categoryCrumb.href = `/ctf?${new URLSearchParams({ category: state.category })}`;
+    if (!state.group) categoryCrumb.setAttribute('aria-current', 'page');
+    else categoryCrumb.removeAttribute('aria-current');
+    groupPath.hidden = !state.group;
+    groupCrumb.textContent = groupLabel;
+    const grouping = !showingPosts && state.category === 'ctf' ? ` · ${events.querySelectorAll('.event-link').length} events` : '';
+    status.textContent = `${count} ${count === 1 ? 'writeup' : 'writeups'}${grouping}`;
   }
 
-  platformFilter.addEventListener('change', applyFilters);
-  categoryFilter.addEventListener('change', applyFilters);
-  difficultyFilter.addEventListener('change', applyFilters);
-  statusFilter.addEventListener('change', applyFilters);
-  searchInput.addEventListener('input', applyFilters);
+  function navigate(url: URL) {
+    if (url.href !== location.href) history.pushState(null, '', url);
+    state = readState(url);
+    render();
+    title.focus({ preventScroll: true });
+  }
+  title.tabIndex = -1;
+  document.querySelectorAll<HTMLAnchorElement>('[data-archive-link]').forEach(link => {
+    link.addEventListener('click', event => {
+      if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      navigate(new URL(link.href));
+    });
+  });
+  function updateFilters() {
+    state.q = search.value;
+    state.tag = tag.value;
+    const url = new URL(location.href);
+    if (state.q) url.searchParams.set('q', state.q);
+    else url.searchParams.delete('q');
+    if (state.tag) url.searchParams.set('tag', state.tag);
+    else url.searchParams.delete('tag');
+    history.replaceState(null, '', url);
+    render();
+  }
+  form.addEventListener('submit', event => event.preventDefault());
+  form.addEventListener('input', updateFilters);
+  form.addEventListener('reset', () => requestAnimationFrame(updateFilters));
+  window.addEventListener('popstate', () => { state = readState(new URL(location.href)); render(); });
+  render();
 </script>
 
-</body>
-</html>
-
-
+<style>
+  #archive-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 24px 0 20px; }
+  #archive-filters :global(input) { flex: 1 1 260px; min-width: 0; width: auto; height: 36px; font-size: var(--ny-font-size-meta); }
+  select, button { font-family: var(--ny-font-ui); font-size: var(--ny-font-size-meta); line-height: var(--ny-line-height-ui); color: var(--ny-color-text-muted); background: var(--ny-color-surface-container); border: 1px solid var(--ny-color-border); border-radius: var(--ny-radius-sm); padding: 7px 10px; }
+  button { cursor: pointer; }
+  #archive-path { margin: 24px 0 16px; color: var(--ny-color-text-subtle); font-size: var(--ny-font-size-meta); line-height: var(--ny-line-height-prose); overflow-wrap: anywhere; }
+  #archive-path a { color: var(--ny-color-text-muted); }
+  #archive-status { margin: 16px 0; color: var(--ny-color-text-subtle); font-size: var(--ny-font-size-meta); }
+  .archive-status-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  #wave-motion-toggle { padding: 4px 8px; background: transparent; border-color: transparent; }
+  #wave-motion-toggle:hover { color: var(--ny-color-outline); }
+  #wave-motion-toggle:focus-visible { outline: 2px solid var(--ny-color-outline); outline-offset: 2px; }
+  .tile-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 20px; }
+  .category-cover-link { display: block; min-width: 0; text-decoration: none !important; }
+  .cover-art { position: relative; overflow: hidden; border-radius: var(--ny-radius-md); background: var(--ny-color-surface); }
+  .cover-art :global(nayuta-image) { display: block; width: 100%; border: 0; border-radius: 0; }
+  .cover-art :global(nayuta-image[data-fixed-ratio] img) { object-position: center; }
+  .cover-footer { position: relative; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: -1px; padding: 10px 18px 16px; background: var(--ny-color-surface-container); }
+  .cover-wave { position: absolute; left: 0; bottom: calc(100% - 1px); width: 100%; height: 56px; overflow: hidden; pointer-events: none; }
+  .cover-wave-layer { fill: var(--ny-color-surface-container); transform-box: fill-box; animation: cover-wave-drift 8.5s linear infinite; animation-play-state: paused; }
+  #category-tiles[data-wave-motion="playing"] .cover-wave-layer { animation-play-state: running; }
+  .cover-wave-back { fill: color-mix(in srgb, var(--ny-color-outline) 32%, var(--ny-color-surface-container)); opacity: 0.68; animation-duration: 4.5s; animation-delay: -1.2s; animation-direction: reverse; }
+  .cover-wave-middle { fill: color-mix(in srgb, var(--ny-color-primary) 22%, var(--ny-color-surface-container)); opacity: 0.88; animation-duration: 6.5s; animation-delay: -3.4s; }
+  .cover-wave-front { animation-delay: -5.7s; animation-direction: reverse; }
+  @keyframes cover-wave-drift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .cover-footer h2 { margin: 0; padding: 0; border: 0; color: var(--ny-color-text); font-size: var(--ny-font-size-heading); font-weight: 500; line-height: var(--ny-line-height-heading); }
+  .cover-count { flex-shrink: 0; color: var(--ny-color-text-muted); font-size: var(--ny-font-size-ui-small); }
+  .event-count { color: var(--ny-color-text-subtle); font-size: var(--ny-font-size-meta); }
+  .category-cover-link:hover h2, .event-link:hover .event-name { color: var(--ny-color-outline); text-decoration: underline; text-underline-offset: 4px; }
+  .category-cover-link:focus-visible, .event-link:focus-visible { outline: 2px solid var(--ny-color-outline); outline-offset: 4px; }
+  .event-list { margin-top: 24px; border-top: 1px solid var(--ny-color-border); }
+  .event-link { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--ny-color-border); text-decoration: none !important; }
+  .event-name { font-size: var(--ny-font-size-prose); }
+  .event-count { flex-shrink: 0; }
+  .writeup-group + .writeup-group { margin-top: 40px; }
+  .group-category { margin: 28px 0 8px; color: var(--ny-color-text-subtle); font-size: var(--ny-font-size-meta); }
+  .writeup-group-heading h2 { margin-top: 0; }
+  .writeup-group :global(.post-list) { margin-top: 20px; }
+  #archive-title:focus { outline: none; }
+  [hidden], :global(.post-summary[hidden]) { display: none !important; }
+  @media (max-width: 600px) { .tile-grid { grid-template-columns: minmax(0, 1fr); } }
+</style>
