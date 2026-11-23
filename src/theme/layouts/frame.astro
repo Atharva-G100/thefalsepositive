@@ -11,6 +11,7 @@ import RightSidebar from './right-sidebar.astro';
 import SidebarFooter from './sidebar-footer.astro';
 import TableOfContents from '../widgets/sidebar/TableOfContents.astro';
 import Left from '../widgets/sidebar/SiteWidgets.astro';
+import PageTools from '../../layouts/PageTools.astro';
 import '../assets/styles/global.css';
 
 interface Props {
@@ -56,7 +57,7 @@ const rightSidebarLabel = 'Table of Contents';
       )}
 
       <!-- Main Region -->
-      <main id="reading-start" class="main-region" tabindex="-1">
+      <main id="reading-start" class="main-region" data-reading-content={isPost || undefined} tabindex="-1">
         <nav class="breadcrumbs" aria-label="Breadcrumb">
           {breadcrumbs.map((crumb, idx) => (
             <Fragment>
@@ -101,6 +102,7 @@ const rightSidebarLabel = 'Table of Contents';
         <span class="btn-bracket">]</span>
       </button>
     )}
+    <PageTools aboveContextButton={withRightSidebar} />
     <ImageLightbox />
 
     <!-- Pure JS for drawer transitions (Progressive Enhancement) -->
@@ -124,6 +126,7 @@ const rightSidebarLabel = 'Table of Contents';
           document.querySelector<HTMLElement>('.layout-container'),
           document.querySelector<HTMLElement>('.site-header'),
           document.getElementById('open-context-btn'),
+          document.querySelector<HTMLElement>('nayuta-page-tools'),
         ];
         function close(restoreFocus = true) {
           if (!active) return;
