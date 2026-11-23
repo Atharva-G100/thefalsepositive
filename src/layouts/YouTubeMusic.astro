@@ -1,0 +1,601 @@
+---
+import { musicTracks } from '../theme/music';
+import { Image } from 'astro:assets';
+import nightSky from '../assets/home-night-sky-sharp.png';
+
+for (const track of musicTracks) {
+  if (!/^[A-Za-z0-9_-]{11}$/.test(track.youtubeId)) {
+    throw new Error(`Invalid YouTube video ID for music track: ${track.title}`);
+  }
+}
+const first = musicTracks[0];
+---
+
+{first ? (
+  <nayuta-youtube-music>
+    <select id="music-track" aria-label="Track" hidden>
+      {musicTracks.map(track => <option value={track.youtubeId} data-artist={track.artist ?? ''}>{track.title}</option>)}
+    </select>
+    <div class="now-playing">
+      <Image src={nightSky} width={640} format="webp" quality={75} alt="" class="music-sky" loading="lazy" />
+      <div class="record" aria-hidden="true"><div class="record-label"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M6 6l12 12M6 18 18 6" /></svg></div></div>
+      <div class="track-meta">
+        <h3 data-track-title>{first.title}</h3>
+        <p data-track-artist>{first.artist || 'From your playlist'}</p>
+      </div>
+    </div>
+    <div class="music-progress">
+      <input type="range" data-seek aria-label="Playback position" min="0" max="0" step="1" value="0" disabled />
+      <div class="music-times"><span data-current-time>0:00</span><span data-duration>0:00</span></div>
+    </div>
+    <div class="playback-row">
+    <div class="music-controls" role="group" aria-label="Playback">
+      <button type="button" data-previous aria-label="Previous track" title="Previous track"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5l-10 7 10 7Z" /></svg></button>
+      <button type="button" class="play-button" data-play aria-label="Play music" title="Play music" aria-pressed="false">
+        <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z" /></svg>
+        <svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" /></svg>
+      </button>
+      <button type="button" data-next aria-label="Next track" title="Next track"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M6 5l10 7-10 7Z" /></svg></button>
+    </div>
+    <label class="volume-row"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m11 5-6 4H2v6h3l6 4ZM15 8a6 6 0 0 1 0 8M18 5a10 10 0 0 1 0 14" /></svg><span class="sr-only">Volume</span><input type="range" data-volume aria-label="Volume" min="0" max="100" value="10" /><output data-volume-value>10%</output></label>
+    </div>
+    <details class="music-queue">
+    <summary class="playlist-heading"><span>Playlist</span><span>{String(musicTracks.length).padStart(2, '0')} tracks <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg></span></summary>
+    <ol class="music-playlist" aria-label="Music playlist">
+      {musicTracks.map((track, index) => <li><button type="button" data-track-index={index} aria-current={index === 0 ? 'true' : undefined}>
+        <span class="track-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+        <span class="playlist-track"><span>{track.title}</span>{track.artist && <small>{track.artist}</small>}</span>
+        <span class="track-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      </button></li>)}
+    </ol>
+    </details>
+    <p class="player-status" data-music-status role="status">Starting softly at 10%…</p>
+  </nayuta-youtube-music>
+) : <p class="music-empty">A little music is on its way.</p>}
+
+<script>
+  interface YouTubePlayer {
+    loadVideoById(video: { videoId: string; startSeconds: number }): void;
+    cueVideoById(id: string): void;
+    playVideo(): void;
+    pauseVideo(): void;
+    seekTo(seconds: number, allowSeekAhead: boolean): void;
+    setVolume(volume: number): void;
+    unMute(): void;
+    getCurrentTime(): number;
+    getDuration(): number;
+    getVideoUrl(): string;
+    getIframe(): HTMLIFrameElement;
+    destroy(): void;
+  }
+  interface YouTubeEvent { target: YouTubePlayer; data: number; }
+  interface YouTubeApi {
+    Player: new (element: HTMLElement, options: {
+      events: {
+        onReady(event: YouTubeEvent): void;
+        onStateChange(event: YouTubeEvent): void;
+        onError(event: YouTubeEvent): void;
+        onAutoplayBlocked(): void;
+      };
+    }) => YouTubePlayer;
+  }
+  const youtubeWindow = window as Window & { YT?: YouTubeApi; onYouTubeIframeAPIReady?: () => void };
+  let apiPromise: Promise<YouTubeApi> | undefined;
+
+  function loadYouTubeApi(): Promise<YouTubeApi> {
+    if (youtubeWindow.YT?.Player) return Promise.resolve(youtubeWindow.YT);
+    if (apiPromise) return apiPromise;
+    apiPromise = new Promise<YouTubeApi>((resolve, reject) => {
+      const previousCallback = youtubeWindow.onYouTubeIframeAPIReady;
+      const script = document.createElement('script');
+      let timeout: ReturnType<typeof setTimeout>;
+      const restoreCallback = () => {
+        clearTimeout(timeout);
+        if (youtubeWindow.onYouTubeIframeAPIReady === onReady) youtubeWindow.onYouTubeIframeAPIReady = previousCallback;
+      };
+      const fail = () => {
+        restoreCallback();
+        script.remove();
+        reject(new Error('YouTube could not load. Check your connection and try again.'));
+      };
+      const onReady = () => {
+        restoreCallback();
+        if (youtubeWindow.YT?.Player) resolve(youtubeWindow.YT);
+        else reject(new Error('YouTube could not initialize. Try again.'));
+        previousCallback?.();
+      };
+      youtubeWindow.onYouTubeIframeAPIReady = onReady;
+      script.src = 'https://www.youtube.com/iframe_api';
+      script.async = true;
+      script.dataset.astroExec = '';
+      script.addEventListener('error', fail, { once: true });
+      timeout = setTimeout(fail, 15000);
+      // The page router swaps the head; keep the in-flight SDK outside that region too.
+      document.body.append(script);
+    }).catch(error => { apiPromise = undefined; throw error; });
+    return apiPromise;
+  }
+
+  function formatTime(seconds: number): string {
+    const time = Number.isFinite(seconds) ? Math.max(0, Math.floor(seconds)) : 0;
+    return `${Math.floor(time / 60)}:${String(time % 60).padStart(2, '0')}`;
+  }
+
+  class NayutaYouTubeMusic extends HTMLElement {
+    private controller?: AbortController;
+    private dispose?: () => void;
+
+    connectedCallback() {
+      this.dispose?.();
+      this.controller?.abort();
+      this.controller = new AbortController();
+      const { signal } = this.controller;
+      const select = this.querySelector<HTMLSelectElement>('#music-track')!;
+      const playButton = this.querySelector<HTMLButtonElement>('[data-play]')!;
+      const seek = this.querySelector<HTMLInputElement>('[data-seek]')!;
+      const volume = this.querySelector<HTMLInputElement>('[data-volume]')!;
+      const volumeValue = this.querySelector<HTMLOutputElement>('[data-volume-value]')!;
+      const currentTime = this.querySelector<HTMLElement>('[data-current-time]')!;
+      const duration = this.querySelector<HTMLElement>('[data-duration]')!;
+      const status = this.querySelector<HTMLElement>('[data-music-status]')!;
+      const trackTitle = this.querySelector<HTMLElement>('[data-track-title]')!;
+      const trackArtist = this.querySelector<HTMLElement>('[data-track-artist]')!;
+      const trackButtons = [...this.querySelectorAll<HTMLButtonElement>('[data-track-index]')];
+      let enabled = true;
+      try {
+        const stored = JSON.parse(sessionStorage.getItem('nayuta-music-preferences') || 'null');
+        if (typeof stored?.enabled === 'boolean') enabled = stored.enabled;
+        if (typeof stored?.volume === 'number' && Number.isFinite(stored.volume) && stored.volume >= 0 && stored.volume <= 100) {
+          volume.value = String(stored.version !== 2 && stored.volume === 30 ? 10 : stored.volume);
+        }
+      } catch { /* Keep defaults when session storage is unavailable. */ }
+      const saveMusicPreferences = () => {
+        try { sessionStorage.setItem('nayuta-music-preferences', JSON.stringify({ version: 2, enabled, volume: volume.valueAsNumber })); } catch { /* Playback still works without storage. */ }
+      };
+      let player: YouTubePlayer | undefined;
+      let host: HTMLElement | undefined;
+      let ready = false;
+      let initializing = false;
+      let wantsPlay = false;
+      let playing = false;
+      let failed = false;
+      let autoplayBlocked = false;
+      let automaticAttempt = false;
+      let autoStartPending = enabled;
+      let interactionRetryUsed = false;
+      let loadedId = '';
+      let requestVersion = 0;
+      let position = 0;
+      let pendingSeek: number | undefined;
+      let seekRequested = false;
+      let suspended = false;
+      let resumeOnReturn = false;
+      let progressTimer: ReturnType<typeof setInterval> | undefined;
+      let startupTimer: ReturnType<typeof setTimeout> | undefined;
+
+      const syncTrackDetails = () => {
+        trackTitle.textContent = select.selectedOptions[0].textContent;
+        trackArtist.textContent = select.selectedOptions[0].dataset.artist || 'From your playlist';
+        trackButtons.forEach((button, index) => button.setAttribute('aria-current', String(index === select.selectedIndex)));
+        if (ready) player!.getIframe().title = `${trackTitle.textContent} — YouTube playback`;
+      };
+      const restorePosition = () => {
+        try {
+          const saved = JSON.parse(sessionStorage.getItem('nayuta-music-position') || 'null');
+          if (![...select.options].some(option => option.value === saved?.id)) return;
+          select.value = saved.id;
+          position = typeof saved.time === 'number' && Number.isFinite(saved.time) ? Math.max(0, saved.time) : 0;
+          pendingSeek = position;
+          seekRequested = false;
+        } catch { /* The current player keeps its position when storage is unavailable. */ }
+      };
+      const matchesSelectedTrack = () => {
+        if (!ready || !player || loadedId !== select.value) return false;
+        const url = player.getVideoUrl();
+        try { return new URL(url).searchParams.get('v') === select.value; }
+        catch { return false; }
+      };
+      const capturePosition = () => {
+        if (!matchesSelectedTrack() || pendingSeek !== undefined) return;
+        const elapsed = player!.getCurrentTime();
+        if (Number.isFinite(elapsed) && elapsed >= 0) position = elapsed;
+      };
+      const savePosition = () => {
+        try { sessionStorage.setItem('nayuta-music-position', JSON.stringify({ id: select.value, time: position })); }
+        catch { /* Same-page pause and resume still work without storage. */ }
+      };
+      const render = () => {
+        const active = playing || wantsPlay;
+        playButton.setAttribute('aria-pressed', String(active));
+        playButton.setAttribute('aria-label', active ? 'Pause music' : failed ? 'Retry music' : 'Play music');
+        playButton.title = playButton.getAttribute('aria-label')!;
+        this.dataset.playing = String(playing);
+        const state = failed ? 'error' : autoplayBlocked ? 'blocked' : playing ? 'playing' : wantsPlay ? 'loading' : 'paused';
+        this.dataset.state = state;
+        this.dispatchEvent(new CustomEvent('nayuta:music-state', { bubbles: true, detail: { state, volume: volume.valueAsNumber } }));
+      };
+      const resetProgress = () => {
+        seek.value = '0';
+        seek.max = '0';
+        seek.disabled = true;
+        seek.style.setProperty('--range-progress', '0%');
+        seek.setAttribute('aria-valuetext', '0:00');
+        currentTime.textContent = duration.textContent = '0:00';
+      };
+      const updateProgress = () => {
+        if (!ready || !player || failed || !matchesSelectedTrack()) return;
+        const total = player.getDuration();
+        const elapsed = player.getCurrentTime();
+        // Seek commands are asynchronous: keep the requested position until YouTube catches up.
+        if (pendingSeek !== undefined) {
+          if (!seekRequested || !(total > 0) || Math.abs(elapsed - Math.min(pendingSeek, total)) > 2) return;
+          pendingSeek = undefined;
+          seekRequested = false;
+        }
+        if (Number.isFinite(elapsed) && elapsed >= 0) position = elapsed;
+        seek.max = String(Number.isFinite(total) ? total : 0);
+        seek.disabled = !(total > 0);
+        seek.value = String(Number.isFinite(elapsed) ? elapsed : 0);
+        seek.style.setProperty('--range-progress', `${total > 0 ? Math.min(100, elapsed / total * 100) : 0}%`);
+        seek.setAttribute('aria-valuetext', `${formatTime(elapsed)} of ${formatTime(total)}`);
+        currentTime.textContent = formatTime(elapsed);
+        duration.textContent = formatTime(total);
+      };
+      const pause = (message = 'Paused.', remember = false) => {
+        capturePosition();
+        savePosition();
+        wantsPlay = playing = false;
+        if (remember) { enabled = false; autoStartPending = resumeOnReturn = false; saveMusicPreferences(); }
+        clearTimeout(startupTimer);
+        if (ready) player?.pauseVideo();
+        status.textContent = message;
+        render();
+      };
+      const showError = (message: string) => {
+        failed = true;
+        resumeOnReturn = false;
+        pause(message);
+        resetProgress();
+        render();
+      };
+      const waitForPlayback = () => {
+        clearTimeout(startupTimer);
+        startupTimer = setTimeout(() => {
+          if (!ready) {
+            requestVersion++;
+            player?.destroy();
+            player = undefined;
+            host?.remove();
+            host = undefined;
+            initializing = false;
+          }
+          if (ready && automaticAttempt) {
+            autoplayBlocked = true;
+            pause(`Tap Play to start music at ${volume.value}%.`);
+          } else showError('Playback did not start. Press Play to try again.');
+        }, 15000);
+      };
+      const playLoadedTrack = () => {
+        if (!player || !ready || !wantsPlay || suspended || document.hidden) return;
+        const reload = loadedId !== select.value || failed;
+        failed = false;
+        loadedId = select.value;
+        if (reload) {
+          pendingSeek = position;
+          seekRequested = true;
+          player.loadVideoById({ videoId: loadedId, startSeconds: position });
+        }
+        else {
+          if (pendingSeek !== undefined) { seekRequested = true; player.seekTo(pendingSeek, true); }
+          player.playVideo();
+        }
+        player.setVolume(volume.valueAsNumber);
+        player.unMute();
+        player.getIframe().title = `${select.selectedOptions[0].textContent} — YouTube playback`;
+        waitForPlayback();
+        render();
+      };
+      const start = async (userInitiated = false) => {
+        if (document.hidden || suspended) return;
+        autoStartPending = false;
+        automaticAttempt = !userInitiated;
+        autoplayBlocked = false;
+        if (userInitiated) { enabled = true; saveMusicPreferences(); }
+        wantsPlay = true;
+        status.textContent = 'Loading music…';
+        render();
+        if (ready) { playLoadedTrack(); return; }
+        if (initializing) return;
+        initializing = true;
+        const version = ++requestVersion;
+        waitForPlayback();
+        try {
+          const api = await loadYouTubeApi();
+          if (signal.aborted || version !== requestVersion) return;
+          if (!wantsPlay) { initializing = false; return; }
+          host = document.createElement('div');
+          host.className = 'music-youtube-host';
+          host.setAttribute('aria-hidden', 'true');
+          const iframe = document.createElement('iframe');
+          const url = new URL(`https://www.youtube-nocookie.com/embed/${select.value}`);
+          url.searchParams.set('enablejsapi', '1');
+          url.searchParams.set('origin', window.location.origin);
+          url.searchParams.set('playsinline', '1');
+          url.searchParams.set('controls', '0');
+          url.searchParams.set('disablekb', '1');
+          url.searchParams.set('fs', '0');
+          url.searchParams.set('rel', '0');
+          url.searchParams.set('autoplay', '0');
+          iframe.width = '200';
+          iframe.height = '200';
+          iframe.title = `${select.selectedOptions[0].textContent} — YouTube playback`;
+          iframe.allow = 'autoplay; encrypted-media';
+          iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+          iframe.tabIndex = -1;
+          iframe.src = url.href;
+          loadedId = select.value;
+          host.append(iframe);
+          document.body.append(host);
+          player = new api.Player(iframe, {
+            events: {
+              onReady: event => {
+                if (signal.aborted || version !== requestVersion) return;
+                ready = true;
+                initializing = false;
+                event.target.getIframe().tabIndex = -1;
+                event.target.setVolume(volume.valueAsNumber);
+                clearInterval(progressTimer);
+                progressTimer = setInterval(updateProgress, 500);
+                if (wantsPlay) playLoadedTrack();
+              },
+              onStateChange: event => {
+                if (signal.aborted || version !== requestVersion) return;
+                if (event.data === 1 && (!wantsPlay || suspended || document.hidden)) { event.target.pauseVideo(); return; }
+                // YouTube can report the old video's events after a track change.
+                if (!matchesSelectedTrack()) return;
+                if (event.data === 1) {
+                  clearTimeout(startupTimer);
+                  playing = wantsPlay = true;
+                  failed = false;
+                  autoplayBlocked = false;
+                  syncTrackDetails();
+                  status.textContent = 'Playing · YouTube';
+                } else if (event.data === 2) {
+                  playing = false;
+                  if (!wantsPlay && !failed && !autoplayBlocked) status.textContent = 'Paused.';
+                } else if (event.data === 3) {
+                  playing = false;
+                  if (wantsPlay) status.textContent = 'Buffering…';
+                } else if (event.data === 0) {
+                  if (!wantsPlay || suspended || document.hidden) return;
+                  playing = wantsPlay = false;
+                  changeTrack(1, true);
+                  return;
+                }
+                updateProgress();
+                render();
+              },
+              onError: event => {
+                if (signal.aborted || version !== requestVersion) return;
+                const message = event.data === 153 ? 'YouTube could not identify this browser. Try reloading the page.'
+                  : event.data === 101 || event.data === 150 ? 'YouTube refused embedded playback for this request. Try another track.'
+                  : event.data === 100 ? 'This upload is unavailable or private. Try another track.'
+                  : event.data === 2 ? 'YouTube rejected the video ID or player parameters.'
+                  : event.data === 5 ? 'YouTube could not play this track in this browser. Try another track.'
+                  : 'This track is unavailable here. Try again or choose another track.';
+                showError(`YouTube error ${event.data}: ${message}`);
+              },
+              onAutoplayBlocked: () => {
+                if (!signal.aborted && version === requestVersion) {
+                  autoplayBlocked = true;
+                  pause(`Your browser needs a tap. Press Play to listen at ${volume.value}%.`);
+                }
+              },
+            },
+          });
+        } catch (error) {
+          if (signal.aborted || version !== requestVersion) return;
+          initializing = false;
+          host?.remove();
+          host = undefined;
+          showError(error instanceof Error ? error.message : 'YouTube could not load. Try again.');
+        }
+      };
+      const selectTrack = (resume: boolean) => {
+        clearTimeout(startupTimer);
+        wantsPlay = playing = false;
+        resumeOnReturn = false;
+        if (ready) player?.pauseVideo();
+        failed = false;
+        autoplayBlocked = false;
+        position = 0;
+        pendingSeek = 0;
+        seekRequested = false;
+        savePosition();
+        resetProgress();
+        syncTrackDetails();
+        if (resume) void start(true);
+        else {
+          if (ready && player) { loadedId = select.value; player.cueVideoById(loadedId); }
+          status.textContent = 'Press Play to start listening.';
+          render();
+        }
+      };
+      const changeTrack = (direction: number, resume = playing || wantsPlay) => {
+        select.selectedIndex = (select.selectedIndex + direction + select.options.length) % select.options.length;
+        selectTrack(resume);
+      };
+      playButton.addEventListener('click', () => { if (playing || wantsPlay) pause('Paused.', true); else void start(true); }, { signal });
+      this.addEventListener('nayuta:music-play', () => { void start(true); }, { signal });
+      document.addEventListener('click', event => {
+        if (!event.isTrusted || !enabled || !autoplayBlocked || interactionRetryUsed) return;
+        if (event.target instanceof Element && event.target.closest('nayuta-page-tools')) return;
+        interactionRetryUsed = true;
+        void start(true);
+      }, { signal, capture: true });
+      trackButtons.forEach((button, index) => button.addEventListener('click', () => {
+        select.selectedIndex = index;
+        selectTrack(true);
+      }, { signal }));
+      this.querySelector('[data-previous]')?.addEventListener('click', () => changeTrack(-1), { signal });
+      this.querySelector('[data-next]')?.addEventListener('click', () => changeTrack(1), { signal });
+      select.addEventListener('change', () => selectTrack(playing || wantsPlay), { signal });
+      seek.addEventListener('input', () => {
+        if (ready && !seek.disabled) {
+          position = seek.valueAsNumber;
+          pendingSeek = position;
+          seekRequested = true;
+          player?.seekTo(position, true);
+          savePosition();
+          currentTime.textContent = formatTime(position);
+        }
+      }, { signal });
+      volume.addEventListener('input', () => {
+        volumeValue.value = `${volume.value}%`;
+        volume.style.setProperty('--range-progress', `${volume.value}%`);
+        saveMusicPreferences();
+        if (ready) player?.setVolume(volume.valueAsNumber);
+        render();
+      }, { signal });
+      const tryAutoplay = () => {
+        if (enabled && autoStartPending && !document.hidden) void start();
+      };
+      const suspendPlayback = () => {
+        if (suspended) return;
+        suspended = true;
+        resumeOnReturn = !failed && (playing || wantsPlay || autoStartPending);
+        if (playing || wantsPlay) pause('Music paused while you’re away.');
+        else { capturePosition(); savePosition(); }
+      };
+      const resumePlayback = () => {
+        if (document.hidden) return;
+        const shouldResume = suspended && resumeOnReturn && enabled && !failed;
+        suspended = resumeOnReturn = false;
+        if (shouldResume) void start();
+        else tryAutoplay();
+      };
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) suspendPlayback();
+        else resumePlayback();
+      }, { signal });
+      this.dispose = () => {
+        capturePosition();
+        savePosition();
+        requestVersion++;
+        clearTimeout(startupTimer);
+        clearInterval(progressTimer);
+        player?.destroy();
+        player = undefined;
+        host?.remove();
+        host = undefined;
+        ready = initializing = wantsPlay = playing = false;
+        status.textContent = 'Press Play to start listening.';
+        resetProgress();
+        render();
+      };
+      window.addEventListener('pagehide', event => {
+        suspendPlayback();
+        // Keep the paused iframe when the browser caches this document for Back.
+        if (!event.persisted) this.dispose?.();
+      }, { signal });
+      window.addEventListener('pageshow', event => {
+        if (event.persisted) {
+          // Another site page may have selected a different song since this page was cached.
+          restorePosition();
+          syncTrackDetails();
+          try {
+            const stored = JSON.parse(sessionStorage.getItem('nayuta-music-preferences') || 'null');
+            if (typeof stored?.enabled === 'boolean') enabled = stored.enabled;
+            if (typeof stored?.volume === 'number' && Number.isFinite(stored.volume) && stored.volume >= 0 && stored.volume <= 100) volume.value = String(stored.volume);
+          } catch { /* Keep the current preferences if storage is unavailable. */ }
+          syncVolume();
+          failed = false;
+          suspended = true;
+          resumeOnReturn = enabled;
+        }
+        resumePlayback();
+      }, { signal });
+      const syncVolume = () => {
+        volumeValue.value = `${volume.value}%`;
+        volume.style.setProperty('--range-progress', `${volume.value}%`);
+        if (ready) player?.setVolume(volume.valueAsNumber);
+      };
+      restorePosition();
+      syncTrackDetails();
+      currentTime.textContent = formatTime(position);
+      syncVolume();
+      if (!enabled) status.textContent = 'Paused for this visit. Press Play whenever you like.';
+      render();
+      queueMicrotask(() => { if (!signal.aborted) tryAutoplay(); });
+    }
+
+    disconnectedCallback() {
+      this.controller?.abort();
+      this.dispose?.();
+      this.dispose = undefined;
+    }
+  }
+
+  if (!customElements.get('nayuta-youtube-music')) customElements.define('nayuta-youtube-music', NayutaYouTubeMusic);
+</script>
+
+<style>
+  nayuta-youtube-music { display: grid; gap: 6px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; clip-path: inset(50%); overflow: hidden; white-space: nowrap; }
+  .now-playing { position: relative; isolation: isolate; display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--ny-color-primary) 20%, transparent); border-radius: 7px; background: var(--ny-color-bg); }
+  .music-sky { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.4; z-index: -2; }
+  .now-playing::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(7, 17, 29, 0.15), rgba(7, 17, 29, 0.9)); z-index: -1; }
+  .record { display: grid; place-items: center; flex: 0 0 42px; height: 42px; border: 1px solid #314353; border-radius: 50%; background: repeating-radial-gradient(circle, #101b25 0 2px, #26333e 2.5px 3px, #101b25 3.5px 5px); box-shadow: 0 4px 14px #0007; animation: record-turn 24s linear infinite; animation-play-state: paused; }
+  .record-label { display: grid; place-items: center; width: 19px; height: 19px; border: 1px solid #6eadd1; border-radius: 50%; background: #24465e; color: #b4ddf3; }
+  .record-label svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 1; }
+  .track-meta { min-width: 0; }
+  .track-meta h3 { margin: 0 0 3px; color: #edf4fa; font-size: 12px; font-weight: 600; line-height: 1.45; overflow-wrap: anywhere; }
+  .track-meta p { margin: 0; color: #a6b5c5; font-size: 10px; line-height: 1.5; }
+  .playback-row { display: flex; align-items: center; gap: 12px; }
+  .music-controls { display: flex; align-items: center; flex: 0 0 auto; gap: 8px; }
+  .music-controls button { display: grid; place-items: center; width: 28px; height: 36px; padding: 0; border: 1px solid transparent; border-radius: 50%; background: none; color: var(--ny-color-text-muted); cursor: pointer; transition: color 180ms ease, background 180ms ease, transform 180ms ease; }
+  .music-controls button:hover { background: var(--ny-color-surface-container); color: var(--ny-color-outline); transform: translateY(-1px); }
+  .music-controls .play-button { width: 36px; height: 36px; color: #d1edfc; border-color: color-mix(in srgb, var(--ny-color-primary) 55%, transparent); background: linear-gradient(145deg, #315772, #1b354a); box-shadow: 0 3px 12px #0003, inset 0 1px #ffffff12; }
+  .music-controls svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .pause-icon, [aria-pressed="true"] .play-icon { display: none; }
+  [aria-pressed="true"] .pause-icon { display: block; }
+  .music-progress { display: grid; gap: 0; }
+  input[type="range"] { --range-progress: 0%; appearance: none; -webkit-appearance: none; width: 100%; min-width: 0; height: 20px; margin: 0; background: transparent; cursor: pointer; }
+  input[type="range"]::-webkit-slider-runnable-track { height: 3px; border-radius: 4px; background: linear-gradient(to right, var(--ny-color-primary) var(--range-progress), var(--ny-color-border) var(--range-progress)); }
+  input[type="range"]::-moz-range-track { height: 3px; border-radius: 4px; background: var(--ny-color-border); }
+  input[type="range"]::-moz-range-progress { height: 3px; border-radius: 4px; background: var(--ny-color-primary); }
+  input[type="range"]::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 9px; height: 9px; margin-top: -3px; border: 0; border-radius: 50%; background: #a8d8f1; }
+  input[type="range"]::-moz-range-thumb { width: 9px; height: 9px; border: 0; border-radius: 50%; background: #a8d8f1; }
+  input:disabled { opacity: 0.4; cursor: default; }
+  .music-times { display: flex; justify-content: space-between; color: var(--ny-color-text-subtle); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .volume-row { display: grid; grid-template-columns: 12px minmax(0, 1fr) 3ch; align-items: center; flex: 1; min-width: 0; gap: 6px; padding: 0; color: var(--ny-color-text-muted); }
+  .volume-row svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+  output { text-align: right; font-size: 10px; font-variant-numeric: tabular-nums; }
+  .playlist-heading { display: flex; align-items: center; justify-content: space-between; min-height: 30px; padding-top: 6px; border-top: 1px solid var(--ny-color-border); color: var(--ny-color-text-muted); font-size: 11px; list-style: none; cursor: pointer; }
+  .playlist-heading::-webkit-details-marker { display: none; }
+  .playlist-heading > span:last-child { display: inline-flex; align-items: center; gap: 7px; color: var(--ny-color-text-subtle); font-size: 10px; }
+  .playlist-heading svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.5; transition: transform 180ms ease; }
+  .music-queue[open] .playlist-heading svg { transform: rotate(180deg); }
+  .music-playlist { display: grid; gap: 2px; list-style: none; padding: 0; margin: 6px 0 0; }
+  .music-playlist li { margin: 0; }
+  .music-playlist button { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 44px; padding: 4px 9px; border: 1px solid transparent; border-radius: 5px; background: transparent; color: var(--ny-color-text-muted); font: inherit; text-align: left; cursor: pointer; transition: background 180ms ease, color 180ms ease; }
+  .music-playlist button:hover { color: var(--ny-color-text); background: var(--ny-color-surface-container); }
+  .music-playlist [aria-current="true"] { color: var(--ny-color-outline); background: color-mix(in srgb, var(--ny-color-primary) 9%, transparent); border-color: color-mix(in srgb, var(--ny-color-primary) 15%, transparent); }
+  .track-number { color: var(--ny-color-text-subtle); font-size: 10px; font-variant-numeric: tabular-nums; }
+  .playlist-track { display: grid; flex: 1; gap: 2px; min-width: 0; font-size: 12px; line-height: 1.45; }
+  .playlist-track small { color: var(--ny-color-text-subtle); font-size: 10px; }
+  .track-bars { display: none; align-items: center; gap: 2px; height: 16px; }
+  .music-playlist [aria-current="true"] .track-bars { display: flex; }
+  .track-bars i { width: 2px; height: 12px; border-radius: 2px; background: currentColor; transform: scaleY(0.35); animation: music-bars 2.8s ease-in-out infinite; animation-play-state: paused; }
+  .track-bars i:nth-child(2) { animation-delay: -0.9s; }
+  .track-bars i:nth-child(3) { animation-delay: -1.8s; }
+  [data-playing="true"] .record, [data-playing="true"] [aria-current="true"] .track-bars i { animation-play-state: running; }
+  button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px solid var(--ny-color-outline); outline-offset: 3px; }
+  :global(.music-youtube-host) { position: fixed; top: 0; left: -10000px; width: 200px; height: 200px; overflow: hidden; pointer-events: none; }
+  .player-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; clip-path: inset(50%); overflow: hidden; white-space: nowrap; }
+  [data-state="error"] .player-status { position: static; width: auto; height: auto; margin: 0; clip-path: none; white-space: normal; color: var(--ny-color-text-muted); font-size: 11px; line-height: 1.6; }
+  .music-empty { color: var(--ny-color-text-muted); }
+  @keyframes record-turn { to { transform: rotate(360deg); } }
+  @keyframes music-bars { 0%, 100% { transform: scaleY(0.35); } 50% { transform: scaleY(0.9); } }
+  @media (prefers-reduced-motion: reduce) { .record, .track-bars i { animation: none; } .music-controls button, .music-playlist button, .playlist-heading svg { transition: none; } }
+</style>
