@@ -4,7 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <BaseLayout 
   title="Toolkit" 
-  description="Client-side utilities and payload drop for rapid CTF operations." 
+  description="Browser-based utilities and useful links for security labs and CTFs."
   activePage="arsenal"
   extraCss={['/styles/arsenal.css']}
 >
@@ -12,15 +12,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <h1 class="visually-hidden">Toolkit</h1>
     <div class="arsenal-hud-tabs">
       <button class="hud-tab active" data-view="local-tools-view">
-        <span class="hud-indicator"></span> Local Tools
+        <span class="hud-indicator"></span> Browser tools
       </button>
       <button class="hud-tab" data-view="external-links-view">
-        <span class="hud-indicator"></span> External Links
+        <span class="hud-indicator"></span> Useful links
       </button>
     </div>
   </div>
 
-  <!-- VIEW 1: Local Tools -->
+  <!-- VIEW 1: Browser tools -->
   <div id="local-tools-view" class="hud-view active">
     <div class="arsenal-container">
     
@@ -29,34 +29,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <summary class="arsenal-menu-toggle">
         <span style="display: flex; align-items: center; gap: 0.5rem;">
           <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
-          Select Tool
+          Choose a tool
         </span>
         <svg class="details-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </summary>
       <aside class="arsenal-sidebar">
-        <div class="hud-diagnostics">
-        <div class="hud-diag-row">
-          <span>STATUS:</span>
-          <span class="hud-diag-val"><span class="hud-pulse"></span>ONLINE</span>
-        </div>
-        <div class="hud-diag-row">
-          <span>SECURE_LINK:</span>
-          <span class="hud-diag-val">ACTIVE</span>
-        </div>
-        <div class="hud-diag-row">
-          <span>SYS_DECRYPT:</span>
-          <span class="hud-diag-val">READY</span>
-        </div>
-      </div>
-
       <div class="arsenal-sidebar-group">
         <div class="arsenal-sidebar-title">Cryptography</div>
         <nav class="arsenal-sidebar-nav">
-          <button class="arsenal-nav-btn active" data-target="tool-decoder">Decoder Ring</button>
+          <button class="arsenal-nav-btn active" data-target="tool-decoder">Encoder and decoder</button>
           <button class="arsenal-nav-btn" data-target="tool-rot">ROT Cipher</button>
           <button class="arsenal-nav-btn" data-target="tool-vigenere">Vigenère Cipher</button>
 
-          <button class="arsenal-nav-btn" data-target="tool-xor">XOR Tool</button>
+          <button class="arsenal-nav-btn" data-target="tool-xor">XOR calculator</button>
         </nav>
       </div>
       
@@ -66,7 +51,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <button class="arsenal-nav-btn" data-target="tool-hashgen">Hash Generator</button>
           <button class="arsenal-nav-btn" data-target="tool-hashid">Hash Identifier</button>
           <button class="arsenal-nav-btn" data-target="tool-magic">Magic Bytes</button>
-          <button class="arsenal-nav-btn" data-target="tool-time">Timestamp Conv</button>
+          <button class="arsenal-nav-btn" data-target="tool-time">Timestamp converter</button>
         </nav>
       </div>
 
@@ -79,21 +64,21 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </div>
 
       <div class="arsenal-sidebar-group">
-        <div class="arsenal-sidebar-title">Offensive</div>
+        <div class="arsenal-sidebar-title">Security testing</div>
         <nav class="arsenal-sidebar-nav">
-          <button class="arsenal-nav-btn" data-target="tool-payloads">Payload Drop</button>
+          <button class="arsenal-nav-btn" data-target="tool-payloads">Payload reference</button>
         </nav>
       </div>
       </aside>
     </details>
 
     <!-- Main Content Area -->
-    <main class="arsenal-main">
+    <div class="arsenal-main">
       
-      <!-- TOOL: Decoder Ring -->
+      <!-- TOOL: Encoder and decoder -->
       <section id="tool-decoder" class="arsenal-tool-panel active">
         <div class="tool-header">
-          <h1 class="tool-title" data-scramble="DECODER RING">DECODER RING</h1>
+          <h1 class="tool-title" data-scramble="Encoder and decoder">Encoder and decoder</h1>
           <p class="tool-desc">Base64, URL, and Hexadecimal conversion.</p>
         </div>
         <div class="tool-section fade-up">
@@ -121,7 +106,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <!-- TOOL: ROT Cipher -->
       <section id="tool-rot" class="arsenal-tool-panel">
         <div class="tool-header">
-          <h1 class="tool-title" data-scramble="ROT CIPHER">ROT CIPHER</h1>
+          <h1 class="tool-title" data-scramble="ROT cipher">ROT cipher</h1>
           <p class="tool-desc">Shift characters by N positions (e.g. ROT13). Monoalphabetic substitution.</p>
         </div>
         <div class="tool-section fade-up">
@@ -153,7 +138,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <!-- TOOL: Vigenère Cipher -->
       <section id="tool-vigenere" class="arsenal-tool-panel">
         <div class="tool-header">
-          <h1 class="tool-title" data-scramble="VIGENÈRE CIPHER">VIGENÈRE CIPHER</h1>
+          <h1 class="tool-title" data-scramble="Vigenère cipher">Vigenère cipher</h1>
           <p class="tool-desc">Polyalphabetic substitution cipher using a text key.</p>
         </div>
         <div class="tool-section fade-up">
@@ -176,16 +161,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <div class="button-group">
             <button class="btn btn-primary" onclick="vigenereRun('encode')">Encode</button>
             <button class="btn" onclick="vigenereRun('decode')">Decode</button>
-            <button class="btn" style="border: 1px solid var(--accent); color: var(--accent); background: transparent;" onclick="vigenereRun('auto')">Auto-Decode (Crack)</button>
+            <button class="btn" style="border: 1px solid var(--accent); color: var(--accent); background: transparent;" onclick="vigenereRun('auto')">Try automatic decoding</button>
           </div>
         </div>
       </section>
 
 
-      <!-- TOOL: XOR Tool -->
+      <!-- TOOL: XOR calculator -->
       <section id="tool-xor" class="arsenal-tool-panel">
         <div class="tool-header">
-          <h1 class="tool-title" data-scramble="XOR TOOL">XOR TOOL</h1>
+          <h1 class="tool-title" data-scramble="XOR calculator">XOR calculator</h1>
           <p class="tool-desc">Perform bitwise XOR. Auto-detects hex vs plaintext inputs.</p>
         </div>
         <div class="tool-section fade-up">
@@ -212,7 +197,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             </div>
           </div>
           <div class="button-group">
-            <button class="btn btn-primary" onclick="xorRun()">Execute XOR</button>
+            <button class="btn btn-primary" onclick="xorRun()">Calculate XOR</button>
           </div>
         </div>
       </section>
@@ -220,7 +205,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <!-- TOOL: Hash Generator -->
       <section id="tool-hashgen" class="arsenal-tool-panel">
         <div class="tool-header">
-          <h1 class="tool-title" data-scramble="HASH GENERATOR">HASH GENERATOR</h1>
+          <h1 class="tool-title" data-scramble="Hash generator">Hash generator</h1>
           <p class="tool-desc">Real-time MD5, SHA-1, SHA-256, and SHA-512 calculation.</p>
         </div>
         <div class="tool-section fade-up">
@@ -254,7 +239,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <!-- TOOL: Hash Identifier -->
       <section id="tool-hashid" class="arsenal-tool-panel">
         <div class="tool-header">
-          <h1 class="tool-title" data-scramble="HASH IDENTIFIER">HASH IDENTIFIER</h1>
+          <h1 class="tool-title" data-scramble="Hash identifier">Hash identifier</h1>
           <p class="tool-desc">Analyze a hash structure to determine possible algorithm types.</p>
         </div>
         <div class="tool-section fade-up">
@@ -274,7 +259,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <!-- TOOL: Magic Bytes -->
       <section id="tool-magic" class="arsenal-tool-panel">
         <div class="tool-header">
-          <h1 class="tool-title" data-scramble="MAGIC BYTES">MAGIC BYTES</h1>
+          <h1 class="tool-title" data-scramble="Magic bytes">Magic bytes</h1>
           <p class="tool-desc">Identify file types from their hexadecimal signatures.</p>
         </div>
         <div class="tool-section fade-up">
@@ -292,10 +277,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </section>
 
       <!-- TOOL: Magic Bytes -->
-      <!-- TOOL: Timestamp Converter -->
+      <!-- TOOL: Timestamp convertererter -->
       <section id="tool-time" class="arsenal-tool-panel">
         <div class="tool-header">
-          <h1 class="tool-title" data-scramble="TIMESTAMP CONV">TIMESTAMP CONV</h1>
+          <h1 class="tool-title" data-scramble="Timestamp converter">Timestamp converter</h1>
           <p class="tool-desc">Convert between Unix Epoch and human-readable dates.</p>
         </div>
         <div class="tool-section fade-up">
@@ -325,8 +310,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <!-- TOOL: IP Converter -->
       <section id="tool-ip" class="arsenal-tool-panel">
         <div class="tool-header">
-          <h1 class="tool-title" data-scramble="IP CONVERTER">IP CONVERTER</h1>
-          <p class="tool-desc">Convert IPv4 addresses to alternate representations (useful for SSRF bypass).</p>
+          <h1 class="tool-title" data-scramble="IP converter">IP converter</h1>
+          <p class="tool-desc">Convert an IPv4 address to hexadecimal, decimal, and binary.</p>
         </div>
         <div class="tool-section fade-up">
           <div class="tool-grid-2">
@@ -355,7 +340,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <!-- TOOL: CIDR Calculator -->
       <section id="tool-cidr" class="arsenal-tool-panel">
         <div class="tool-header">
-          <h1 class="tool-title" data-scramble="CIDR CALCULATOR">CIDR CALCULATOR</h1>
+          <h1 class="tool-title" data-scramble="CIDR calculator">CIDR calculator</h1>
           <p class="tool-desc">Calculate network boundaries and usable host ranges.</p>
         </div>
         <div class="tool-section fade-up">
@@ -372,11 +357,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
       </section>
 
-      <!-- TOOL: Payload Drop -->
+      <!-- TOOL: Payload reference -->
       <section id="tool-payloads" class="arsenal-tool-panel">
         <div class="tool-header">
-          <h1 class="tool-title" data-scramble="PAYLOAD DROP">PAYLOAD DROP</h1>
-          <p class="tool-desc">Quick-copy cheat sheet for vulnerability testing.</p>
+          <h1 class="tool-title" data-scramble="Payload reference">Payload reference</h1>
+          <p class="tool-desc">Reference snippets for web security labs.</p>
         </div>
         
         <div class="payload-search-bar fade-up">
@@ -493,7 +478,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
       </section>
 
-    </main>
+    </div>
   </div> <!-- Close arsenal-container -->
   </div> <!-- Close local-tools-view -->
 
@@ -501,8 +486,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   <div id="external-links-view" class="hud-view">
     <div class="external-container">
       <div class="tool-header">
-        <h1 class="tool-title" data-scramble="SATELLITE INTELLIGENCE">SATELLITE INTELLIGENCE</h1>
-        <p class="tool-desc">Curated external systems, decoders, and cheat sheets to assist during CTF operations.</p>
+        <h1 class="tool-title" data-scramble="Useful links">Useful links</h1>
+        <p class="tool-desc">Tools and references I use for security labs, CTFs, and research.</p>
       </div>
 
       <div class="links-grid">
@@ -513,7 +498,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <li>
               <a href="https://gchq.github.io/CyberChef/" target="_blank" rel="noopener noreferrer" class="link-item">
                 <span class="link-name">CyberChef</span>
-                <p class="link-desc">The ultimate cyber tool for decoding, encoding, parsing, and formatting data.</p>
+                <p class="link-desc">A browser-based tool for decoding, encoding, parsing, and formatting data.</p>
               </a>
             </li>
             <li>
@@ -525,7 +510,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <li>
               <a href="https://www.dcode.fr/en" target="_blank" rel="noopener noreferrer" class="link-item">
                 <span class="link-name">dCode</span>
-                <p class="link-desc">Massive platform for solving ciphers, codes, logic puzzles, and esoteric languages.</p>
+                <p class="link-desc">Tools for exploring ciphers, codes, logic puzzles, and esoteric languages.</p>
               </a>
             </li>
             <li>
@@ -539,7 +524,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
         <!-- Web Exploitation -->
         <div class="link-category-card">
-          <h3 class="link-category-title">Web Exploitation</h3>
+          <h3 class="link-category-title">Web security</h3>
           <ul class="link-list">
             <li>
               <a href="https://www.revshells.com/" target="_blank" rel="noopener noreferrer" class="link-item">
@@ -562,7 +547,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <li>
               <a href="https://github.com/danielmiessler/SecLists" target="_blank" rel="noopener noreferrer" class="link-item">
                 <span class="link-name">SecLists</span>
-                <p class="link-desc">The ultimate collection of multiple types of lists used during security assessments, collected in one place.</p>
+                <p class="link-desc">A collection of wordlists used in security assessments.</p>
               </a>
             </li>
             <li>
@@ -576,7 +561,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
         <!-- Reverse Engineering & Binary Exploitation -->
         <div class="link-category-card">
-          <h3 class="link-category-title">Reverse Eng & Privilege Escalation</h3>
+          <h3 class="link-category-title">Reverse engineering and system security</h3>
           <ul class="link-list">
             <li>
               <a href="https://godbolt.org/" target="_blank" rel="noopener noreferrer" class="link-item">
@@ -601,12 +586,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
         <!-- Reconnaissance & Intelligence -->
         <div class="link-category-card">
-          <h3 class="link-category-title">OSINT & Reconnaissance</h3>
+          <h3 class="link-category-title">Open-source research</h3>
           <ul class="link-list">
             <li>
               <a href="https://osintframework.com/" target="_blank" rel="noopener noreferrer" class="link-item">
                 <span class="link-name">OSINT Framework</span>
-                <p class="link-desc">Directory map of internet resources, tools, and platforms for deep-web intelligence gathering.</p>
+                <p class="link-desc">A directory of resources and tools for open-source research.</p>
               </a>
             </li>
             <li>
@@ -637,7 +622,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   referrerpolicy="no-referrer">
 </script>
 
-<script is:inline>
+<script is:inline data-astro-rerun>
   // --- UI Interactions ───
   // Top View Switching (Local vs Satellite)
   document.querySelectorAll('.hud-tab').forEach(tab => {
@@ -729,7 +714,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }
   }
 
-  // --- Tool: Decoder Ring ---
+  // --- Tool: Encoder and decoder ---
   function decodeRun(action) {
     const input = document.getElementById('decoder-in').value;
     if (!input) { setOutput('decoder-out', ''); return; }
@@ -756,12 +741,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   }
 
   // Keep menu open on desktop by default
-  document.addEventListener('DOMContentLoaded', () => {
+  (() => {
     if (window.innerWidth > 900) {
       const menu = document.getElementById('arsenal-menu');
       if (menu) menu.setAttribute('open', '');
     }
-  });
+  })();
 
   // --- Tool: ROT Cipher ---
   function rotRun(mode) {
@@ -916,7 +901,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     setOutput('vigenere-out', out);
   }
 
-  // --- Tool: XOR Tool ---
+  // --- Tool: XOR calculator ---
   function xorRun() {
     let input = document.getElementById('xor-in').value.trim();
     let key = document.getElementById('xor-key').value.trim();
@@ -1062,7 +1047,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }
   }
 
-  // --- Tool: Timestamp Converter ---
+  // --- Tool: Timestamp convertererter ---
   function timeUnixRun() {
     const input = document.getElementById('time-unix-in').value;
     if (!input) { setOutput('time-unix-out', ''); return; }
@@ -1187,7 +1172,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     el.textContent = out;
   }
 
-  // --- Tool: Payload Drop ---
+  // --- Tool: Payload reference ---
   function filterPayloads() {
     const q = document.getElementById('payload-search').value.toLowerCase();
     const categories = document.querySelectorAll('.payload-category');

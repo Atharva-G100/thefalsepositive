@@ -1,32 +1,20 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Prose from '../theme/layouts/components/Prose.astro';
 ---
 <BaseLayout 
-  title="Cyber Intel" 
-  description="Live cybersecurity news feed — vulnerabilities, breaches, tools, and research."
+  title="Security news"
+  description="Recent cybersecurity articles about vulnerabilities, breaches, tools, and research."
   activePage="news"
   extraCss={['/styles/news.css']}
 >
 
-  <!-- Intel Dashboard Header -->
-  <header class="news-header-parallax" aria-label="News Header Banner">
-    <div class="parallax-bg" style="background-image: url('/assets/ryuk.png');"></div>
-    <div class="header-scanline"></div>
-    <div class="parallax-overlay">
-      <div class="news-header-content">
-        <div class="news-header-badge">
-          <span class="news-live-dot" aria-label="Live"></span>
-          [ LIVE FEED ACTIVE ]
-        </div>
-        <h1>Cyber Intel</h1>
-        <p class="news-header-sub" id="news-last-updated">
-          Fetching latest intelligence from the field...
-        </p>
-      </div>
-    </div>
-  </header>
+  <Prose>
+    <h1>Security news</h1>
+    <p id="news-last-updated">Loading the latest articles...</p>
+  </Prose>
 
-  <main class="page-wrapper" id="main-content">
+  <div class="page-wrapper" id="main-content">
     <div class="news-layout">
 
       <!-- Control Bar: Filters & Refresh -->
@@ -54,7 +42,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </div>
 
     </div>
-  </main>
+  </div>
 
-  <script src="/scripts/news.js" is:inline></script>
+  <script src="/scripts/news.js" type="module" is:inline></script>
 </BaseLayout>

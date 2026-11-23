@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostList from '../theme/layouts/widgets/post-list/PostList.astro';
+import { getPosts } from '../theme/assets/utils/posts';
+
+const posts = (await getPosts('blog')).sort(
+  (a, b) => Date.parse(b.data.publishDate) - Date.parse(a.data.publishDate),
+);
+---
+
+<BaseLayout title="Blog" activePage="blog" description="Notes from security labs, research, and things I’m learning.">
+  <h1>Blog</h1>
+  {posts.length > 0 ? <PostList posts={posts} /> : <p>No blog posts yet.</p>}
+</BaseLayout>

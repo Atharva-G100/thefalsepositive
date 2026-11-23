@@ -1,10 +1,10 @@
 {
   "name": "the-false-positive",
   "version": "1.0.0",
-  "description": "A Death Note-themed cybersecurity blog by vaLak",
+  "description": "A personal cybersecurity blog by Atharva Gawas",
   "type": "module",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "dev": "astro dev",
@@ -13,9 +13,11 @@
     "deploy": "astro build && wrangler pages deploy dist"
   },
   "dependencies": {
-    "astro": "^5.2.2"
+    "astro": "^5.2.2",
+    "photoswipe": "5.4.4"
   },
   "devDependencies": {
+    "@types/node": "22.19.1",
     "wrangler": "^3.0.0"
   }
 }

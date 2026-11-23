@@ -1,242 +1,161 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+
 ---
-<BaseLayout 
-  title="About vaLak" 
-  description="Threat actor profile and intelligence dossier."
-  activePage="about"
-  extraCss={['/styles/about.css']}
->
-  <!-- Visible Parallax Background -->
-  <div class="parallax-container">
-    
-    <!-- Deepest Layer: The Monitor -->
-    <div class="parallax-layer parallax-0" data-speed="0.05">
-      <div class="monitor-frame">
-        <img src="/gifs/L%20logo.gif" alt="L Monitor" class="monitor-gif" loading="lazy" decoding="async" />
+<BaseLayout title="About" activePage="about" description="About Atharva Gawas — Cybersecurity learner, researcher, and red teamer interested in web, API, and Active Directory penetration testing.">
+  <div class="about-main">
+
+    <!-- HERO -->
+    <section class="about-hero">
+      <div class="about-hero-left">
+
+        <h1 class="about-name">Atharva Gawas</h1>
+        <p class="about-tagline">Cybersecurity learner and researcher with a curious mind, focused on web, API, and Active Directory penetration testing.</p>
+        <div class="about-meta-row">
+          <span class="about-meta-item">Red teamer</span>
+          <span class="about-meta-dot">&middot;</span>
+          <span class="about-meta-item">Navi Mumbai, India</span>
+        </div>
+        <div class="about-divider"></div>
+        <p class="about-bio">This blog is where I keep notes from my studies, work through CTF challenges, and share things I’ve learned along the way.</p>
+      </div>
+    </section>
+
+    <!-- ROW 1: 4-column info strip (reference design) -->
+    <div class="about-strip">
+      <!-- FOCUS -->
+      <div class="strip-column">
+        <div class="strip-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+            <circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/>
+            <line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
+            <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
+          </svg>
+        </div>
+        <h2 class="strip-title">Focus</h2>
+        <ul class="strip-list">
+          <li>Web penetration testing</li>
+          <li>API penetration testing</li>
+          <li>Active Directory security</li>
+          <li>Red teaming</li>
+        </ul>
+      </div>
+      <!-- CURRENTLY -->
+      <div class="strip-column">
+        <div class="strip-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+            <polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>
+          </svg>
+        </div>
+        <h2 class="strip-title">What I’m working on</h2>
+        <ul class="strip-list">
+          <li>Studying cybersecurity</li>
+          <li>Building small tools</li>
+          <li>Practising in labs</li>
+          <li>Writing study notes</li>
+        </ul>
+      </div>
+      <!-- PHILOSOPHY -->
+      <div class="strip-column">
+        <div class="strip-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+            <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+            <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+          </svg>
+        </div>
+        <h2 class="strip-title">How I learn</h2>
+        <p class="strip-philosophy">I learn by trying things, asking questions, and writing down what I understand. I share those notes so others can follow along and compare approaches.</p>
+      </div>
+      <!-- THE ARCHIVE -->
+      <div class="strip-column">
+        <div class="strip-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <h2 class="strip-title">Explore</h2>
+        <a href="/pentest" class="strip-archive-link">Archived handbook <span class="arrow-icon">&rarr;</span></a>
+        <a href="/ctf" class="strip-archive-link">CTF Writeups <span class="arrow-icon">&rarr;</span></a>
+        <a href="/arsenal" class="strip-archive-link">Toolkit <span class="arrow-icon">&rarr;</span></a>
+        <a href="/news" class="strip-archive-link">Security news <span class="arrow-icon">&rarr;</span></a>
       </div>
     </div>
 
-    <div class="parallax-layer parallax-1" data-speed="0.2">
-      <div class="p-box p-large"></div>
+    <!-- ROW 2: Tools, Languages, Certifications, CTF -->
+    <div class="about-strip about-strip-row2">
+      <!-- LANGUAGES -->
+      <div class="strip-column">
+        <div class="strip-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+          </svg>
+        </div>
+        <h2 class="strip-title">Languages</h2>
+        <ul class="strip-list">
+          <li>Python</li>
+          <li>C</li>
+          <li>JavaScript</li>
+          <li>Bash</li>
+        </ul>
+      </div>
+      <!-- TOOLS -->
+      <div class="strip-column">
+        <div class="strip-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+          </svg>
+        </div>
+        <h2 class="strip-title">Tools I use</h2>
+        <ul class="strip-list">
+          <li>Burp Suite</li>
+          <li>Metasploit</li>
+          <li>Nmap</li>
+          <li>OWASP ZAP</li>
+          <li>Wireshark</li>
+          <li>Ghidra</li>
+        </ul>
+      </div>
+      <!-- CERTIFICATIONS -->
+      <div class="strip-column">
+        <div class="strip-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+            <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+          </svg>
+        </div>
+        <h2 class="strip-title">Certifications</h2>
+        <ul class="strip-list">
+          <li>THM: Jr. Penetration Tester</li>
+          <li>APIsec Certified Practitioner</li>
+          <li>Udemy: Applied Ethical Hacking</li>
+          <li>Infosys: Pentesting with Metasploit</li>
+          <li>Cisco: Intro to CyberSecurity</li>
+        </ul>
+      </div>
+      <!-- CTF / OPERATIONS -->
+      <div class="strip-column">
+        <div class="strip-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+        <h2 class="strip-title">CTFs</h2>
+        <ul class="strip-list">
+          <li>[3301] N0T F0UND</li>
+          <li>Web Exploitation</li>
+          <li>Forensics</li>
+          <li>Privilege Escalation</li>
+        </ul>
+      </div>
     </div>
-    <div class="parallax-layer parallax-2" data-speed="0.5">
-      <div class="p-box p-medium"></div>
-    </div>
-    <div class="parallax-layer parallax-3" data-speed="0.1">
-      <div class="p-line"></div>
-    </div>
-    <div class="parallax-layer parallax-4" data-speed="0.35">
-      <div class="p-box p-small"></div>
-    </div>
+
   </div>
-
-  <div class="about-container">
-    
-    <!-- Hero Section -->
-    <header class="about-hero fade-up">
-      <div class="hero-symbol">[ ]</div>
-      <h1 class="hero-title">Threat Actor: vaLak</h1>
-    </header>
-
-    <!-- Biography (Identity Reveal) -->
-    <section class="dossier-section">
-      <h2 class="section-title fade-up" data-scramble="IDENTITY FILE">IDENTITY FILE</h2>
-      
-      <div class="identity-card fade-up">
-        <div class="identity-header">
-          <span class="status-indicator"></span> [ ALIAS "vaLak" DECLASSIFIED&nbsp;]
-        </div>
-        <div class="identity-details">
-          <div class="detail-row"><span class="detail-label">Real Name:</span> <span class="detail-value">Atharva Gawas</span></div>
-          <div class="detail-row"><span class="detail-label">Designation:</span> <span class="detail-value">Cybersecurity Student · Jr. Penetration Tester</span></div>
-          <div class="detail-row"><span class="detail-label">Base of Ops:</span> <span class="detail-value">Navi Mumbai, India</span></div>
-          <div class="detail-row"><span class="detail-label">Core Focus:</span> <span class="detail-value">Offensive Security, Web App Sec, Digital Forensics</span></div>
-        </div>
-      </div>
-
-      <h3 class="subsection-title fade-up">WHY I BREAK THINGS</h3>
-      <p class="dossier-text fade-up">
-        Driven by curiosity and a relentless desire to understand how systems operate beneath the surface. Practical experience built through hands-on labs, independent research, and global CTF competitions. 
-      </p>
-      <p class="dossier-text fade-up">
-        Primary objective: discover weaknesses, apply ethical hacking methodologies, and engineer stronger, more resilient architectures. The terminal is always active.
-      </p>
-    </section>
-
-    <!-- Arsenal (Tech Stack) -->
-    <section class="dossier-section">
-      <h2 class="section-title fade-up" data-scramble="ARSENAL">ARSENAL</h2>
-      <div class="arsenal-grid fade-up">
-        
-        <div class="arsenal-category fade-up">
-          <h3>Languages</h3>
-          <div class="arsenal-tags">
-            <span class="arsenal-tag">Python</span>
-            <span class="arsenal-tag">C</span>
-            <span class="arsenal-tag">JavaScript</span>
-            <span class="arsenal-tag">Bash</span>
-          </div>
-        </div>
-
-        <div class="arsenal-category fade-up">
-          <h3>Offensive Tools</h3>
-          <div class="arsenal-tags">
-            <span class="arsenal-tag">Burp Suite</span>
-            <span class="arsenal-tag">Metasploit</span>
-            <span class="arsenal-tag">Nmap</span>
-            <span class="arsenal-tag">OWASP ZAP</span>
-            <span class="arsenal-tag">OpenVAS</span>
-            <span class="arsenal-tag">Wireshark</span>
-            <span class="arsenal-tag">Ghidra</span>
-          </div>
-        </div>
-
-        <div class="arsenal-category fade-up">
-          <h3>Certifications</h3>
-          <div class="arsenal-tags">
-            <span class="arsenal-tag">THM: Jr. Penetration Tester</span>
-            <span class="arsenal-tag">APIsec Certified Practitioner</span>
-            <span class="arsenal-tag">Udemy: Applied Ethical Hacking</span>
-            <span class="arsenal-tag">Infosys: Pentesting with Metasploit</span>
-            <span class="arsenal-tag">Cisco: Intro to CyberSecurity</span>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- Operations -->
-    <section class="dossier-section">
-      <h2 class="section-title fade-up" data-scramble="OPERATIONS">OPERATIONS</h2>
-      <ul class="ops-list fade-up">
-        <li class="ops-item fade-up">
-          <h3 class="ops-title">CTF Player</h3>
-          <p class="ops-desc">[3301] N0T F0UND<br>Actively competing in Capture The Flag competitions, specializing in web exploitation, forensics, and privilege escalation.</p>
-        </li>
-      </ul>
-    </section>
-
-    <!-- Communications -->
-    <section class="dossier-section">
-      <h2 class="section-title fade-up" data-scramble="COMMUNICATIONS">COMMUNICATIONS</h2>
-      <div class="arsenal-tags fade-up">
-        <a href="https://www.linkedin.com/in/atharva-gawas-valak/" target="_blank" rel="noopener noreferrer" class="arsenal-tag" style="text-decoration: none;">LinkedIn</a>
-        <a href="https://github.com/Atharva-G100" target="_blank" rel="noopener noreferrer" class="arsenal-tag" style="text-decoration: none;">GitHub</a>
-        <a href="mailto:gawasatharva8@gmail.com" class="arsenal-tag" style="text-decoration: none;">Email</a>
-      </div>
-    </section>
-
-    <!-- Directives -->
-    <section class="dossier-section">
-      <h2 class="section-title fade-up" data-scramble="DIRECTIVES">DIRECTIVES</h2>
-      <p class="dossier-text fade-up">
-        "Trust nothing. Verify everything."
-      </p>
-      <p class="dossier-text fade-up">
-        Every system has a flaw. Every "false positive" is just a misunderstanding of the underlying architecture. Learning is continuous, and the terminal is home.
-      </p>
-    </section>
-
-  </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      
-      /* ── Parallax Scroll Effect ────────────────── */
-      const parallaxLayers = document.querySelectorAll('.parallax-layer');
-      
-      window.addEventListener('scroll', () => {
-        const scrolled = window.scrollY;
-        
-        parallaxLayers.forEach(layer => {
-          const speed = parseFloat(layer.getAttribute('data-speed'));
-          // Move layers up at different speeds based on scroll
-          layer.style.transform = `translateY(${scrolled * -speed}px)`;
-        });
-      });
-
-      /* ── Scramble Text Function ────────────────── */
-      function scrambleText(element, finalString) {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*';
-        let iterations = 0;
-        const maxIterations = 10; 
-        
-        if (element.hasAttribute('data-scrambled')) return;
-        element.setAttribute('data-scrambled', 'true');
-
-        const interval = setInterval(() => {
-          let scrambled = '';
-          for (let i = 0; i < finalString.length; i++) {
-            if (finalString[i] === ' ') {
-              scrambled += ' ';
-            } else {
-              scrambled += chars[Math.floor(Math.random() * chars.length)];
-            }
-          }
-          
-          element.innerText = scrambled;
-          iterations++;
-
-          if (iterations >= maxIterations) {
-            clearInterval(interval);
-            element.innerText = finalString;
-          }
-        }, 40); 
-      }
-
-      /* ── Intersection Observer ─────────────────── */
-      // Handles both Fade-Up animations and Scramble Decryption
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const el = entry.target;
-            
-            // Trigger Fade-Up
-            if (el.classList.contains('fade-up')) {
-              el.classList.add('is-visible');
-              
-              // Only scramble once it becomes visible
-              const targetText = el.getAttribute('data-scramble');
-              if (targetText) {
-                // Add a small delay to the scramble so the fade-in happens first
-                setTimeout(() => {
-                  scrambleText(el, targetText);
-                }, 200);
-              }
-              
-              // Unobserve after animating in once
-              observer.unobserve(el);
-            }
-          }
-        });
-      }, {
-        threshold: 0.1, // Trigger when 10% is visible
-        rootMargin: "0px 0px -50px 0px" // Trigger slightly before it hits the bottom
-      });
-
-      // Observe all elements with fade-up class
-      document.querySelectorAll('.fade-up').forEach(el => {
-        observer.observe(el);
-      });
-
-      // Initial trigger for elements already in viewport on load
-      // (The observer usually catches this automatically, but just in case)
-      setTimeout(() => {
-        const scrolled = window.scrollY;
-        if(scrolled === 0) {
-           document.querySelectorAll('.fade-up').forEach(el => {
-              const rect = el.getBoundingClientRect();
-              if(rect.top < window.innerHeight) {
-                 el.classList.add('is-visible');
-                 const targetText = el.getAttribute('data-scramble');
-                 if(targetText) scrambleText(el, targetText);
-                 observer.unobserve(el);
-              }
-           });
-        }
-      }, 100);
-
-    });
-  </script>
 </BaseLayout>
+
+
+<style>
+  .about-meta-row { color: var(--ny-color-text-subtle); font-size: var(--ny-font-size-meta); margin-bottom: 16px; }
+  .about-strip { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
+  .strip-icon { display: none; }
+  .strip-archive-link { display: block; margin-bottom: 8px; }
+  @media (max-width: 560px) { .about-strip { display: block; } }
+</style>

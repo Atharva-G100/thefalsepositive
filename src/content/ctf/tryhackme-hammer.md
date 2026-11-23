@@ -1,6 +1,7 @@
 ---
 title: "Hammer"
 ctf: "TryHackMe"
+category: "machine"
 date: "2026-08-06"
 description: "Authentication bypass via OTP brute force and JWT privilege escalation using an exposed signing key."
 points: 0

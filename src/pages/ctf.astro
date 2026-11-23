@@ -1,162 +1,281 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import PostList from '../theme/layouts/widgets/post-list/PostList.astro';
+import Input from '../theme/layouts/components/Input.astro';
+import CoverImage from '../theme/layouts/components/Image.astro';
+import ctfCover from '../assets/writeups-ctf-night.png';
+import machinesCover from '../assets/writeups-machines-night.png';
+import { getPosts } from '../theme/assets/utils/posts';
 
-// Get all CTF writeups from content collection
-const allWriteups = await getCollection('ctf').catch(() => []);
-
-// Sort by date descending
-const sortedWriteups = allWriteups.sort((a, b) => {
-  const dateA = new Date(a.data.date || 0);
-  const dateB = new Date(b.data.date || 0);
-  return dateB.getTime() - dateA.getTime();
-});
-
-// Group by Year -> CTF
-const groupedByYearAndCtf = sortedWriteups.reduce((acc, writeup) => {
-  const date = writeup.data.date ? new Date(writeup.data.date) : new Date();
-  const year = date.getFullYear().toString();
-  const ctfName = writeup.data.ctf || 'Other';
-  
-  if (!acc[year]) acc[year] = {};
-  if (!acc[year][ctfName]) acc[year][ctfName] = [];
-  
-  acc[year][ctfName].push(writeup);
-  return acc;
-}, {} as Record<string, Record<string, typeof allWriteups>>);
-
-// Get sorted years
-const years = Object.keys(groupedByYearAndCtf).sort((a, b) => Number(b) - Number(a));
-
-// Get tags and their counts
-const tagCounts = allWriteups.reduce((acc, writeup) => {
-  if (writeup.data.tags) {
-    writeup.data.tags.forEach(tag => {
-      acc[tag] = (acc[tag] || 0) + 1;
-    });
-  }
-  return acc;
-}, {} as Record<string, number>);
-const tags = Object.keys(tagCounts).sort();
+const posts = (await getPosts()).sort((a, b) => b.data.publishDate.localeCompare(a.data.publishDate));
+const tags = [...new Set(posts.flatMap(post => post.data.tags))].sort();
+const ctfPosts = posts.filter(post => post.data.category === 'ctf');
+const machinePosts = posts.filter(post => post.data.category === 'machine');
+const eventNames = [...new Set(ctfPosts.map(post => post.data.ctf?.trim() || 'Other'))];
+const events = eventNames.map(name => ({
+  category: 'ctf', name, label: name, categoryLabel: 'CTFs',
+  posts: ctfPosts.filter(post => (post.data.ctf?.trim() || 'Other') === name),
+}));
+const groups = [
+  ...events,
+  { category: 'machine', name: '', label: 'Machines', categoryLabel: 'Machines', posts: machinePosts },
+];
+const categories = [
+  { value: 'ctf', label: 'CTFs', cover: ctfCover, count: ctfPosts.length },
+  { value: 'machine', label: 'Machines', cover: machinesCover, count: machinePosts.length },
+];
+const coverWavePath = 'M0 40 C167 0 333 0 500 40 S833 80 1000 40 S1333 0 1500 40 S1833 80 2000 40 V144 H0 Z';
+const browseHref = (category: string, group?: string) => {
+  const params = new URLSearchParams({ category });
+  if (group) params.set('group', group);
+  return `/ctf?${params}`;
+};
 ---
-<BaseLayout 
-  title="CTF Writeups" 
-  description="CTF writeups by vaLak — every competition documented like a case file."
-  activePage="ctf"
-  extraCss={['/styles/ctf.css']}
->
-  <!-- Full-Width Cinematic Header -->
-  <div class="ctf-hero-banner">
-    <h1 class="ctf-hero-title">Writeups</h1>
+<BaseLayout title="Writeups" activePage="ctf" description="CTF competition writeups and machine walkthroughs.">
+  <h1 id="archive-title">Writeups</h1>
+  <p id="archive-description">Browse CTF competitions and machine walkthroughs.</p>
+
+  <form id="archive-filters" role="search" aria-label="Search writeups">
+    <Input id="writeup-filter" type="search" aria-label="Search writeups" placeholder="Search title, tag or event..." />
+    <select id="filter-tag" aria-label="Tag"><option value="">All tags</option>{tags.map(tag => <option>{tag}</option>)}</select>
+    <button type="reset">Clear</button>
+  </form>
+
+  <nav id="archive-path" aria-label="Writeup hierarchy" hidden>
+    <a href="/ctf" data-archive-link>All writeups</a>
+    <span id="category-path" hidden> / <a id="category-crumb" href="/ctf" data-archive-link></a></span>
+    <span id="group-path" hidden> / <span id="group-crumb" aria-current="page"></span></span>
+  </nav>
+
+  <div class="archive-status-row">
+    <p id="archive-status" role="status">{posts.length} writeups</p>
+    <button id="wave-motion-toggle" type="button" aria-controls="category-tiles" hidden>Play waves</button>
   </div>
 
-  <main class="ctf-blog-layout" id="main-content" style="padding-top: 2.5rem;">
-    
-    <!-- Left Column: Timeline & Tags -->
-    <div class="ctf-blog-main">
-      
-      <!-- Archives / Timeline -->
-      <div class="ctf-timeline">
-        {years.map(year => (
-          <div class="timeline-year-group">
-            <h2 class="timeline-year">{year}</h2>
-            {Object.keys(groupedByYearAndCtf[year]).map(ctfName => (
-              <div class="timeline-ctf-group">
-                <h3 class="timeline-ctf-name">{ctfName}</h3>
-                <ul class="timeline-writeups">
-                  {groupedByYearAndCtf[year][ctfName].map(writeup => {
-                    const date = writeup.data.date ? new Date(writeup.data.date) : new Date();
-                    const monthDay = date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' }).replace('/', '-');
-                    return (
-                      <li class="writeup-item" data-tags={(writeup.data.tags || []).join(',')}>
-                        <span class="timeline-date">{monthDay}</span>
-                        <a href={`/ctf/${writeup.slug}`} class="timeline-link">{writeup.data.title}</a>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
+  <div id="category-tiles" class="tile-grid" data-wave-motion="paused">
+    {categories.map(category => (
+      <a class="category-cover-link" href={browseHref(category.value)} data-archive-link data-category={category.value} data-category-label={category.label}>
+        <div class="cover-art">
+          <CoverImage src={category.cover} alt="" ratio="16 / 9" lightbox={false} />
+          <div class="cover-footer">
+            <svg class="cover-wave" viewBox="0 0 1000 112" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+              <g class="cover-wave-layer cover-wave-back"><path d={coverWavePath} transform="translate(0 -8)" /></g>
+              <g class="cover-wave-layer cover-wave-middle"><path d={coverWavePath} /></g>
+              <g class="cover-wave-layer cover-wave-front"><path d={coverWavePath} transform="translate(0 12)" /></g>
+            </svg>
+            <h2>{category.label}</h2>
+            <span class="cover-count">{category.count} {category.count === 1 ? 'writeup' : 'writeups'}</span>
           </div>
-        ))}
-      </div>
+        </div>
+      </a>
+    ))}
+  </div>
 
+    <div id="ctf-events" class="event-list" hidden>
+      {events.map(event => (
+        <a class="event-link" href={browseHref('ctf', event.name)} data-archive-link>
+          <span class="event-name">{event.label}</span>
+          <span class="event-count">{event.posts.length} {event.posts.length === 1 ? 'writeup' : 'writeups'}</span>
+        </a>
+      ))}
     </div>
 
-    <!-- Right Column: Profile Widget -->
-    <aside class="ctf-blog-sidebar">
-      <details class="widget projects-widget" id="tags-widget">
-        <summary class="widget-header" style="cursor: pointer; user-select: none; list-style: none;">
-          <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="display: flex; align-items: center; gap: 0.5rem;">
-              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-              Filter by Tag
-            </span>
-            <svg class="details-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-          </div>
-        </summary>
-        <div class="tags-grid">
-          {tags.map(tag => (
-            <a href={`/ctf?tag=${tag}`} class="tag-link" data-tag={tag}>
-              <span class="tag-hash">#</span> {tag} <span class="tag-count">({tagCounts[tag]})</span>
-            </a>
-          ))}
-        </div>
-      </details>
-    </aside>
+  <p id="archive-empty" hidden>No writeups match these filters.</p>
+  <div id="writeup-lists" hidden>
+    {groups.map(group => (
+      <section class="writeup-group" data-category={group.category} data-group={group.name} data-group-label={group.label} data-category-label={group.categoryLabel} hidden>
+        <header class="writeup-group-heading">
+          {group.category === 'ctf' && <p class="group-category">{group.categoryLabel}</p>}
+          <h2>{group.label}</h2>
+        </header>
+        <PostList posts={group.posts} />
+      </section>
+    ))}
+  </div>
+  <noscript>
+    <p>All writeups:</p>
+    <ul>{posts.map(post => <li><a href={post.href}>{post.data.title}</a></li>)}</ul>
+  </noscript>
+</BaseLayout>
 
-  </main>
+<script>
+  import { navigate as navigatePage } from 'astro:transitions/client';
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Keep tags open by default on desktop
-      if (window.innerWidth > 900) {
-        const tags = document.getElementById('tags-widget');
-        if (tags) tags.setAttribute('open', '');
+  let archiveController: AbortController | undefined;
+  function setupArchive() {
+    archiveController?.abort();
+    if (!document.querySelector('#archive-filters')) return;
+    archiveController = new AbortController();
+    const { signal } = archiveController;
+    const form = document.querySelector<HTMLFormElement>('#archive-filters')!;
+    const search = document.querySelector<HTMLInputElement>('#writeup-filter')!;
+    const tag = document.querySelector<HTMLSelectElement>('#filter-tag')!;
+    const title = document.querySelector<HTMLElement>('#archive-title')!;
+    const description = document.querySelector<HTMLElement>('#archive-description')!;
+    const categoryTiles = document.querySelector<HTMLElement>('#category-tiles')!;
+    const waveMotionToggle = document.querySelector<HTMLButtonElement>('#wave-motion-toggle')!;
+    let waveMotionChoice: string | null = null;
+    try { waveMotionChoice = sessionStorage.getItem('writeup-wave-motion'); } catch {}
+    function updateWaveMotion() {
+      const playing = waveMotionChoice !== 'paused';
+      categoryTiles.dataset.waveMotion = playing ? 'playing' : 'paused';
+      waveMotionToggle.textContent = playing ? 'Pause waves' : 'Play waves';
+    }
+    waveMotionToggle.addEventListener('click', () => {
+      waveMotionChoice = categoryTiles.dataset.waveMotion === 'playing' ? 'paused' : 'playing';
+      try { sessionStorage.setItem('writeup-wave-motion', waveMotionChoice); } catch {}
+      updateWaveMotion();
+    }, { signal });
+    updateWaveMotion();
+    const categoryLinks = [...categoryTiles.querySelectorAll<HTMLAnchorElement>('[data-category]')];
+    const events = document.querySelector<HTMLElement>('#ctf-events')!;
+    const groups = [...document.querySelectorAll<HTMLElement>('.writeup-group')];
+    const lists = document.querySelector<HTMLElement>('#writeup-lists')!;
+    const empty = document.querySelector<HTMLElement>('#archive-empty')!;
+    const status = document.querySelector<HTMLElement>('#archive-status')!;
+    const path = document.querySelector<HTMLElement>('#archive-path')!;
+    const categoryPath = document.querySelector<HTMLElement>('#category-path')!;
+    const categoryCrumb = document.querySelector<HTMLAnchorElement>('#category-crumb')!;
+    const groupPath = document.querySelector<HTMLElement>('#group-path')!;
+    const groupCrumb = document.querySelector<HTMLElement>('#group-crumb')!;
+    const baseTitle = document.title;
+
+    function readState(url: URL) {
+      const category = categoryLinks.find(link => link.dataset.category === url.searchParams.get('category'))?.dataset.category ?? '';
+      const group = category === 'ctf' ? groups.find(group => group.dataset.category === category && group.dataset.group === url.searchParams.get('group'))?.dataset.group ?? '' : '';
+      const requestedTag = url.searchParams.get('tag') ?? '';
+      return {
+        category,
+        group,
+        q: url.searchParams.get('q') ?? '',
+        tag: [...tag.options].some(option => option.value === requestedTag) ? requestedTag : '',
+      };
+    }
+    let state = readState(new URL(location.href));
+
+    function render() {
+      search.value = state.q;
+      tag.value = state.tag;
+      const selectedCategory = categoryLinks.find(link => link.dataset.category === state.category);
+      const selectedGroup = state.group ? groups.find(group => group.dataset.category === state.category && group.dataset.group === state.group) : undefined;
+      const categoryLabel = selectedCategory?.dataset.categoryLabel ?? '';
+      const groupLabel = selectedGroup?.dataset.groupLabel ?? '';
+      const filtering = Boolean(state.q.trim() || state.tag);
+      const showingPosts = state.category === 'machine' || Boolean(state.group || filtering);
+      const query = state.q.trim().toLowerCase();
+      let count = 0;
+
+      for (const group of groups) {
+        const inScope = (!state.category || group.dataset.category === state.category) && (!state.group || group.dataset.group === state.group);
+        let groupCount = 0;
+        for (const post of group.querySelectorAll<HTMLElement>('.post-summary')) {
+          const text = `${post.textContent} ${post.dataset.tags ?? ''} ${post.dataset.platform ?? ''} ${group.dataset.groupLabel} ${group.dataset.categoryLabel}`.toLowerCase();
+          const matches = inScope && (!state.tag || JSON.parse(post.dataset.tags || '[]').includes(state.tag)) && text.includes(query);
+          post.hidden = !matches;
+          if (matches) groupCount++;
+        }
+        group.hidden = !showingPosts || groupCount === 0;
+        group.querySelector<HTMLElement>('.writeup-group-heading')!.hidden = Boolean(state.group) || state.category === 'machine';
+        count += groupCount;
       }
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const activeTag = urlParams.get('tag');
+      categoryTiles.hidden = Boolean(state.category || showingPosts);
+      waveMotionToggle.hidden = categoryTiles.hidden;
+      events.hidden = showingPosts || state.category !== 'ctf';
+      lists.hidden = !showingPosts;
+      empty.hidden = !showingPosts || count > 0;
+      empty.textContent = filtering ? 'No writeups match these filters.' : 'No writeups published here yet.';
+      title.textContent = groupLabel || categoryLabel || 'Writeups';
+      description.textContent = state.group
+        ? 'Challenge writeups from this competition.'
+        : state.category === 'ctf' ? 'Choose a competition to browse its writeups.'
+        : state.category === 'machine' ? 'Machine walkthroughs and lab notes.'
+        : 'Browse CTF competitions and machine walkthroughs.';
+      document.title = groupLabel || categoryLabel ? `${groupLabel || categoryLabel} | ${baseTitle}` : baseTitle;
 
-      if (!activeTag) return;
+      path.hidden = !state.category && !filtering;
+      categoryPath.hidden = !state.category;
+      categoryCrumb.textContent = categoryLabel;
+      categoryCrumb.href = `/ctf?${new URLSearchParams({ category: state.category })}`;
+      if (!state.group) categoryCrumb.setAttribute('aria-current', 'page');
+      else categoryCrumb.removeAttribute('aria-current');
+      groupPath.hidden = !state.group;
+      groupCrumb.textContent = groupLabel;
+      const grouping = !showingPosts && state.category === 'ctf' ? ` · ${events.querySelectorAll('.event-link').length} events` : '';
+      status.textContent = `${count} ${count === 1 ? 'writeup' : 'writeups'}${grouping}`;
+    }
 
-      // 1. Highlight the active tag and allow toggling it off
-      document.querySelectorAll('.tag-link').forEach(link => {
-        if (link.getAttribute('data-tag') === activeTag) {
-          link.classList.add('active');
-          link.href = '/ctf'; // Click again to clear the filter
-          
-          // Ensure tags widget is open if a tag is active on load (even on mobile)
-          const tags = document.getElementById('tags-widget');
-          if (tags) tags.setAttribute('open', '');
-        }
-      });
-
-      // 2. Filter the writeups
-      document.querySelectorAll('.timeline-year-group').forEach(yearGroup => {
-        let yearHasVisible = false;
-
-        yearGroup.querySelectorAll('.timeline-ctf-group').forEach(ctfGroup => {
-          let ctfHasVisible = false;
-
-          ctfGroup.querySelectorAll('.writeup-item').forEach(item => {
-            const tags = item.getAttribute('data-tags').split(',');
-            if (tags.includes(activeTag)) {
-              item.style.display = ''; // Show
-              ctfHasVisible = true;
-              yearHasVisible = true;
-            } else {
-              item.style.display = 'none'; // Hide
-            }
-          });
-
-          // Hide CTF group if all its writeups are hidden
-          ctfGroup.style.display = ctfHasVisible ? '' : 'none';
-        });
-
-        // Hide Year group if all its CTF groups are hidden
-        yearGroup.style.display = yearHasVisible ? '' : 'none';
-      });
+    function navigate(url: URL) {
+      void navigatePage(url.href).then(() => document.getElementById('archive-title')?.focus({ preventScroll: true }));
+    }
+    title.tabIndex = -1;
+    document.querySelectorAll<HTMLAnchorElement>('[data-archive-link]').forEach(link => {
+      link.addEventListener('click', event => {
+        if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        navigate(new URL(link.href));
+      }, { signal });
     });
-  </script>
-</BaseLayout>
+    function updateFilters() {
+      state.q = search.value;
+      state.tag = tag.value;
+      const url = new URL(location.href);
+      if (state.q) url.searchParams.set('q', state.q);
+      else url.searchParams.delete('q');
+      if (state.tag) url.searchParams.set('tag', state.tag);
+      else url.searchParams.delete('tag');
+      history.replaceState(history.state, '', url);
+      render();
+    }
+    form.addEventListener('submit', event => event.preventDefault(), { signal });
+    form.addEventListener('input', updateFilters, { signal });
+    form.addEventListener('reset', () => queueMicrotask(() => { if (!signal.aborted) updateFilters(); }), { signal });
+    render();
+  }
+  setupArchive();
+  document.addEventListener('astro:page-load', setupArchive);
+  document.addEventListener('astro:before-swap', () => archiveController?.abort());
+</script>
+
+<style>
+  #archive-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 24px 0 20px; }
+  #archive-filters :global(input) { flex: 1 1 260px; min-width: 0; width: auto; height: 36px; font-size: var(--ny-font-size-meta); }
+  select, button { font-family: var(--ny-font-ui); font-size: var(--ny-font-size-meta); line-height: var(--ny-line-height-ui); color: var(--ny-color-text-muted); background: var(--ny-color-surface-container); border: 1px solid var(--ny-color-border); border-radius: var(--ny-radius-sm); padding: 7px 10px; }
+  button { cursor: pointer; }
+  #archive-path { margin: 24px 0 16px; color: var(--ny-color-text-subtle); font-size: var(--ny-font-size-meta); line-height: var(--ny-line-height-prose); overflow-wrap: anywhere; }
+  #archive-path a { color: var(--ny-color-text-muted); }
+  #archive-status { margin: 16px 0; color: var(--ny-color-text-subtle); font-size: var(--ny-font-size-meta); }
+  .archive-status-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  #wave-motion-toggle { padding: 4px 8px; background: transparent; border-color: transparent; }
+  #wave-motion-toggle:hover { color: var(--ny-color-outline); }
+  #wave-motion-toggle:focus-visible { outline: 2px solid var(--ny-color-outline); outline-offset: 2px; }
+  .tile-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 20px; }
+  .category-cover-link { display: block; min-width: 0; text-decoration: none !important; }
+  .cover-art { position: relative; overflow: hidden; border-radius: var(--ny-radius-md); background: var(--ny-color-surface); }
+  .cover-art :global(nayuta-image) { display: block; width: 100%; border: 0; border-radius: 0; }
+  .cover-art :global(nayuta-image[data-fixed-ratio] img) { object-position: center; }
+  .cover-footer { position: relative; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: -1px; padding: 10px 18px 16px; background: var(--ny-color-surface-container); }
+  .cover-wave { position: absolute; left: 0; bottom: calc(100% - 1px); width: 100%; height: 56px; overflow: hidden; pointer-events: none; }
+  .cover-wave-layer { fill: var(--ny-color-surface-container); transform-box: fill-box; animation: cover-wave-drift 8.5s linear infinite; animation-play-state: paused; }
+  #category-tiles[data-wave-motion="playing"] .cover-wave-layer { animation-play-state: running; }
+  .cover-wave-back { fill: color-mix(in srgb, var(--ny-color-outline) 32%, var(--ny-color-surface-container)); opacity: 0.68; animation-duration: 4.5s; animation-delay: -1.2s; animation-direction: reverse; }
+  .cover-wave-middle { fill: color-mix(in srgb, var(--ny-color-primary) 22%, var(--ny-color-surface-container)); opacity: 0.88; animation-duration: 6.5s; animation-delay: -3.4s; }
+  .cover-wave-front { animation-delay: -5.7s; animation-direction: reverse; }
+  @keyframes cover-wave-drift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .cover-footer h2 { margin: 0; padding: 0; border: 0; color: var(--ny-color-text); font-size: var(--ny-font-size-heading); font-weight: 500; line-height: var(--ny-line-height-heading); }
+  .cover-count { flex-shrink: 0; color: var(--ny-color-text-muted); font-size: var(--ny-font-size-ui-small); }
+  .event-count { color: var(--ny-color-text-subtle); font-size: var(--ny-font-size-meta); }
+  .category-cover-link:hover h2, .event-link:hover .event-name { color: var(--ny-color-outline); text-decoration: underline; text-underline-offset: 4px; }
+  .category-cover-link:focus-visible, .event-link:focus-visible { outline: 2px solid var(--ny-color-outline); outline-offset: 4px; }
+  .event-list { margin-top: 24px; border-top: 1px solid var(--ny-color-border); }
+  .event-link { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--ny-color-border); text-decoration: none !important; }
+  .event-name { font-size: var(--ny-font-size-prose); }
+  .event-count { flex-shrink: 0; }
+  .writeup-group + .writeup-group { margin-top: 40px; }
+  .group-category { margin: 28px 0 8px; color: var(--ny-color-text-subtle); font-size: var(--ny-font-size-meta); }
+  .writeup-group-heading h2 { margin-top: 0; }
+  .writeup-group :global(.post-list) { margin-top: 20px; }
+  #archive-title:focus { outline: none; }
+  [hidden], :global(.post-summary[hidden]) { display: none !important; }
+  @media (max-width: 600px) { .tile-grid { grid-template-columns: minmax(0, 1fr); } }
+</style>

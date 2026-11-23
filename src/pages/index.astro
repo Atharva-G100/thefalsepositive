@@ -1,147 +1,40 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import Frame from '../theme/layouts/frame.astro';
+import PostList from '../theme/layouts/widgets/post-list/PostList.astro';
+import config from '../theme/config';
+import { getPosts } from '../theme/assets/utils/posts';
+
+const [writeups, blogPosts] = await Promise.all([getPosts('ctf'), getPosts('blog')]);
+const latestPost = [...writeups, ...blogPosts].sort(
+  (a, b) => (Date.parse(b.data.publishDate) || 0) - (Date.parse(a.data.publishDate) || 0),
+)[0];
+const description = 'Notes from security labs, CTFs, and things I’m figuring out.';
 ---
-<BaseLayout 
-  title="vaLak" 
-  description="A cybersecurity notebook by vaLak. Pentesting journey, CTF writeups, and daily cyber news - themed around the Death Note universe."
-  extraCss={['/styles/home.css']}
->
-  
-  <main class="page-wrapper" id="main-content">
 
-    <!-- ── Hero ── -->
-    <section class="hero" aria-label="Introduction">
-      <div class="hero-title-container">
-        <h1 class="visually-hidden">The False Positive</h1>
-        <img 
-          src="/assets/The_False_Positive_removed_bg.png" 
-          alt="The False Positive" 
-          class="hero-title-graphic" 
-          loading="eager"
-        />
-      </div>
-
-      <div class="hero-quote-container">
-        <blockquote class="hero-quote">
-          &#8220;There is a 94% probability that the person reading this
-          is trying to get better at hacking.&#8221;
-        </blockquote>
-      </div>
-
-      <p class="hero-desc">
-        A personal notebook built for the me who was navigating TryHackMe,
-        HackTheBox, and the overwhelming world of ethical hacking. Every technique,
-        every command, every case file - documented like evidence.
-      </p>
-
-      <div class="hero-cta">
-        <a href="/pentest" class="btn btn-primary" id="hero-enter-btn">
-          Open the Note
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
-        </a>
-      </div>
-
-      <div class="l-probability" aria-label="L probability estimate">
-        <span>I am va</span><span class="prob-val">L</span><span>ak. The L is not a coincidence.</span>
-      </div>
-
-      <div class="scroll-hint" aria-hidden="true">
-        <span>SCROLL</span>
-        <div class="scroll-arrow"></div>
-      </div>
+<Frame title={config.title} description={description} isHome>
+  <section class="home-welcome" aria-labelledby="welcome-title">
+    <h1 id="welcome-title">The False Positive</h1>
+    <p>{description}</p>
+    <nav class="welcome-links" aria-label="Explore posts">
+      <a href="/ctf">Read writeups</a>
+      <a href="/blog">Blog</a>
+    </nav>
+  </section>
+  {latestPost && (
+    <section class="latest-section" aria-label="Latest post">
+      <p class="section-label">Latest post <span> / {latestPost.collection === 'ctf' ? 'Writeup' : 'Blog'}</span></p>
+      <PostList posts={[latestPost]} />
     </section>
+  )}
+</Frame>
 
-    <!-- ── Death Note Book Parallax Section ── -->
-    <div class="parallax-section" aria-label="Death Note Artifact">
-      <div class="parallax-bg" style="background-image: url('/assets/death_note_book.png');"></div>
-      <div class="parallax-overlay">
-        <p class="parallax-text">The system whose vulnerabilities are written in this notebook shall fall.</p>
-      </div>
-    </div>
-
-    <!-- ── Section Cards ── -->
-    <section class="home-sections" aria-label="Navigate to sections">
-      <p class="home-sections-title">The Notebook</p>
-      <div class="home-cards" role="list">
-
-        <!-- Pentest Handbook -->
-        <a href="/pentest" class="home-card" role="listitem" id="card-pentest" aria-label="Pentest Handbook">
-          <span class="card-number">01</span>
-          <span class="card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="1em" height="1em" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
-          </span>
-          <h2 class="card-title">Pentest Handbook</h2>
-          <p class="card-desc">
-            Every technique. Every command. Every methodology - organized by category
-            and written like case notes. Red-Teaming, Web Attacks, Active Directory.
-          </p>
-          <span class="card-arrow">
-            Open Handbook
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </span>
-        </a>
-
-        <!-- CTF Writeups -->
-        <a href="/ctf" class="home-card" role="listitem" id="card-ctf" aria-label="CTF Writeups">
-          <span class="card-number">02</span>
-          <span class="card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="1em" height="1em" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
-          </span>
-          <h2 class="card-title">CTF Writeups</h2>
-          <p class="card-desc">
-            Every competition is a case. Every challenge is a suspect.
-            Writeups from CTFs - documented with methodology, tools used, and lessons learned.
-          </p>
-          <span class="card-arrow">
-            Open Writeups
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </span>
-        </a>
-
-        <!-- Cyber Intel -->
-        <a href="/news" class="home-card" role="listitem" id="card-news" aria-label="Cyber Intel News">
-          <span class="card-number">03</span>
-          <span class="card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="1em" height="1em" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg>
-          </span>
-          <h2 class="card-title">Cyber Intel</h2>
-          <p class="card-desc">
-            Daily intelligence from the field. Live cybersecurity news -
-            vulnerabilities, breaches, tools, and threat reports. Refreshed automatically.
-          </p>
-          <span class="card-arrow">
-            View Intel Feed
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </span>
-        </a>
-
-      </div>
-    </section>
-
-    <!-- ── About Strip ── -->
-    <section class="home-about" aria-label="About vaLak">
-      <div class="about-l-image" aria-hidden="true">
-        <img src="/assets/l_hero.jpg" alt="L Lawliet - vaLak" class="about-l-portrait" loading="lazy" />
-      </div>
-      <h2 class="about-handle">va<span class="handle-l">L</span>ak</h2>
-      <p class="about-text">
-        Navigating the world of ethical hacking and cybersecurity - one challenge at a time.
-        This notebook documents the journey. The wins, the failures, the "aha" moments.
-        Everything written in red ink, in the style of L himself.
-        <br /><br />
-        <em class="text-silver">"Watashi wa L desu."</em>
-      </p>
-    </section>
-
-  </main>
-
-</BaseLayout>
-
+<style>
+  .home-welcome, .latest-section { max-width: 800px; }
+  h1 { margin-bottom: 20px; font-size: var(--ny-font-size-title); font-weight: 700; line-height: var(--ny-line-height-title); }
+  .home-welcome p { color: var(--ny-color-text-muted); font-size: var(--ny-font-size-prose); line-height: var(--ny-line-height-prose); }
+  .welcome-links { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 20px; font-size: var(--ny-font-size-prose-small); }
+  .latest-section { margin-top: 36px; }
+  .section-label { margin-bottom: 16px; color: var(--ny-color-text-muted); font-size: var(--ny-font-size-meta); }
+  .section-label span { color: var(--ny-color-text-subtle); }
+  .latest-section :global(.post-list) { margin-top: 0; }
+</style>

@@ -1,0 +1,413 @@
+---
+import YouTubeMusic from './YouTubeMusic.astro';
+interface Props { aboveContextButton?: boolean; }
+const { aboveContextButton = false } = Astro.props;
+---
+<nayuta-page-tools class:list={{ 'above-context': aboveContextButton }}>
+  <div id="page-tools-menu" class="tools-menu" role="group" aria-label="Page tools" hidden>
+    <button type="button" class="tool-button" data-open-panel="music-panel" aria-label="Music" title="Music" aria-haspopup="dialog">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l11-2v13M9 9l11-2" /><ellipse cx="6" cy="18" rx="3" ry="3" /><ellipse cx="17" cy="16" rx="3" ry="3" /></svg>
+    </button>
+    <button type="button" class="tool-button" data-open-panel="reading-settings" aria-label="Reading settings" title="Reading settings" aria-haspopup="dialog">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3-1 3-3 1 1 3-2 2 2 2-1 3 3 1 1 3h6l1-3 3-1-1-3 2-2-2-2 1-3-3-1-1-3Z" /><circle cx="12" cy="12" r="3" /></svg>
+    </button>
+    <button type="button" class="tool-button" data-scroll="top" aria-label="Back to top" title="Back to top">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6" /></svg>
+    </button>
+    <button type="button" class="tool-button" data-scroll="bottom" aria-label="Go to bottom" title="Go to bottom">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+    </button>
+  </div>
+  <aside class="music-tip" data-music-tip aria-label="Music controls tip" hidden>
+    <button type="button" class="tip-close" data-dismiss-music-tip aria-label="Dismiss music tip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
+    <strong data-music-tip-title>A little background music</strong>
+    <p data-music-tip-message role="status">Use this button to pause music or adjust the volume.</p>
+    <button type="button" class="tip-action" data-tip-open-music>Open music controls <span aria-hidden="true">↗</span></button>
+  </aside>
+  <button type="button" class="tools-trigger" aria-label="Open page tools" title="Open page tools" aria-controls="page-tools-menu" aria-expanded="false" hidden>
+    <svg class="tools-mark" viewBox="0 0 40 40" aria-hidden="true">
+      <rect class="tools-equalizer-bar" x="8" y="8" width="3" height="24" rx="1.5" />
+      <rect class="tools-equalizer-bar" x="13" y="8" width="3" height="24" rx="1.5" />
+      <rect class="tools-equalizer-bar" x="18" y="8" width="3" height="24" rx="1.5" />
+      <rect class="tools-equalizer-bar" x="23" y="8" width="3" height="24" rx="1.5" />
+      <rect class="tools-equalizer-bar" x="28" y="8" width="3" height="24" rx="1.5" />
+    </svg>
+    <svg class="tools-close" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+  </button>
+
+  <dialog id="reading-settings" class="tools-panel" aria-labelledby="reading-settings-title">
+    <div class="panel-header">
+      <h2 id="reading-settings-title">Reading settings</h2>
+      <button type="button" class="panel-close" data-close-panel aria-label="Close reading settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
+    </div>
+    <p class="panel-note">For articles, writeups, and notes.</p>
+    <form id="reading-settings-form">
+      <fieldset class="font-field">
+        <legend>Font</legend>
+        <div class="font-options">
+          <label><input type="radio" name="reading-font" value="theme" checked /><span>Theme</span></label>
+          <label><input type="radio" name="reading-font" value="system" /><span>System</span></label>
+          <label><input type="radio" name="reading-font" value="serif" /><span>Serif</span></label>
+        </div>
+      </fieldset>
+      <div class="setting-row">
+        <label for="reading-size">Font size</label>
+        <div class="stepper">
+          <button type="button" data-adjust="size" data-direction="-1" aria-label="Decrease font size">−</button>
+          <div class="number-field"><input id="reading-size" type="number" min="14" max="22" step="1" value="16" /><span aria-hidden="true">px</span></div>
+          <button type="button" data-adjust="size" data-direction="1" aria-label="Increase font size">+</button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <label for="reading-line-height">Line spacing</label>
+        <div class="stepper">
+          <button type="button" data-adjust="lineHeight" data-direction="-1" aria-label="Decrease line spacing">−</button>
+          <input id="reading-line-height" type="number" min="1.4" max="2.2" step="0.05" value="1.75" />
+          <button type="button" data-adjust="lineHeight" data-direction="1" aria-label="Increase line spacing">+</button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <label for="reading-measure">Text width</label>
+        <select id="reading-measure"><option value="auto">Auto</option><option value="60ch">60 characters</option><option value="72ch">72 characters</option><option value="84ch">84 characters</option></select>
+      </div>
+      <div class="setting-row">
+        <label for="reading-justify">Justify text</label>
+        <input id="reading-justify" type="checkbox" role="switch" />
+      </div>
+      <button type="reset" class="reset-reading">Reset to theme defaults</button>
+    </form>
+  </dialog>
+
+  <dialog id="music-panel" class="tools-panel music-panel" aria-labelledby="music-panel-title">
+    <div class="panel-header">
+      <h2 id="music-panel-title">Music</h2>
+      <button type="button" class="panel-close" data-close-panel aria-label="Close music"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
+    </div>
+    <YouTubeMusic />
+  </dialog>
+</nayuta-page-tools>
+
+<script>
+  import { applyReadingPreferences, loadReadingPreferences, normalizeReadingPreferences, readingDefaults, saveReadingPreferences } from '../theme/assets/utils/reading-preferences';
+
+  class NayutaPageTools extends HTMLElement {
+    private controller?: AbortController;
+
+    connectedCallback() {
+      this.controller?.abort();
+      this.controller = new AbortController();
+      const { signal } = this.controller;
+      const trigger = this.querySelector<HTMLButtonElement>('.tools-trigger')!;
+      const menu = this.querySelector<HTMLElement>('.tools-menu')!;
+      const dialogs = [...this.querySelectorAll<HTMLDialogElement>('dialog')];
+      const form = this.querySelector<HTMLFormElement>('#reading-settings-form')!;
+      const sizeInput = this.querySelector<HTMLInputElement>('#reading-size')!;
+      const lineInput = this.querySelector<HTMLInputElement>('#reading-line-height')!;
+      const measureInput = this.querySelector<HTMLSelectElement>('#reading-measure')!;
+      const justifyInput = this.querySelector<HTMLInputElement>('#reading-justify')!;
+      const musicDialog = dialogs.find(dialog => dialog.id === 'music-panel')!;
+      const tip = this.querySelector<HTMLElement>('[data-music-tip]')!;
+      const tipAction = this.querySelector<HTMLButtonElement>('[data-tip-open-music]')!;
+      let tipDismissed = false;
+      let tipShown = false;
+      let tipHovered = false;
+      let tipRemaining = 10000;
+      let tipVisibleSince = 0;
+      let restoreMusicFocus = true;
+      const skipFocusRestore = new WeakSet<HTMLDialogElement>();
+      try { tipDismissed = sessionStorage.getItem('nayuta-music-tip-dismissed') === '1'; } catch { /* The tip can still be dismissed without storage. */ }
+      let tipHideTimer: ReturnType<typeof setTimeout> | undefined;
+      let tipShowTimer: ReturnType<typeof setTimeout> | undefined;
+      const pauseTipClock = () => {
+        clearTimeout(tipHideTimer);
+        if (tipVisibleSince) tipRemaining = Math.max(0, tipRemaining - (Date.now() - tipVisibleSince));
+        tipVisibleSince = 0;
+      };
+      const dismissMusicTip = () => {
+        pauseTipClock();
+        tip.hidden = true;
+        tipDismissed = true;
+        clearTimeout(tipShowTimer);
+        clearTimeout(tipHideTimer);
+        try { sessionStorage.setItem('nayuta-music-tip-dismissed', '1'); } catch { /* Dismissal still applies to this page. */ }
+      };
+      const resumeTipClock = () => {
+        if (tip.hidden || document.hidden || tipHovered || tip.contains(document.activeElement) || tipVisibleSince) return;
+        if (tipRemaining <= 0) { dismissMusicTip(); return; }
+        tipVisibleSince = Date.now();
+        tipHideTimer = setTimeout(dismissMusicTip, tipRemaining);
+      };
+      const scheduleMusicTip = () => {
+        if (tipDismissed || tipShown || tipShowTimer || document.hidden || !this.querySelector('nayuta-youtube-music')) return;
+        if (!this.dataset.musicState || this.dataset.musicState === 'loading') return;
+        tipShowTimer = setTimeout(() => {
+          tipShowTimer = undefined;
+          if (tipDismissed || document.hidden || this.dataset.musicState === 'loading') return;
+          tipShown = true;
+          tip.hidden = false;
+          resumeTipClock();
+        }, 1200);
+      };
+      tip.addEventListener('pointerenter', () => { tipHovered = true; pauseTipClock(); }, { signal });
+      tip.addEventListener('pointerleave', () => { tipHovered = false; resumeTipClock(); }, { signal });
+      tip.addEventListener('focusin', pauseTipClock, { signal });
+      tip.addEventListener('focusout', () => queueMicrotask(resumeTipClock), { signal });
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) pauseTipClock();
+        else { scheduleMusicTip(); resumeTipClock(); }
+      }, { signal });
+      signal.addEventListener('abort', () => { clearTimeout(tipShowTimer); clearTimeout(tipHideTimer); }, { once: true });
+      this.querySelector('[data-dismiss-music-tip]')?.addEventListener('click', dismissMusicTip, { signal });
+      this.addEventListener('nayuta:music-state', event => {
+        const { state } = (event as CustomEvent<{ state: string; volume: number }>).detail;
+        this.dataset.musicState = state;
+        tipAction.innerHTML = state === 'blocked' ? 'Play music <span aria-hidden="true">↗</span>' : 'Open music controls <span aria-hidden="true">↗</span>';
+        scheduleMusicTip();
+      }, { signal });
+      let preferences = loadReadingPreferences();
+
+      function setMenu(open: boolean, restoreFocus = false) {
+        menu.hidden = !open;
+        trigger.setAttribute('aria-expanded', String(open));
+        trigger.setAttribute('aria-label', open ? 'Close page tools' : 'Open page tools');
+        trigger.title = open ? 'Close page tools' : 'Open page tools';
+        if (restoreFocus) trigger.focus();
+      }
+      const openMusicPanel = () => {
+        dismissMusicTip();
+        setMenu(false);
+        restoreMusicFocus = true;
+        if (!musicDialog.open) musicDialog.show();
+      };
+      tipAction.addEventListener('click', () => {
+        const shouldPlay = this.dataset.musicState === 'blocked';
+        openMusicPanel();
+        if (shouldPlay) this.querySelector('nayuta-youtube-music')?.dispatchEvent(new Event('nayuta:music-play'));
+      }, { signal });
+      trigger.addEventListener('click', () => { dismissMusicTip(); setMenu(menu.hidden); }, { signal });
+      document.addEventListener('pointerdown', event => {
+        if (this.contains(event.target as Node)) return;
+        if (musicDialog.open) { restoreMusicFocus = false; musicDialog.close(); }
+        if (!dialogs.some(dialog => dialog.open)) setMenu(false);
+      }, { signal });
+      document.addEventListener('keydown', event => {
+        const music = dialogs.find(dialog => dialog.id === 'music-panel');
+        if (event.key === 'Escape' && music?.open && !dialogs.some(dialog => dialog !== music && dialog.open)) {
+          event.preventDefault();
+          music.close();
+          return;
+        }
+        if (event.key === 'Escape' && !tip.hidden && !dialogs.some(dialog => dialog.open)) { dismissMusicTip(); return; }
+        if (event.key === 'Escape' && !menu.hidden && !dialogs.some(dialog => dialog.open)) {
+          event.preventDefault();
+          setMenu(false, true);
+        }
+      }, { signal });
+      this.querySelectorAll<HTMLButtonElement>('[data-open-panel]').forEach(button => {
+        const dialog = dialogs.find(dialog => dialog.id === button.dataset.openPanel)!;
+        button.addEventListener('click', () => {
+          if (dialog.id === 'music-panel') {
+            openMusicPanel();
+          } else {
+            dialogs.find(panel => panel.id === 'music-panel')?.close();
+            dialog.showModal();
+          }
+        }, { signal });
+        dialog.addEventListener('close', () => {
+          if (skipFocusRestore.delete(dialog)) return;
+          if (dialog === musicDialog && !restoreMusicFocus) { restoreMusicFocus = true; return; }
+          if (!dialogs.some(panel => panel.open)) (menu.hidden ? trigger : button).focus({ preventScroll: true });
+        }, { signal });
+        dialog.querySelector('[data-close-panel]')?.addEventListener('click', () => dialog.close(), { signal });
+        dialog.addEventListener('click', event => {
+          const rect = dialog.getBoundingClientRect();
+          if (event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) dialog.close();
+        }, { signal });
+        dialog.addEventListener('keydown', event => {
+          if (dialog.id === 'music-panel') return;
+          if (event.key !== 'Tab') return;
+          const focusable = [...dialog.querySelectorAll<HTMLElement>('button, input, select, audio[controls], [tabindex]')]
+            .filter(element => element.tabIndex >= 0 && !element.matches(':disabled') && element.getClientRects().length);
+          const first = focusable[0];
+          const last = focusable.at(-1);
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last?.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first?.focus();
+          }
+        }, { signal });
+      });
+      this.querySelectorAll<HTMLButtonElement>('[data-scroll]').forEach(button => {
+        button.addEventListener('click', () => {
+          const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+          setMenu(false);
+          document.getElementById('reading-start')?.focus({ preventScroll: true });
+          window.scrollTo({ top: button.dataset.scroll === 'top' ? 0 : document.documentElement.scrollHeight, behavior: reducedMotion ? 'instant' : 'smooth' });
+        }, { signal });
+      });
+
+      const syncReadingSettings = () => {
+        applyReadingPreferences(preferences);
+        this.querySelectorAll<HTMLInputElement>('[name="reading-font"]').forEach(input => { input.checked = input.value === preferences.font; });
+        sizeInput.value = String(preferences.size);
+        lineInput.value = String(preferences.lineHeight);
+        measureInput.value = preferences.measure;
+        justifyInput.checked = preferences.justify;
+        this.querySelectorAll<HTMLButtonElement>('[data-adjust]').forEach(button => {
+          const isSize = button.dataset.adjust === 'size';
+          const value = isSize ? preferences.size : preferences.lineHeight;
+          button.disabled = Number(button.dataset.direction) < 0 ? value <= (isSize ? 14 : 1.4) : value >= (isSize ? 22 : 2.2);
+        });
+      };
+      const save = () => { saveReadingPreferences(preferences); syncReadingSettings(); };
+      form.addEventListener('submit', event => event.preventDefault(), { signal });
+      form.addEventListener('input', () => {
+        if (!sizeInput.validity.valid || !lineInput.validity.valid) return;
+        preferences = normalizeReadingPreferences({
+          font: this.querySelector<HTMLInputElement>('[name="reading-font"]:checked')?.value,
+          size: sizeInput.valueAsNumber, lineHeight: lineInput.valueAsNumber,
+          measure: measureInput.value, justify: justifyInput.checked,
+        });
+        save();
+      }, { signal });
+      this.querySelectorAll<HTMLButtonElement>('[data-adjust]').forEach(button => {
+        button.addEventListener('click', () => {
+          const field = button.dataset.adjust === 'size' ? 'size' : 'lineHeight';
+          preferences = normalizeReadingPreferences({ ...preferences, [field]: preferences[field] + Number(button.dataset.direction) * (field === 'size' ? 1 : 0.05) });
+          save();
+        }, { signal });
+      });
+      form.addEventListener('reset', event => { event.preventDefault(); preferences = { ...readingDefaults }; save(); }, { signal });
+      syncReadingSettings();
+
+      document.addEventListener('astro:before-swap', () => {
+        dialogs.filter(dialog => dialog.open).forEach(dialog => { skipFocusRestore.add(dialog); dialog.close(); });
+        setMenu(false);
+      }, { signal });
+      document.addEventListener('astro:after-swap', () => {
+        this.inert = false;
+        this.classList.toggle('above-context', Boolean(document.getElementById('open-context-btn')));
+        applyReadingPreferences(preferences);
+      }, { signal });
+
+      this.dataset.musicState = this.querySelector<HTMLElement>('nayuta-youtube-music')?.dataset.state || this.dataset.musicState || 'loading';
+      scheduleMusicTip();
+      trigger.hidden = false;
+    }
+
+    disconnectedCallback() {
+      this.controller?.abort();
+      this.querySelectorAll<HTMLDialogElement>('dialog[open]').forEach(dialog => dialog.close());
+    }
+  }
+  if (!customElements.get('nayuta-page-tools')) customElements.define('nayuta-page-tools', NayutaPageTools);
+</script>
+
+<style>
+  nayuta-page-tools { --tools-bottom: calc(20px + env(safe-area-inset-bottom, 0px)); position: fixed; right: calc(16px + env(safe-area-inset-right, 0px)); bottom: var(--tools-bottom); z-index: 1100; font-family: var(--ny-font-ui); font-size: var(--ny-font-size-ui); }
+  button, input, select { font: inherit; color: var(--ny-color-text); }
+  button { cursor: pointer; }
+  button:disabled { opacity: 0.35; cursor: default; }
+  button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--ny-color-outline); outline-offset: 3px; }
+  svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .tools-trigger, .tool-button { display: grid; place-items: center; padding: 0; border: 1px solid var(--ny-color-border); border-radius: 50%; background: var(--ny-color-surface-container); color: var(--ny-color-outline); box-shadow: 0 2px 8px var(--ny-color-shadow); }
+  .tools-trigger { width: 48px; height: 48px; border-color: var(--ny-color-primary); }
+  .tools-trigger::after { content: ''; position: absolute; right: 2px; bottom: 1px; width: 7px; height: 7px; border: 2px solid var(--ny-color-bg); border-radius: 50%; background: var(--ny-color-outline); opacity: 0; transition: opacity 200ms ease; }
+  [data-music-state="playing"] .tools-trigger::after { opacity: 1; }
+  .music-tip { position: absolute; right: 62px; bottom: 0; width: min(250px, calc(100vw - 104px)); padding: 15px 16px 13px; border: 1px solid color-mix(in srgb, var(--ny-color-primary) 30%, var(--ny-color-border)); border-radius: 10px; background: var(--ny-color-surface); color: var(--ny-color-text); box-shadow: 0 8px 30px #0005; animation: music-tip-in 240ms ease-out; }
+  .music-tip[hidden] { display: none; }
+  .music-tip::after { content: ''; position: absolute; right: -5px; bottom: 18px; width: 8px; height: 8px; transform: rotate(45deg); border-top: 1px solid color-mix(in srgb, var(--ny-color-primary) 30%, var(--ny-color-border)); border-right: 1px solid color-mix(in srgb, var(--ny-color-primary) 30%, var(--ny-color-border)); background: var(--ny-color-surface); }
+  .music-tip strong { display: block; padding-right: 16px; font-size: 12px; font-weight: 600; }
+  .music-tip p { margin: 8px 0 10px; color: var(--ny-color-text-muted); font-size: 11px; line-height: 1.65; }
+  .tip-close { position: absolute; top: 8px; right: 7px; display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 0; background: none; color: var(--ny-color-text-subtle); }
+  .tip-close svg { width: 13px; height: 13px; }
+  .tip-action { display: flex; justify-content: space-between; gap: 10px; width: 100%; padding: 0; border: 0; background: none; color: var(--ny-color-outline); font-size: 10px; text-align: left; }
+  @keyframes music-tip-in { from { opacity: 0; transform: translate(5px, 3px); } to { opacity: 1; transform: none; } }
+  .tools-trigger[hidden], .tools-menu[hidden] { display: none; }
+  .tools-mark, .tools-close { grid-area: 1 / 1; transition: opacity 220ms ease, transform 260ms cubic-bezier(0.2, 0.65, 0.3, 1); }
+  .tools-mark { width: 34px; height: 34px; fill: currentColor; stroke: none; }
+  /* Keep this requested control animation active independently of reading-motion preferences. */
+  .tools-equalizer-bar { transform-origin: 20px 32px; animation: tools-equalizer 4.8s ease-in-out infinite; }
+  .tools-equalizer-bar:nth-child(2) { animation-delay: -0.8s; }
+  .tools-equalizer-bar:nth-child(3) { animation-delay: -1.6s; }
+  .tools-equalizer-bar:nth-child(4) { animation-delay: -2.4s; }
+  .tools-equalizer-bar:nth-child(5) { animation-delay: -3.2s; }
+  .tools-close { width: 26px; height: 26px; opacity: 0; transform: rotate(-45deg) scale(0.7); }
+  .tools-trigger[aria-expanded="true"] .tools-mark { opacity: 0; transform: translateY(4px) scale(0.7); }
+  .tools-trigger[aria-expanded="true"] .tools-equalizer-bar { animation-play-state: paused; }
+  .tools-trigger[aria-expanded="true"] .tools-close { opacity: 1; transform: none; }
+  @keyframes tools-equalizer { 0%, 100% { transform: scaleY(0.42); } 50% { transform: scaleY(0.88); } }
+  .tools-menu { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .tool-button { width: 42px; height: 42px; }
+  .tool-button, .tools-trigger { transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease; }
+  .tools-menu:not([hidden]) .tool-button { animation: tools-button-in 180ms ease-out backwards; }
+  .tools-menu .tool-button:nth-child(1) { animation-delay: 105ms; }
+  .tools-menu .tool-button:nth-child(2) { animation-delay: 70ms; }
+  .tools-menu .tool-button:nth-child(3) { animation-delay: 35ms; }
+  @keyframes tools-button-in { from { opacity: 0; transform: translateY(8px) scale(0.96); } to { opacity: 1; transform: none; } }
+  .tool-button:hover, .tools-trigger:hover { background: var(--ny-color-surface-elevated); border-color: var(--ny-color-primary); }
+  .tools-panel { position: fixed; inset: auto calc(80px + env(safe-area-inset-right, 0px)) var(--tools-bottom) auto; width: min(350px, calc(100vw - 100px)); max-height: min(560px, calc(100svh - 40px)); margin: 0; padding: 20px; overflow: auto; border: 1px solid var(--ny-color-border); border-radius: var(--ny-radius-lg); background: var(--ny-color-surface); color: var(--ny-color-text); box-shadow: 0 12px 48px rgba(0, 0, 0, 0.35); color-scheme: dark; }
+  .music-panel { width: min(300px, calc(100vw - 100px)); max-height: min(500px, calc(100svh - 40px)); padding: 12px; background: linear-gradient(155deg, color-mix(in srgb, var(--ny-color-primary) 4%, var(--ny-color-surface)), var(--ny-color-surface) 60%); }
+  .music-panel .panel-header { margin-bottom: 6px; }
+  .music-panel .panel-header h2 { font-size: 12px; letter-spacing: 0.02em; }
+  .music-panel .panel-close { width: 26px; height: 26px; }
+  #reading-settings { width: min(300px, calc(100vw - 32px)); padding: 14px; }
+  #reading-settings .panel-header { margin-bottom: 8px; }
+  #reading-settings .panel-header h2 { font-size: 14px; }
+  #reading-settings .panel-close { width: 28px; height: 28px; }
+  #reading-settings .panel-note { margin-bottom: 12px; font-size: var(--ny-font-size-ui-meta); line-height: 1.5; }
+  .tools-panel::backdrop { background: rgba(4, 9, 17, 0.25); }
+  .tools-panel { opacity: 0; transform: translateY(6px) scale(0.98); transform-origin: bottom right; transition: opacity 180ms ease, transform 180ms ease, display 180ms allow-discrete, overlay 180ms allow-discrete; }
+  .tools-panel[open] { opacity: 1; transform: none; }
+  .tools-panel:not([open]) { pointer-events: none; }
+  .tools-panel::backdrop { opacity: 0; transition: opacity 180ms ease, display 180ms allow-discrete, overlay 180ms allow-discrete; }
+  .tools-panel[open]::backdrop { opacity: 1; }
+  @starting-style {
+    .tools-panel[open] { opacity: 0; transform: translateY(6px) scale(0.98); }
+    .tools-panel[open]::backdrop { opacity: 0; }
+  }
+  .panel-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .panel-header h2 { margin: 0; font-size: var(--ny-font-size-prose); font-weight: 600; line-height: 1.4; }
+  .panel-close { display: grid; place-items: center; width: 30px; height: 30px; padding: 0; background: none; border: 0; color: var(--ny-color-text-muted); }
+  .panel-close:hover { color: var(--ny-color-outline); }
+  .panel-note { margin: 0 0 20px; color: var(--ny-color-text-subtle); font-size: var(--ny-font-size-ui-small); line-height: 1.6; }
+  fieldset { min-width: 0; border: 0; }
+  legend { margin-bottom: 6px; color: var(--ny-color-text-muted); }
+  .font-field { padding: 0 0 12px; }
+  .font-options { display: flex; gap: 6px; }
+  .font-options label { position: relative; flex: 1; cursor: pointer; }
+  .font-options input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .font-options span { display: block; text-align: center; padding: 4px 6px; border: 1px solid var(--ny-color-border); border-radius: var(--ny-radius-sm); background: var(--ny-color-surface-container); }
+  .font-options input:checked + span { border-color: var(--ny-color-primary); background: color-mix(in srgb, var(--ny-color-primary) 20%, var(--ny-color-surface-container)); color: var(--ny-color-outline); }
+  .font-options input:focus-visible + span { outline: 2px solid var(--ny-color-outline); outline-offset: 3px; }
+  .setting-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid var(--ny-color-border); }
+  .setting-row > label { color: var(--ny-color-text-muted); }
+  .stepper { display: flex; align-items: center; gap: 4px; }
+  .stepper button { width: 26px; height: 28px; border: 0; background: none; color: var(--ny-color-outline); font-size: 18px; }
+  .stepper input { width: 58px; height: 28px; padding: 4px; text-align: center; border: 1px solid var(--ny-color-border); border-radius: var(--ny-radius-sm); background: var(--ny-color-bg); appearance: textfield; -moz-appearance: textfield; }
+  .stepper input::-webkit-inner-spin-button, .stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  .number-field { position: relative; }
+  .number-field input { padding-right: 22px; }
+  .number-field span { position: absolute; right: 7px; top: 5px; color: var(--ny-color-text-subtle); font-size: var(--ny-font-size-ui-meta); pointer-events: none; }
+  select { max-width: 160px; min-width: 0; padding: 6px 8px; border: 1px solid var(--ny-color-border); border-radius: var(--ny-radius-sm); background: var(--ny-color-bg); }
+  .setting-row select { max-width: 140px; padding: 4px 6px; }
+  #reading-justify { appearance: none; width: 34px; height: 20px; padding: 3px; border: 1px solid var(--ny-color-border); border-radius: 20px; background: var(--ny-color-bg); cursor: pointer; }
+  #reading-justify::before { content: ''; display: block; width: 12px; height: 12px; border-radius: 50%; background: var(--ny-color-text-subtle); }
+  #reading-justify:checked { background: var(--ny-color-primary); border-color: var(--ny-color-primary); }
+  #reading-justify:checked::before { transform: translateX(14px); background: var(--ny-color-text); }
+  .reset-reading { width: 100%; margin-top: 6px; padding: 7px; border: 1px solid var(--ny-color-border); border-radius: var(--ny-radius-sm); background: var(--ny-color-surface-container); color: var(--ny-color-text-muted); font-size: var(--ny-font-size-ui-small); }
+  .reset-reading:hover { color: var(--ny-color-outline); }
+  :global([data-reading-content] .prose) { --ny-font-prose: var(--reader-font, var(--ny-font-ui)); --ny-font-size-prose: var(--reader-size, 1rem); --ny-font-size-prose-small: calc(var(--reader-size, 1rem) * 0.875); --ny-line-height-prose: var(--reader-line-height, 1.75); max-width: var(--reader-measure, 100%); margin-inline: auto; }
+  :global([data-reading-content] .prose p), :global([data-reading-content] .prose li) { text-align: var(--reader-align, start); }
+  @media (max-width: 1120px) { nayuta-page-tools.above-context { --tools-bottom: calc(62px + env(safe-area-inset-bottom, 0px)); } }
+  @media (max-width: 600px) { .tools-panel { right: calc(16px + env(safe-area-inset-right, 0px)); bottom: calc(var(--tools-bottom) + 60px); width: calc(100vw - 32px - env(safe-area-inset-right, 0px)); max-height: calc(100svh - var(--tools-bottom) - 88px); } .music-panel { width: min(300px, calc(100% - 32px - env(safe-area-inset-right, 0px))); } }
+  @media (hover: hover) and (pointer: fine) { .tool-button:hover, .tools-trigger:hover { transform: scale(1.06); } }
+  @media (prefers-reduced-motion: reduce) {
+    .music-tip { animation: none; }
+    .tools-menu:not([hidden]) .tool-button { animation: none; }
+    .tool-button, .tools-trigger, .tools-panel, .tools-panel::backdrop { transition: none; }
+    .tool-button:hover, .tools-trigger:hover { transform: none; }
+  }
+</style>

@@ -1,0 +1,54 @@
+---
+import { getPosts } from '../../../assets/utils/posts';
+import PostListItem from './PostListItem.astro';
+interface Props { posts: Awaited<ReturnType<typeof getPosts>>; }
+const { posts } = Astro.props;
+const summaries = await Promise.all(posts.map(async (post) => {
+  const { remarkPluginFrontmatter } = await post.render();
+  return {
+    platform: post.data.ctf ?? '', tags: post.data.tags,
+    category: post.data.category ?? '',
+    href: post.href, title: post.data.title,
+    publishDate: post.data.publishDate,
+    readingTimeMinutes: remarkPluginFrontmatter.readingTimeMinutes,
+    description: post.data.description,
+  };
+}));
+---
+<nayuta-post-list>
+  <div class="post-list">
+    {summaries.map(item => <PostListItem item={item} attributes={{ "data-platform": item.platform, "data-tags": JSON.stringify(item.tags), "data-category": item.category }} />)}
+  </div>
+</nayuta-post-list>
+<style>
+  nayuta-post-list {
+    display: block;
+  }
+
+  nayuta-post-list[hidden] {
+    display: none;
+  }
+
+  .post-list {
+    display: flex;
+    flex-direction: column;
+    gap: calc(2 * var(--ny-space-4));
+    margin-top: var(--ny-space-6);
+  }
+
+  .post-status {
+    color: var(--ny-color-text-muted);
+  }
+
+  .post-status[data-announcement] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>

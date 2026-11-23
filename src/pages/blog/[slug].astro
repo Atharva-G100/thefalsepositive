@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPosts } from '../../theme/assets/utils/posts';
+import { formatReadingTime } from '../../theme/assets/utils/reading-time';
+
+export async function getStaticPaths() {
+  const posts = await getPosts('blog');
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content, headings, remarkPluginFrontmatter } = await post.render();
+const readingTime = formatReadingTime(remarkPluginFrontmatter.readingTimeMinutes);
+const breadcrumbs = [
+  { text: 'Home', href: '/' },
+  { text: 'Blog', href: '/blog' },
+  { text: post.data.title, href: post.href },
+];
+---
+
+<BaseLayout title={post.data.title} description={post.data.description} activePage="blog" isPost headings={headings} breadcrumbs={breadcrumbs}>
+  <article>
+    <h1>{post.data.title}</h1>
+    <p class="post-meta">Published: {post.data.publishDate} &nbsp;·&nbsp; Reading Time: {readingTime}</p>
+    <Content />
+  </article>
+</BaseLayout>
+
+<style>
+  :global(.prose) .post-meta {
+    color: var(--ny-color-text-subtle);
+    font-size: var(--ny-font-size-meta);
+    line-height: var(--ny-line-height-compact);
+    margin-bottom: var(--ny-space-5);
+  }
+</style>
