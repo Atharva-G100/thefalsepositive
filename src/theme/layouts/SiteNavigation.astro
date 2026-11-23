@@ -1,0 +1,43 @@
+---
+import { ClientRouter } from 'astro:transitions';
+---
+
+<ClientRouter fallback="swap" />
+
+<script>
+  import { swapFunctions } from 'astro:transitions/client';
+
+  document.addEventListener('astro:before-swap', event => {
+    const currentPage = document.getElementById('site-page');
+    const nextPage = event.newDocument.getElementById('site-page');
+    if (!currentPage || !nextPage) return;
+
+    // Astro can emit page scripts after the layout; include them in the swapped region.
+    for (const script of event.newDocument.body.querySelectorAll('script')) {
+      if (!nextPage.contains(script)) nextPage.append(script);
+    }
+
+    for (const script of document.scripts) {
+      script.dataset.astroExec = '';
+      // YouTube injects its SDK into the head, including while its API is still loading.
+      if (script.parentElement === document.head && script.src.startsWith('https://www.youtube.com/')) {
+        script.setAttribute('data-astro-transition-persist', `music-sdk:${new URL(script.src).pathname}`);
+        event.newDocument.head.append(script.cloneNode(false));
+      }
+    }
+
+    event.swap = () => {
+      const incoming = event.newDocument;
+      swapFunctions.deselectScripts(incoming);
+      swapFunctions.swapRootAttributes(incoming);
+      swapFunctions.swapHeadElements(incoming);
+      const restoreFocus = swapFunctions.saveFocus();
+      for (const attribute of [...document.body.attributes]) document.body.removeAttribute(attribute.name);
+      for (const attribute of incoming.body.attributes) document.body.setAttribute(attribute.name, attribute.value);
+      document.querySelectorAll('.astro-route-announcer').forEach(element => element.remove());
+      // Keep the body, tools, and YouTube iframe connected. Moving an iframe reloads its stream.
+      swapFunctions.swapBodyElement(nextPage, currentPage);
+      restoreFocus();
+    };
+  });
+</script>

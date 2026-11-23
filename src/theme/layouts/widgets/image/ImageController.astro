@@ -8,6 +8,8 @@
 </script>
 
 <script>
+  document.addEventListener('astro:after-swap', () => { document.documentElement.dataset.nyImages = ''; });
+
   class NayutaImage extends HTMLElement {
     private image?: HTMLImageElement;
     private controller?: AbortController;

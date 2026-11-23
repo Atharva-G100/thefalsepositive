@@ -99,134 +99,142 @@ const browseHref = (category: string, group?: string) => {
 </BaseLayout>
 
 <script>
-  const form = document.querySelector<HTMLFormElement>('#archive-filters')!;
-  const search = document.querySelector<HTMLInputElement>('#writeup-filter')!;
-  const tag = document.querySelector<HTMLSelectElement>('#filter-tag')!;
-  const title = document.querySelector<HTMLElement>('#archive-title')!;
-  const description = document.querySelector<HTMLElement>('#archive-description')!;
-  const categoryTiles = document.querySelector<HTMLElement>('#category-tiles')!;
-  const waveMotionToggle = document.querySelector<HTMLButtonElement>('#wave-motion-toggle')!;
-  let waveMotionChoice: string | null = null;
-  try { waveMotionChoice = sessionStorage.getItem('writeup-wave-motion'); } catch {}
-  function updateWaveMotion() {
-    const playing = waveMotionChoice !== 'paused';
-    categoryTiles.dataset.waveMotion = playing ? 'playing' : 'paused';
-    waveMotionToggle.textContent = playing ? 'Pause waves' : 'Play waves';
-  }
-  waveMotionToggle.addEventListener('click', () => {
-    waveMotionChoice = categoryTiles.dataset.waveMotion === 'playing' ? 'paused' : 'playing';
-    try { sessionStorage.setItem('writeup-wave-motion', waveMotionChoice); } catch {}
+  import { navigate as navigatePage } from 'astro:transitions/client';
+
+  let archiveController: AbortController | undefined;
+  function setupArchive() {
+    archiveController?.abort();
+    if (!document.querySelector('#archive-filters')) return;
+    archiveController = new AbortController();
+    const { signal } = archiveController;
+    const form = document.querySelector<HTMLFormElement>('#archive-filters')!;
+    const search = document.querySelector<HTMLInputElement>('#writeup-filter')!;
+    const tag = document.querySelector<HTMLSelectElement>('#filter-tag')!;
+    const title = document.querySelector<HTMLElement>('#archive-title')!;
+    const description = document.querySelector<HTMLElement>('#archive-description')!;
+    const categoryTiles = document.querySelector<HTMLElement>('#category-tiles')!;
+    const waveMotionToggle = document.querySelector<HTMLButtonElement>('#wave-motion-toggle')!;
+    let waveMotionChoice: string | null = null;
+    try { waveMotionChoice = sessionStorage.getItem('writeup-wave-motion'); } catch {}
+    function updateWaveMotion() {
+      const playing = waveMotionChoice !== 'paused';
+      categoryTiles.dataset.waveMotion = playing ? 'playing' : 'paused';
+      waveMotionToggle.textContent = playing ? 'Pause waves' : 'Play waves';
+    }
+    waveMotionToggle.addEventListener('click', () => {
+      waveMotionChoice = categoryTiles.dataset.waveMotion === 'playing' ? 'paused' : 'playing';
+      try { sessionStorage.setItem('writeup-wave-motion', waveMotionChoice); } catch {}
+      updateWaveMotion();
+    }, { signal });
     updateWaveMotion();
-  });
-  updateWaveMotion();
-  const categoryLinks = [...categoryTiles.querySelectorAll<HTMLAnchorElement>('[data-category]')];
-  const events = document.querySelector<HTMLElement>('#ctf-events')!;
-  const groups = [...document.querySelectorAll<HTMLElement>('.writeup-group')];
-  const lists = document.querySelector<HTMLElement>('#writeup-lists')!;
-  const empty = document.querySelector<HTMLElement>('#archive-empty')!;
-  const status = document.querySelector<HTMLElement>('#archive-status')!;
-  const path = document.querySelector<HTMLElement>('#archive-path')!;
-  const categoryPath = document.querySelector<HTMLElement>('#category-path')!;
-  const categoryCrumb = document.querySelector<HTMLAnchorElement>('#category-crumb')!;
-  const groupPath = document.querySelector<HTMLElement>('#group-path')!;
-  const groupCrumb = document.querySelector<HTMLElement>('#group-crumb')!;
-  const baseTitle = document.title;
+    const categoryLinks = [...categoryTiles.querySelectorAll<HTMLAnchorElement>('[data-category]')];
+    const events = document.querySelector<HTMLElement>('#ctf-events')!;
+    const groups = [...document.querySelectorAll<HTMLElement>('.writeup-group')];
+    const lists = document.querySelector<HTMLElement>('#writeup-lists')!;
+    const empty = document.querySelector<HTMLElement>('#archive-empty')!;
+    const status = document.querySelector<HTMLElement>('#archive-status')!;
+    const path = document.querySelector<HTMLElement>('#archive-path')!;
+    const categoryPath = document.querySelector<HTMLElement>('#category-path')!;
+    const categoryCrumb = document.querySelector<HTMLAnchorElement>('#category-crumb')!;
+    const groupPath = document.querySelector<HTMLElement>('#group-path')!;
+    const groupCrumb = document.querySelector<HTMLElement>('#group-crumb')!;
+    const baseTitle = document.title;
 
-  function readState(url: URL) {
-    const category = categoryLinks.find(link => link.dataset.category === url.searchParams.get('category'))?.dataset.category ?? '';
-    const group = category === 'ctf' ? groups.find(group => group.dataset.category === category && group.dataset.group === url.searchParams.get('group'))?.dataset.group ?? '' : '';
-    const requestedTag = url.searchParams.get('tag') ?? '';
-    return {
-      category,
-      group,
-      q: url.searchParams.get('q') ?? '',
-      tag: [...tag.options].some(option => option.value === requestedTag) ? requestedTag : '',
-    };
-  }
-  let state = readState(new URL(location.href));
+    function readState(url: URL) {
+      const category = categoryLinks.find(link => link.dataset.category === url.searchParams.get('category'))?.dataset.category ?? '';
+      const group = category === 'ctf' ? groups.find(group => group.dataset.category === category && group.dataset.group === url.searchParams.get('group'))?.dataset.group ?? '' : '';
+      const requestedTag = url.searchParams.get('tag') ?? '';
+      return {
+        category,
+        group,
+        q: url.searchParams.get('q') ?? '',
+        tag: [...tag.options].some(option => option.value === requestedTag) ? requestedTag : '',
+      };
+    }
+    let state = readState(new URL(location.href));
 
-  function render() {
-    search.value = state.q;
-    tag.value = state.tag;
-    const selectedCategory = categoryLinks.find(link => link.dataset.category === state.category);
-    const selectedGroup = state.group ? groups.find(group => group.dataset.category === state.category && group.dataset.group === state.group) : undefined;
-    const categoryLabel = selectedCategory?.dataset.categoryLabel ?? '';
-    const groupLabel = selectedGroup?.dataset.groupLabel ?? '';
-    const filtering = Boolean(state.q.trim() || state.tag);
-    const showingPosts = state.category === 'machine' || Boolean(state.group || filtering);
-    const query = state.q.trim().toLowerCase();
-    let count = 0;
+    function render() {
+      search.value = state.q;
+      tag.value = state.tag;
+      const selectedCategory = categoryLinks.find(link => link.dataset.category === state.category);
+      const selectedGroup = state.group ? groups.find(group => group.dataset.category === state.category && group.dataset.group === state.group) : undefined;
+      const categoryLabel = selectedCategory?.dataset.categoryLabel ?? '';
+      const groupLabel = selectedGroup?.dataset.groupLabel ?? '';
+      const filtering = Boolean(state.q.trim() || state.tag);
+      const showingPosts = state.category === 'machine' || Boolean(state.group || filtering);
+      const query = state.q.trim().toLowerCase();
+      let count = 0;
 
-    for (const group of groups) {
-      const inScope = (!state.category || group.dataset.category === state.category) && (!state.group || group.dataset.group === state.group);
-      let groupCount = 0;
-      for (const post of group.querySelectorAll<HTMLElement>('.post-summary')) {
-        const text = `${post.textContent} ${post.dataset.tags ?? ''} ${post.dataset.platform ?? ''} ${group.dataset.groupLabel} ${group.dataset.categoryLabel}`.toLowerCase();
-        const matches = inScope && (!state.tag || JSON.parse(post.dataset.tags || '[]').includes(state.tag)) && text.includes(query);
-        post.hidden = !matches;
-        if (matches) groupCount++;
+      for (const group of groups) {
+        const inScope = (!state.category || group.dataset.category === state.category) && (!state.group || group.dataset.group === state.group);
+        let groupCount = 0;
+        for (const post of group.querySelectorAll<HTMLElement>('.post-summary')) {
+          const text = `${post.textContent} ${post.dataset.tags ?? ''} ${post.dataset.platform ?? ''} ${group.dataset.groupLabel} ${group.dataset.categoryLabel}`.toLowerCase();
+          const matches = inScope && (!state.tag || JSON.parse(post.dataset.tags || '[]').includes(state.tag)) && text.includes(query);
+          post.hidden = !matches;
+          if (matches) groupCount++;
+        }
+        group.hidden = !showingPosts || groupCount === 0;
+        group.querySelector<HTMLElement>('.writeup-group-heading')!.hidden = Boolean(state.group) || state.category === 'machine';
+        count += groupCount;
       }
-      group.hidden = !showingPosts || groupCount === 0;
-      group.querySelector<HTMLElement>('.writeup-group-heading')!.hidden = Boolean(state.group) || state.category === 'machine';
-      count += groupCount;
+
+      categoryTiles.hidden = Boolean(state.category || showingPosts);
+      waveMotionToggle.hidden = categoryTiles.hidden;
+      events.hidden = showingPosts || state.category !== 'ctf';
+      lists.hidden = !showingPosts;
+      empty.hidden = !showingPosts || count > 0;
+      empty.textContent = filtering ? 'No writeups match these filters.' : 'No writeups published here yet.';
+      title.textContent = groupLabel || categoryLabel || 'Writeups';
+      description.textContent = state.group
+        ? 'Challenge writeups from this competition.'
+        : state.category === 'ctf' ? 'Choose a competition to browse its writeups.'
+        : state.category === 'machine' ? 'Machine walkthroughs and lab notes.'
+        : 'Browse CTF competitions and machine walkthroughs.';
+      document.title = groupLabel || categoryLabel ? `${groupLabel || categoryLabel} | ${baseTitle}` : baseTitle;
+
+      path.hidden = !state.category && !filtering;
+      categoryPath.hidden = !state.category;
+      categoryCrumb.textContent = categoryLabel;
+      categoryCrumb.href = `/ctf?${new URLSearchParams({ category: state.category })}`;
+      if (!state.group) categoryCrumb.setAttribute('aria-current', 'page');
+      else categoryCrumb.removeAttribute('aria-current');
+      groupPath.hidden = !state.group;
+      groupCrumb.textContent = groupLabel;
+      const grouping = !showingPosts && state.category === 'ctf' ? ` · ${events.querySelectorAll('.event-link').length} events` : '';
+      status.textContent = `${count} ${count === 1 ? 'writeup' : 'writeups'}${grouping}`;
     }
 
-    categoryTiles.hidden = Boolean(state.category || showingPosts);
-    waveMotionToggle.hidden = categoryTiles.hidden;
-    events.hidden = showingPosts || state.category !== 'ctf';
-    lists.hidden = !showingPosts;
-    empty.hidden = !showingPosts || count > 0;
-    empty.textContent = filtering ? 'No writeups match these filters.' : 'No writeups published here yet.';
-    title.textContent = groupLabel || categoryLabel || 'Writeups';
-    description.textContent = state.group
-      ? 'Challenge writeups from this competition.'
-      : state.category === 'ctf' ? 'Choose a competition to browse its writeups.'
-      : state.category === 'machine' ? 'Machine walkthroughs and lab notes.'
-      : 'Browse CTF competitions and machine walkthroughs.';
-    document.title = groupLabel || categoryLabel ? `${groupLabel || categoryLabel} | ${baseTitle}` : baseTitle;
-
-    path.hidden = !state.category && !filtering;
-    categoryPath.hidden = !state.category;
-    categoryCrumb.textContent = categoryLabel;
-    categoryCrumb.href = `/ctf?${new URLSearchParams({ category: state.category })}`;
-    if (!state.group) categoryCrumb.setAttribute('aria-current', 'page');
-    else categoryCrumb.removeAttribute('aria-current');
-    groupPath.hidden = !state.group;
-    groupCrumb.textContent = groupLabel;
-    const grouping = !showingPosts && state.category === 'ctf' ? ` · ${events.querySelectorAll('.event-link').length} events` : '';
-    status.textContent = `${count} ${count === 1 ? 'writeup' : 'writeups'}${grouping}`;
-  }
-
-  function navigate(url: URL) {
-    if (url.href !== location.href) history.pushState(null, '', url);
-    state = readState(url);
-    render();
-    title.focus({ preventScroll: true });
-  }
-  title.tabIndex = -1;
-  document.querySelectorAll<HTMLAnchorElement>('[data-archive-link]').forEach(link => {
-    link.addEventListener('click', event => {
-      if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-      event.preventDefault();
-      navigate(new URL(link.href));
+    function navigate(url: URL) {
+      void navigatePage(url.href).then(() => document.getElementById('archive-title')?.focus({ preventScroll: true }));
+    }
+    title.tabIndex = -1;
+    document.querySelectorAll<HTMLAnchorElement>('[data-archive-link]').forEach(link => {
+      link.addEventListener('click', event => {
+        if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        navigate(new URL(link.href));
+      }, { signal });
     });
-  });
-  function updateFilters() {
-    state.q = search.value;
-    state.tag = tag.value;
-    const url = new URL(location.href);
-    if (state.q) url.searchParams.set('q', state.q);
-    else url.searchParams.delete('q');
-    if (state.tag) url.searchParams.set('tag', state.tag);
-    else url.searchParams.delete('tag');
-    history.replaceState(null, '', url);
+    function updateFilters() {
+      state.q = search.value;
+      state.tag = tag.value;
+      const url = new URL(location.href);
+      if (state.q) url.searchParams.set('q', state.q);
+      else url.searchParams.delete('q');
+      if (state.tag) url.searchParams.set('tag', state.tag);
+      else url.searchParams.delete('tag');
+      history.replaceState(history.state, '', url);
+      render();
+    }
+    form.addEventListener('submit', event => event.preventDefault(), { signal });
+    form.addEventListener('input', updateFilters, { signal });
+    form.addEventListener('reset', () => queueMicrotask(() => { if (!signal.aborted) updateFilters(); }), { signal });
     render();
   }
-  form.addEventListener('submit', event => event.preventDefault());
-  form.addEventListener('input', updateFilters);
-  form.addEventListener('reset', () => requestAnimationFrame(updateFilters));
-  window.addEventListener('popstate', () => { state = readState(new URL(location.href)); render(); });
-  render();
+  setupArchive();
+  document.addEventListener('astro:page-load', setupArchive);
+  document.addEventListener('astro:before-swap', () => archiveController?.abort());
 </script>
 
 <style>
