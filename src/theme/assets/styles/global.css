@@ -59,6 +59,7 @@
   /* Overlays & Translucent Surfaces (Derived from theme background) */
   --ny-color-mask: color-mix(in srgb, var(--ny-color-bg) 80%, transparent);
   --ny-color-header-bg: color-mix(in srgb, var(--ny-color-bg) 85%, transparent);
+  --ny-color-scrollbar: color-mix(in srgb, var(--ny-color-primary) 70%, var(--ny-color-surface-elevated));
 }
 
 @media (max-width: 768px) {
@@ -71,6 +72,43 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+/* Share the same quiet scrollbar across pages, sidebars, and tool panels. */
+@media (forced-colors: none) {
+  @supports selector(::-webkit-scrollbar) {
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track,
+    ::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--ny-color-scrollbar);
+      border-radius: 999px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--ny-color-outline);
+    }
+
+    ::-webkit-scrollbar-button {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--ny-color-scrollbar) transparent;
+    }
+  }
 }
 
 body {
