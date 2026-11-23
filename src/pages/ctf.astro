@@ -106,11 +106,10 @@ const browseHref = (category: string, group?: string) => {
   const description = document.querySelector<HTMLElement>('#archive-description')!;
   const categoryTiles = document.querySelector<HTMLElement>('#category-tiles')!;
   const waveMotionToggle = document.querySelector<HTMLButtonElement>('#wave-motion-toggle')!;
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let waveMotionChoice: string | null = null;
   try { waveMotionChoice = sessionStorage.getItem('writeup-wave-motion'); } catch {}
   function updateWaveMotion() {
-    const playing = waveMotionChoice ? waveMotionChoice === 'playing' : !reducedMotion.matches;
+    const playing = waveMotionChoice !== 'paused';
     categoryTiles.dataset.waveMotion = playing ? 'playing' : 'paused';
     waveMotionToggle.textContent = playing ? 'Pause waves' : 'Play waves';
   }
@@ -119,7 +118,6 @@ const browseHref = (category: string, group?: string) => {
     try { sessionStorage.setItem('writeup-wave-motion', waveMotionChoice); } catch {}
     updateWaveMotion();
   });
-  reducedMotion.addEventListener('change', updateWaveMotion);
   updateWaveMotion();
   const categoryLinks = [...categoryTiles.querySelectorAll<HTMLAnchorElement>('[data-category]')];
   const events = document.querySelector<HTMLElement>('#ctf-events')!;
