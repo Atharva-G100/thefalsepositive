@@ -28,7 +28,7 @@ const { aboveContextButton = false } = Astro.props;
       <h2 id="reading-settings-title">Reading settings</h2>
       <button type="button" class="panel-close" data-close-panel aria-label="Close reading settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
     </div>
-    <p class="panel-note">For articles, writeups, and archived notes.</p>
+    <p class="panel-note">For articles, writeups, and notes.</p>
     <form id="reading-settings-form">
       <fieldset class="font-field">
         <legend>Font</legend>
@@ -224,6 +224,11 @@ const { aboveContextButton = false } = Astro.props;
   .tool-button { width: 42px; height: 42px; }
   .tool-button:hover, .tools-trigger:hover { background: var(--ny-color-surface-elevated); border-color: var(--ny-color-primary); }
   .tools-panel { position: fixed; inset: auto calc(80px + env(safe-area-inset-right, 0px)) var(--tools-bottom) auto; width: min(350px, calc(100vw - 100px)); max-height: min(560px, calc(100svh - 40px)); margin: 0; padding: 20px; overflow: auto; border: 1px solid var(--ny-color-border); border-radius: var(--ny-radius-lg); background: var(--ny-color-surface); color: var(--ny-color-text); box-shadow: 0 12px 48px rgba(0, 0, 0, 0.35); color-scheme: dark; }
+  #reading-settings { width: min(300px, calc(100vw - 32px)); padding: 14px; }
+  #reading-settings .panel-header { margin-bottom: 8px; }
+  #reading-settings .panel-header h2 { font-size: 14px; }
+  #reading-settings .panel-close { width: 28px; height: 28px; }
+  #reading-settings .panel-note { margin-bottom: 12px; font-size: var(--ny-font-size-ui-meta); line-height: 1.5; }
   .tools-panel::backdrop { background: rgba(4, 9, 17, 0.25); }
   .panel-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
   .panel-header h2 { margin: 0; font-size: var(--ny-font-size-prose); font-weight: 600; line-height: 1.4; }
@@ -231,29 +236,30 @@ const { aboveContextButton = false } = Astro.props;
   .panel-close:hover { color: var(--ny-color-outline); }
   .panel-note { margin: 0 0 20px; color: var(--ny-color-text-subtle); font-size: var(--ny-font-size-ui-small); line-height: 1.6; }
   fieldset { min-width: 0; border: 0; }
-  legend { margin-bottom: 10px; color: var(--ny-color-text-muted); }
-  .font-field { padding: 0 0 18px; }
+  legend { margin-bottom: 6px; color: var(--ny-color-text-muted); }
+  .font-field { padding: 0 0 12px; }
   .font-options { display: flex; gap: 6px; }
   .font-options label { position: relative; flex: 1; cursor: pointer; }
   .font-options input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-  .font-options span { display: block; text-align: center; padding: 7px 8px; border: 1px solid var(--ny-color-border); border-radius: var(--ny-radius-sm); background: var(--ny-color-surface-container); }
+  .font-options span { display: block; text-align: center; padding: 4px 6px; border: 1px solid var(--ny-color-border); border-radius: var(--ny-radius-sm); background: var(--ny-color-surface-container); }
   .font-options input:checked + span { border-color: var(--ny-color-primary); background: color-mix(in srgb, var(--ny-color-primary) 20%, var(--ny-color-surface-container)); color: var(--ny-color-outline); }
   .font-options input:focus-visible + span { outline: 2px solid var(--ny-color-outline); outline-offset: 3px; }
-  .setting-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 16px 0; border-top: 1px solid var(--ny-color-border); }
+  .setting-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid var(--ny-color-border); }
   .setting-row > label { color: var(--ny-color-text-muted); }
-  .stepper { display: flex; align-items: center; gap: 5px; }
-  .stepper button { width: 28px; height: 32px; border: 0; background: none; color: var(--ny-color-outline); font-size: 18px; }
-  .stepper input { width: 66px; height: 32px; padding: 4px; text-align: center; border: 1px solid var(--ny-color-border); border-radius: var(--ny-radius-sm); background: var(--ny-color-bg); appearance: textfield; -moz-appearance: textfield; }
+  .stepper { display: flex; align-items: center; gap: 4px; }
+  .stepper button { width: 26px; height: 28px; border: 0; background: none; color: var(--ny-color-outline); font-size: 18px; }
+  .stepper input { width: 58px; height: 28px; padding: 4px; text-align: center; border: 1px solid var(--ny-color-border); border-radius: var(--ny-radius-sm); background: var(--ny-color-bg); appearance: textfield; -moz-appearance: textfield; }
   .stepper input::-webkit-inner-spin-button, .stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
   .number-field { position: relative; }
   .number-field input { padding-right: 22px; }
-  .number-field span { position: absolute; right: 7px; top: 7px; color: var(--ny-color-text-subtle); font-size: var(--ny-font-size-ui-meta); pointer-events: none; }
+  .number-field span { position: absolute; right: 7px; top: 5px; color: var(--ny-color-text-subtle); font-size: var(--ny-font-size-ui-meta); pointer-events: none; }
   select { max-width: 160px; min-width: 0; padding: 6px 8px; border: 1px solid var(--ny-color-border); border-radius: var(--ny-radius-sm); background: var(--ny-color-bg); }
+  .setting-row select { max-width: 140px; padding: 4px 6px; }
   #reading-justify { appearance: none; width: 34px; height: 20px; padding: 3px; border: 1px solid var(--ny-color-border); border-radius: 20px; background: var(--ny-color-bg); cursor: pointer; }
   #reading-justify::before { content: ''; display: block; width: 12px; height: 12px; border-radius: 50%; background: var(--ny-color-text-subtle); }
   #reading-justify:checked { background: var(--ny-color-primary); border-color: var(--ny-color-primary); }
   #reading-justify:checked::before { transform: translateX(14px); background: var(--ny-color-text); }
-  .reset-reading { width: 100%; margin-top: 8px; padding: 9px; border: 1px solid var(--ny-color-border); border-radius: var(--ny-radius-sm); background: var(--ny-color-surface-container); color: var(--ny-color-text-muted); }
+  .reset-reading { width: 100%; margin-top: 6px; padding: 7px; border: 1px solid var(--ny-color-border); border-radius: var(--ny-radius-sm); background: var(--ny-color-surface-container); color: var(--ny-color-text-muted); font-size: var(--ny-font-size-ui-small); }
   .reset-reading:hover { color: var(--ny-color-outline); }
   .music-empty { padding: 14px 0 6px; color: var(--ny-color-text-muted); line-height: 1.75; }
   .music-content { display: grid; gap: 12px; }
