@@ -1,0 +1,91 @@
+---
+import config from '../config';
+
+const navigation = (config.links ?? []).filter(link => link.text && link.url?.startsWith('/'));
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (url?: string) => url === '/' ? pathname === '/' : Boolean(url && (pathname === url || pathname.startsWith(`${url}/`)));
+---
+
+<header class="site-header">
+  <a class="site-brand" href="/" aria-label="The False Positive home">
+    <img src={config.avatar} width="28" height="28" alt="" />
+    <span>{config.author}</span>
+  </a>
+  <nav class="desktop-navigation" aria-label="Main navigation">
+    {navigation.map(link => <a href={link.url} aria-current={isCurrent(link.url) ? 'page' : undefined}>{link.text}</a>)}
+  </nav>
+  <div class="header-actions">
+    <a class="github-link" href="https://github.com/Atharva-G100" aria-label="GitHub profile">
+      <i class="fa-brands fa-github" aria-hidden="true"></i>
+    </a>
+    <button class="mobile-widgets-btn" id="open-widgets-btn" type="button" aria-label="Open Sidebar" title="Search and widgets" aria-controls="widgets-drawer" aria-expanded="false">
+      <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+    </button>
+    <details class="mobile-navigation">
+      <summary>Menu <span aria-hidden="true">+</span></summary>
+      <nav aria-label="Mobile navigation">
+        {navigation.map(link => <a href={link.url} aria-current={isCurrent(link.url) ? 'page' : undefined}>{link.text}</a>)}
+      </nav>
+    </details>
+  </div>
+</header>
+
+<script>
+  const menu = document.querySelector<HTMLDetailsElement>('.mobile-navigation');
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && menu?.open) {
+      menu.open = false;
+      menu.querySelector('summary')?.focus();
+    }
+  });
+  document.addEventListener('click', event => {
+    if (menu?.open && event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+  });
+</script>
+
+<style>
+  .site-header {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    width: calc(100% - 2 * var(--ny-shell-gutter));
+    max-width: calc(var(--ny-shell-width) - 2 * var(--ny-shell-gutter));
+    min-height: 48px;
+    padding: 8px 16px;
+    border: 1px solid rgba(213, 231, 255, 0.18);
+    border-radius: var(--ny-radius-md);
+    background: rgba(12, 20, 32, 0.42);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    backdrop-filter: blur(18px) saturate(130%);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  }
+  .site-brand { display: inline-flex; align-items: center; gap: 10px; font-size: var(--ny-font-size-ui); font-weight: 600; text-decoration: none; }
+  .site-brand img { display: block; border-radius: var(--ny-radius-sm); }
+  .desktop-navigation { display: flex; align-items: center; gap: 24px; margin-left: auto; }
+  .desktop-navigation a, .mobile-navigation a { color: #d3deec; font-size: var(--ny-font-size-ui-small); text-decoration: none; }
+  .desktop-navigation a:hover, .mobile-navigation a:hover,
+  .desktop-navigation a[aria-current], .mobile-navigation a[aria-current] { color: var(--ny-color-outline); }
+  .header-actions { display: flex; align-items: center; gap: 18px; }
+  .github-link { display: inline-flex; font-size: 18px; text-decoration: none; }
+  .mobile-navigation, .mobile-widgets-btn { display: none; }
+  .mobile-widgets-btn { align-items: center; justify-content: center; width: 28px; height: 28px; border: 0; background: transparent; color: var(--ny-color-text-muted); cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--ny-color-outline); outline-offset: 4px; }
+  @media (max-width: 768px) {
+    .site-header { top: 12px; gap: 12px; padding: 8px 12px; }
+    .desktop-navigation { display: none; }
+    .header-actions { margin-left: auto; gap: 14px; }
+    .mobile-navigation { display: block; }
+    :global(html[data-drawers-ready]) .mobile-widgets-btn { display: inline-flex; }
+    .mobile-navigation summary { display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none; font-size: var(--ny-font-size-ui-small); }
+    .mobile-navigation summary::-webkit-details-marker { display: none; }
+    .mobile-navigation[open] summary span { transform: rotate(45deg); }
+    .mobile-navigation nav { position: absolute; top: calc(100% + 10px); right: 0; display: flex; flex-direction: column; min-width: 190px; padding: 10px; border: 1px solid var(--ny-color-border); border-radius: var(--ny-radius-md); background: rgba(14, 23, 37, 0.97); backdrop-filter: blur(18px); }
+    .mobile-navigation nav a { padding: 10px 14px; }
+  }
+  @media (max-width: 360px) { .site-brand span { display: none; } }
+</style>

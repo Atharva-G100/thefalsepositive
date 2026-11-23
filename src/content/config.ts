@@ -7,6 +7,7 @@ const ctfCollection = defineCollection({
     title: z.string(),
     date: z.string().optional(),
     ctf: z.string().optional(),
+    category: z.enum(['ctf', 'machine']).default('ctf'),
     description: z.string().optional(),
     icon: z.string().optional(),
     points: z.number().optional(),
@@ -31,7 +32,19 @@ const handbookCollection = defineCollection({
   }),
 });
 
+const blogCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    date: z.string(),
+    description: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+    draft: z.boolean().default(false),
+  }),
+});
+
 export const collections = {
   ctf: ctfCollection,
   handbook: handbookCollection,
+  blog: blogCollection,
 };

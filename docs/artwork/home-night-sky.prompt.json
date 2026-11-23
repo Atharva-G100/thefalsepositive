@@ -1,0 +1,10 @@
+{
+  "tool": "built-in image_gen",
+  "reference": "User-supplied night-sky wallpaper (not tracked)",
+  "asset": "../../src/assets/home-night-sky-sharp.png",
+  "actualDimensions": {
+    "width": 1746,
+    "height": 901
+  },
+  "prompt": "Use case: precise-object-edit, resolution and detail restoration.\nAsset type: high-resolution full-width website background banner.\nInput image 1 is the edit target. Make a faithful high-resolution restoration of this exact blue anime night landscape. Requested output size: 3840 x 1984 pixels, landscape, maximum available detail. Preserve the composition, horizon, mountain silhouettes, tiny distant town lights, lake, cloud shapes, diagonal Milky Way, original navy/teal/icy-blue palette and dark calm exposure. Change only fidelity: resolve individual tiny sharp stars, delicate cloud edges, crisp mountain ridges, and fine distant lights without adding objects. This must still look like the same wallpaper, not a redesigned scene. Sharp clean drawn details and smooth high-quality sky gradients. Keep the original illustration style. No text, no logos, no watermark, no UI. Avoid blur, soft-focus, excessive glow, grain, oversharpening halos, enlarged stars, extra celestial bodies, or a brighter palette. Return the restored image as a production background asset."
+}

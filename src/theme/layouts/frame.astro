@@ -1,0 +1,269 @@
+---
+import type { MarkdownHeading } from 'astro';
+import { Image } from 'astro:assets';
+import HeadBase from './head-base.astro';
+import SiteHeader from './site-header.astro';
+import nightSky from '../../assets/home-night-sky-sharp.png';
+import ImageController from './widgets/image/ImageController.astro';
+import ImageLightbox from './widgets/image/ImageLightbox.astro';
+import LeftSidebar from './left-sidebar.astro';
+import RightSidebar from './right-sidebar.astro';
+import SidebarFooter from './sidebar-footer.astro';
+import TableOfContents from '../widgets/sidebar/TableOfContents.astro';
+import Left from '../widgets/sidebar/SiteWidgets.astro';
+import '../assets/styles/global.css';
+
+interface Props {
+  headings?: MarkdownHeading[];
+  isPost?: boolean;
+  title: string;
+  description?: string;
+  isHome?: boolean;
+  breadcrumbs?: { text: string; href: string }[];
+}
+const {
+  headings = [], isPost = false, title, description, isHome = false,
+  breadcrumbs = [{ text: 'Home', href: '/' }],
+} = Astro.props;
+const withLeftSidebar = true;
+const withProfileCard = true;
+const withRightSidebar = isPost;
+const rightSidebarLabel = 'Table of Contents';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <HeadBase title={title} description={description} isHome={isHome} />
+    <ImageController />
+    <slot name="head" />
+  </head>
+  <body class:list={{ 'home-page': isHome }}>
+    <a class="skip-link" href="#reading-start">Skip to content</a>
+    <!-- Mobile Sticky Header -->
+    <SiteHeader />
+    <div class="site-banner" aria-hidden="true">
+      <Image src={nightSky} class="banner-image" alt="" format="webp" quality={95} widths={[640, 1280, 1746]} sizes="100vw" loading="eager" fetchpriority="high" />
+      <div class="banner-shade"></div>
+    </div>
+
+    <div class={`layout-container ${!withLeftSidebar ? 'without-left-sidebar' : ''} ${withRightSidebar ? 'with-right-sidebar' : ''}`}>
+      {withLeftSidebar && (
+        <LeftSidebar withProfileCard={withProfileCard} withHeader={withProfileCard || Astro.slots.has('left-header')}>
+          {Astro.slots.has('left-header') && <slot name="left-header" slot="header" />}
+          <Left />
+        </LeftSidebar>
+      )}
+
+      <!-- Main Region -->
+      <main id="reading-start" class="main-region" tabindex="-1">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          {breadcrumbs.map((crumb, idx) => (
+            <Fragment>
+              {idx > 0 && ' > '}
+              <a href={crumb.href} aria-current={idx === breadcrumbs.length - 1 ? 'page' : undefined}>{crumb.text}</a>
+            </Fragment>
+          ))}
+        </nav>
+        <slot />
+        <!-- Mobile Footer (Shown in normal flow only on mobile) -->
+        <SidebarFooter className="mobile-footer" />
+      </main>
+      {withRightSidebar && <RightSidebar><TableOfContents headings={headings} /></RightSidebar>}
+    </div>
+
+    <!-- Mobile Drawer Elements -->
+    <div class="drawer-backdrop" id="drawer-backdrop"></div>
+    <!-- Left Drawer (Widgets) -->
+    {withLeftSidebar && (
+      <div class="drawer" id="widgets-drawer" role="dialog" aria-modal="true" aria-label="Sidebar" aria-hidden="true" inert>
+        <button class="drawer-close" id="close-widgets-btn">[Close]</button>
+        <div style="margin-top: 20px;"><Left /></div>
+      </div>
+    )}
+    <!-- Right Drawer (Context) -->
+    {withRightSidebar && (
+      <div class="drawer drawer-right" id="context-drawer" role="dialog" aria-modal="true" aria-label={rightSidebarLabel} aria-hidden="true" inert>
+        <button class="drawer-close" id="close-context-btn">[Close]</button>
+        <div style="margin-top: 20px;"><RightSidebar drawer><TableOfContents headings={headings} /></RightSidebar></div>
+      </div>
+    )}
+    <!-- Mobile Floating Action Button for Right Sidebar (TOC / Context) -->
+    {withRightSidebar && (
+      <button class="mobile-floating-btn" id="open-context-btn" aria-label={`Open ${rightSidebarLabel}`} aria-controls="context-drawer" aria-expanded="false">
+        <span class="btn-bracket">[</span>
+        <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <line x1="2" y1="3.5" x2="14" y2="3.5" />
+          <line x1="2" y1="8" x2="10" y2="8" />
+          <line x1="2" y1="12.5" x2="14" y2="12.5" />
+        </svg>
+        <span class="btn-text">{rightSidebarLabel === 'Table of Contents' ? 'TOC' : 'Sidebar'}</span>
+        <span class="btn-bracket">]</span>
+      </button>
+    )}
+    <ImageLightbox />
+
+    <!-- Pure JS for drawer transitions (Progressive Enhancement) -->
+    <script>
+      let drawerController: AbortController | undefined;
+      function setupDrawers() {
+        drawerController?.abort();
+        drawerController = new AbortController();
+        const { signal } = drawerController;
+        const backdrop = document.getElementById('drawer-backdrop');
+        const pairs = [
+          ['open-widgets-btn', 'widgets-drawer'],
+          ['open-context-btn', 'context-drawer'],
+        ].flatMap(([buttonId, drawerId]) => {
+          const button = document.getElementById(buttonId);
+          const drawer = document.getElementById(drawerId);
+          return button && drawer ? [{ button, drawer }] : [];
+        });
+        let active: (typeof pairs)[number] | undefined;
+        const background = [
+          document.querySelector<HTMLElement>('.layout-container'),
+          document.querySelector<HTMLElement>('.site-header'),
+          document.getElementById('open-context-btn'),
+        ];
+        function close(restoreFocus = true) {
+          if (!active) return;
+          const { button, drawer } = active;
+          drawer.classList.remove('open');
+          drawer.inert = true;
+          drawer.setAttribute('aria-hidden', 'true');
+          button.setAttribute('aria-expanded', 'false');
+          backdrop?.classList.remove('open');
+          background.forEach(element => { if (element) element.inert = false; });
+          active = undefined;
+          if (restoreFocus) button.focus();
+        }
+        for (const pair of pairs) {
+          pair.button.addEventListener('click', () => {
+            close(false);
+            active = pair;
+            pair.drawer.inert = false;
+            pair.drawer.setAttribute('aria-hidden', 'false');
+            pair.drawer.classList.add('open');
+            pair.button.setAttribute('aria-expanded', 'true');
+            backdrop?.classList.add('open');
+            background.forEach(element => { if (element) element.inert = true; });
+            pair.drawer.querySelector<HTMLButtonElement>('.drawer-close')?.focus();
+          }, { signal });
+          pair.drawer.querySelector('.drawer-close')?.addEventListener('click', () => close(), { signal });
+        }
+        backdrop?.addEventListener('click', () => close(), { signal });
+        document.addEventListener('keydown', event => {
+          if (!active) return;
+          if (event.key === 'Escape') {
+            event.preventDefault();
+            close();
+          } else if (event.key === 'Tab') {
+            const focusable = [...active.drawer.querySelectorAll<HTMLElement>('a[href], button, input, select, textarea, [tabindex]')]
+              .filter(element => element.tabIndex >= 0 && !element.matches(':disabled') && element.getClientRects().length);
+            const first = focusable[0];
+            const last = focusable.at(-1);
+            if (event.shiftKey && document.activeElement === first) {
+              event.preventDefault();
+              last?.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+              event.preventDefault();
+              first?.focus();
+            }
+          }
+        }, { signal });
+        window.addEventListener('resize', () => {
+          if (active && !active.button.getClientRects().length) close(false);
+        }, { signal });
+        document.documentElement.dataset.drawersReady = '';
+      }
+      setupDrawers();
+      document.addEventListener('astro:after-swap', setupDrawers);
+    </script>
+  </body>
+</html>
+
+<style>
+  body {
+    --ny-shell-width: 1440px;
+    --ny-shell-gutter: var(--ny-layout-outer-padding-inline);
+    --ny-banner-height: clamp(160px, 16vw, 240px);
+  }
+  body.home-page { --ny-banner-height: clamp(220px, 40vw, 560px); }
+  .site-banner { position: relative; height: var(--ny-banner-height); overflow: hidden; }
+  .banner-image { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center bottom; }
+  .banner-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(4, 11, 21, 0.12), rgba(4, 11, 21, 0.04) 60%, rgba(4, 11, 21, 0.3)); }
+  .skip-link { position: fixed; top: -60px; left: 20px; z-index: 2100; padding: 10px 16px; background: var(--ny-color-surface); }
+  .skip-link:focus { top: 12px; }
+  .main-region:focus { outline: none; }
+  .layout-container {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: var(--ny-layout-left-width) minmax(0, 1fr);
+    gap: var(--ny-layout-column-gap);
+    max-width: var(--ny-shell-width);
+    margin: -60px auto 0;
+    padding: 32px var(--ny-shell-gutter) var(--ny-layout-outer-padding-block);
+    min-height: calc(100svh - var(--ny-banner-height) + 60px);
+    border-radius: var(--ny-radius-lg) var(--ny-radius-lg) 0 0;
+    background: var(--ny-color-bg);
+  }
+  .layout-container.without-left-sidebar { grid-template-columns: minmax(0, 1fr); }
+  .layout-container.with-right-sidebar {
+    grid-template-columns: var(--ny-layout-left-width) minmax(0, 1fr) var(--ny-layout-right-width);
+    max-width: var(--ny-shell-width);
+  }
+  .layout-container.without-left-sidebar.with-right-sidebar { grid-template-columns: minmax(0, 1fr) var(--ny-layout-right-width); }
+  :global(.left-region) {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    position: sticky;
+    top: 88px;
+    height: calc(100svh - 112px);
+    max-height: calc(100svh - 112px);
+    overflow: hidden;
+  }
+  :global(.left-footer) { margin-top: auto; flex-shrink: 0; font-size: var(--ny-font-size-ui-micro); color: var(--ny-color-text-subtle); line-height: 1.6; border-top: 1px solid var(--ny-color-border); padding-top: 16px; }
+  :global(.left-footer a), :global(.mobile-footer a) { color: var(--ny-color-text-muted); text-decoration: none; }
+  :global(.left-footer a:hover), :global(.mobile-footer a:hover) { color: var(--ny-color-outline); text-decoration: underline; }
+  .main-region { max-width: 1670px; min-width: 0; width: 100%; }
+  .layout-container.with-right-sidebar .main-region { max-width: 1470px; }
+  .breadcrumbs { font-size: var(--ny-font-size-ui-meta); color: var(--ny-color-text-subtle); margin-bottom: 24px; }
+  .breadcrumbs a { color: var(--ny-color-text-subtle); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--ny-color-outline); }
+  :global(.right-region) { display: flex; flex-direction: column; gap: 20px; height: fit-content; position: sticky; top: 88px; }
+  :global(html) { scroll-padding-top: 88px; }
+  .drawer { visibility: hidden; position: fixed; top: 0; bottom: 0; width: min(300px, calc(100vw - 32px)); background-color: var(--ny-color-surface); border-right: 1px solid var(--ny-color-border); padding: 24px; z-index: 2000; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); overflow-y: auto; }
+  .drawer-right { left: auto; right: 0; border-right: none; border-left: 1px solid var(--ny-color-border); transform: translateX(100%); }
+  .drawer.open { visibility: visible; transform: translateX(0); }
+  .drawer-backdrop { position: fixed; inset: 0; background-color: var(--ny-color-mask, color-mix(in srgb, var(--ny-color-bg) 80%, transparent)); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); z-index: 1500; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+  .drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+  .drawer-close { position: absolute; top: 16px; right: 16px; background: none; border: none; color: var(--ny-color-text-muted); font-family: var(--ny-font-ui); font-size: var(--ny-font-size-icon); cursor: pointer; }
+  .drawer-close + div { margin-top: 44px !important; }
+  .drawer-close:hover { color: var(--ny-color-outline); }
+  .drawer > div { display: flex; flex-direction: column; gap: 28px; }
+  .mobile-floating-btn { display: none; position: fixed; right: max(16px, calc(env(safe-area-inset-right, 0px) + 16px)); bottom: max(20px, calc(env(safe-area-inset-bottom, 0px) + 20px)); height: 30px; padding: 0 8px; background-color: var(--ny-color-surface-container); border: 1px solid var(--ny-color-border); border-radius: var(--ny-radius-sm); color: var(--ny-color-text-muted); font-family: var(--ny-font-ui); font-size: var(--ny-font-size-ui-meta); font-weight: 600; letter-spacing: var(--ny-letter-spacing-ui); box-shadow: 0 2px 8px var(--ny-color-shadow); z-index: 1200; align-items: center; gap: 5px; cursor: pointer; transition: all 0.15s ease; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+  .mobile-floating-btn:hover { color: var(--ny-color-outline); border-color: var(--ny-color-outline); background-color: var(--ny-color-surface-elevated); box-shadow: 0 0 10px color-mix(in srgb, var(--ny-color-outline) 30%, transparent); transform: translateY(-1px); }
+  .mobile-floating-btn:active { transform: translateY(0); }
+  .mobile-floating-btn .btn-bracket { color: var(--ny-color-text-subtle); transition: color 0.15s ease; }
+  .mobile-floating-btn:hover .btn-bracket { color: var(--ny-color-outline); }
+  @media (max-width: 1120px) {
+    .layout-container.with-right-sidebar { grid-template-columns: var(--ny-layout-left-width) minmax(0, 1fr); }
+    .layout-container.without-left-sidebar.with-right-sidebar { grid-template-columns: minmax(0, 1fr); }
+    .layout-container.with-right-sidebar .main-region { max-width: 1670px; }
+    :global(.right-region) { grid-column: 1 / -1; position: static; }
+    :global(html[data-drawers-ready] .right-region) { display: none; }
+    :global(html[data-drawers-ready]) .mobile-floating-btn { display: flex; }
+  }
+  @media (max-width: 768px) {
+    body { --ny-shell-gutter: 20px; }
+    .layout-container { grid-template-columns: minmax(0, 1fr); margin-top: -32px; padding: 24px var(--ny-shell-gutter); row-gap: 24px; align-content: start; }
+    .layout-container.with-right-sidebar, .layout-container.without-left-sidebar, .layout-container.without-left-sidebar.with-right-sidebar { grid-template-columns: minmax(0, 1fr); }
+    :global(.left-region) { position: static; top: auto; height: auto; max-height: none; overflow: visible; padding-right: 0; gap: 0; }
+    :global(html[data-drawers-ready] .left-region .left-sidebar-content), :global(.left-region .left-footer) { display: none; }
+    :global(.left-region .profile-card) { border-bottom: 1px solid var(--ny-color-border); padding-bottom: 20px; }
+    :global(.mobile-footer) { display: block; margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--ny-color-border); font-size: var(--ny-font-size-ui-micro); color: var(--ny-color-text-subtle); line-height: 1.6; }
+  }
+  @media (min-width: 769px) { :global(.mobile-footer) { display: none; } }
+</style>
